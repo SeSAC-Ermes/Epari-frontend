@@ -1,9 +1,12 @@
 import React from 'react';
 import Logo from '../assets/epariLogo.jpg'
+import { useNavigate } from 'react-router-dom';
 
-const SignUp = () => {
+const SignUpForm = () => {
+  const navigate = useNavigate();
+
   return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-white p-6">
+      <>
         {/* Logo Section */}
         <div className="flex items-center gap-3 mb-12">
           <img
@@ -12,12 +15,12 @@ const SignUp = () => {
               className="w-15 h-14 object-contain"
           />
           <div className="flex items-baseline">
-            <span className="text-3xl font-semibold">
-              SeSAC
-            </span>
+          <span className="text-3xl font-semibold">
+            SeSAC
+          </span>
             <span className="text-base text-gray-500 font-normal">
-              epari
-            </span>
+            epari
+          </span>
           </div>
         </div>
 
@@ -88,6 +91,7 @@ const SignUp = () => {
               {/* Sign In Button */}
               <button
                   type="button"
+                  onClick={() => navigate('/signin')}
                   className="w-60 py-2 px-4 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
               >
                 Back to Sign In
@@ -95,8 +99,8 @@ const SignUp = () => {
             </div>
           </form>
         </div>
-      </div>
+      </>
   );
 };
 
-export default SignUp;
+export default SignUpForm;
