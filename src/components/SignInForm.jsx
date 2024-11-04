@@ -2,10 +2,11 @@ import React from 'react';
 import Logo from '../assets/epariLogo.jpg'
 import { useNavigate } from 'react-router-dom';
 
-const SignIn = () => {
+const SignInForm = () => {
   const navigate = useNavigate();
+
   return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-white p-6">
+      <>
         {/* Logo Section */}
         <div className="flex items-center gap-3 mb-12">
           <img
@@ -14,12 +15,12 @@ const SignIn = () => {
               className="w-15 h-14 object-contain"
           />
           <div className="flex items-baseline">
-            <span className="text-3xl font-semibold">
-              SeSAC
-            </span>
+          <span className="text-3xl font-semibold">
+            SeSAC
+          </span>
             <span className="text-base text-gray-500 font-normal">
-              epari
-            </span>
+            epari
+          </span>
           </div>
         </div>
 
@@ -86,8 +87,8 @@ const SignIn = () => {
             </div>
           </form>
         </div>
-      </div>
+      </>
   );
 };
 
-export default SignIn;
+export default SignInForm;
