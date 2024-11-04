@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Logo from '../assets/epariLogo.jpg';
-import { Layout, FileText, Database, MessageSquare, Calendar, User, Settings } from 'lucide-react';
+import { Calendar, Database, FileText, Layout, MessageSquare, Settings, User } from 'lucide-react';
 
 const Sidebar = () => {
   const location = useLocation();
