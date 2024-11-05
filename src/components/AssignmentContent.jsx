@@ -1,6 +1,6 @@
 import React from 'react';
 
-const MainContent = () => {
+const AssignmentContent = () => {
   const assignments = [
     {
       id: 1,
@@ -56,4 +56,4 @@ const MainContent = () => {
   );
 };
 
-export default MainContent;
+export default AssignmentContent;

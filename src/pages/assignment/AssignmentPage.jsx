@@ -1,14 +1,14 @@
 import React from 'react';
 import Sidebar from '../../components/Sidebar';
-import MainContent from '../../components/MainContent';
+import AssignmentContent from '../../components/AssignmentContent.jsx';
 
-const ExamPage = () => {
+const AssignmentPage = () => {
   return (
       <div className="flex min-h-screen bg-gray-50">
         <Sidebar />
-        <MainContent />
+        <AssignmentContent />
       </div>
   );
 };
 
-export default ExamPage;
+export default AssignmentPage;
