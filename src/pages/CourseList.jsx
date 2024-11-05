@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import TopBar from "../components/layout/TopBar";
 
 const CourseList = () => {

@@ -1,18 +1,18 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import {Link, useLocation} from 'react-router-dom';
 import Logo from '../assets/epariLogo.jpg';
-import { Calendar, Database, FileText, Layout, MessageSquare, Settings, User } from 'lucide-react';
+import {Calendar, Database, FileText, Layout, MessageSquare, Settings, User} from 'lucide-react';
 
 const Sidebar = () => {
   const location = useLocation();
 
   const menuItems = [
-    { icon: <FileText size={20} />, text: 'Schedules', path: '/schedules' },
-    { icon: <Database size={20} />, text: 'Resources', path: '/resources' },
-    { icon: <MessageSquare size={20} />, text: 'Discussion', path: '/discussion' },
-    { icon: <Calendar size={20} />, text: 'Schedules', path: '/schedule' },
-    { icon: <User size={20} />, text: 'my Account', path: '/account' },
-    { icon: <Settings size={20} />, text: 'Settings', path: '/settings' }
+    {icon: <FileText size={20}/>, text: 'Schedules', path: '/schedules'},
+    {icon: <Database size={20}/>, text: 'Resources', path: '/resources'},
+    {icon: <MessageSquare size={20}/>, text: 'Discussion', path: '/discussion'},
+    {icon: <Calendar size={20}/>, text: 'Schedules', path: '/schedule'},
+    {icon: <User size={20}/>, text: 'my Account', path: '/account'},
+    {icon: <Settings size={20}/>, text: 'Settings', path: '/settings'}
   ];
 
   return (
@@ -27,7 +27,7 @@ const Sidebar = () => {
           <sup className="text-xs text-gray-500 font-normal">epari</sup>
         </Link>
         <Link to="/aws" className="flex items-center gap-3 p-3 bg-green-500 rounded-lg text-white no-underline mb-4">
-          <Layout size={20} />
+          <Layout size={20}/>
           <span className="text-sm font-medium">(영등포 6기) AWS 클라우드...</span>
         </Link>
         <div className="flex flex-col gap-1">

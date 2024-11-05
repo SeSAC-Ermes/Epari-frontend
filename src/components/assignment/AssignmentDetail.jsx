@@ -1,6 +1,10 @@
 import React from 'react';
 
-const AssignmentContent = () => {
+/*
+  과제 상세페이지 컴포넌트 Sidebar 컴포넌트와 구성해 AssignmentPage에 구현
+ */
+
+const AssignmentDetail = () => {
   const assignments = [
     {
       id: 1,
@@ -26,7 +30,8 @@ const AssignmentContent = () => {
       <div className="flex-1 bg-gray-50 p-10">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-gray-900">시험 및 과제</h1>
-          <button className="flex items-center gap-2 bg-green-500 text-white px-5 py-3 rounded-lg text-sm font-medium hover:bg-green-600 transition-colors">
+          <button
+              className="flex items-center gap-2 bg-green-500 text-white px-5 py-3 rounded-lg text-sm font-medium hover:bg-green-600 transition-colors">
             + 새로 올리기
           </button>
         </div>
@@ -56,4 +61,4 @@ const AssignmentContent = () => {
   );
 };
 
-export default AssignmentContent;
+export default AssignmentDetail;
