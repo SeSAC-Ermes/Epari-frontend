@@ -9,6 +9,9 @@ import LectureNoticeListPage from "./pages/LectureNoticeListPage.jsx";
 import QnAListPage from "./pages/QnAListPage.jsx";
 import CurriculumPage from "./pages/CurriculumPage.jsx";
 import AccountPage from "./pages/AccountPage.jsx";
+import QnADetailPage from "./pages/QnADetailPage.jsx";
+import QnAWritePage from "./pages/QnAWritePage.jsx";
+
 
 function App() {
   return (
@@ -21,6 +24,8 @@ function App() {
           <Route path="/coursedetail" element={<CourseDetailPage />} />
           <Route path="/lecturenoticelist" element={<LectureNoticeListPage />} />
           <Route path="/qnalist" element={<QnAListPage />} />
+          <Route path="/qna/write" element={<QnAWritePage />} />
+          <Route path="/qnalist/:num" element={<QnADetailPage />} />
           <Route path="/curriculum" element={<CurriculumPage />} />
           <Route path="/account" element={<AccountPage />} />
         </Routes>

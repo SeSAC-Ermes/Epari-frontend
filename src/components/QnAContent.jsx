@@ -32,6 +32,11 @@ const QnAContent = () => {
     }
   ];
 
+  // 게시글 클릭 시 이동하는 함수
+  const handleRowClick = (num) => {
+    navigate(`/qnalist/${num}`);
+  };
+
   return (
       <main className="max-w-7xl mx-auto px-4 py-8">
         <div className="bg-white rounded-lg p-6">
@@ -73,20 +78,20 @@ const QnAContent = () => {
                 <tr
                     key={qna.id}
                     className="border-b hover:bg-gray-50 cursor-pointer"
-                    onClick={() => navigate(`/qna/${qna.id}`)}
+                    onClick={() => handleRowClick(qna.id)}
                 >
                   <td className="py-4">{qna.date}</td>
                   <td className="py-4">{qna.writer}</td>
                   <td className="py-4">
-                  <span className="px-3 py-1 bg-green-100 text-green-600 rounded-full text-sm">
-                    {qna.category}
-                  </span>
+                    <span className="px-3 py-1 bg-green-100 text-green-600 rounded-full text-sm">
+                      {qna.category}
+                    </span>
                   </td>
                   <td className="py-4">{qna.title}</td>
                   <td className="py-4">
-                  <span className="px-3 py-1 bg-purple-100 text-purple-600 rounded-full text-sm">
-                    {qna.status}
-                  </span>
+                    <span className="px-3 py-1 bg-purple-100 text-purple-600 rounded-full text-sm">
+                      {qna.status}
+                    </span>
                   </td>
                 </tr>
             ))}
