@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import ReactQuill from 'react-quill';
 import Sidebar from '../../components/layout/Sidebar';
-import FileUpload from '../../components/assignment/FileUpload';
+import FileUpload from "../../components/common/FileUpload.jsx";
 import 'react-quill/dist/quill.snow.css';
 
 /**

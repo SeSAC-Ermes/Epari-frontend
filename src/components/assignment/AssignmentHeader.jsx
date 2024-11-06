@@ -1,5 +1,5 @@
 /**
-  과제 제출페이지 헤더 컴포넌트
+ 과제 제출페이지 헤더 컴포넌트
  */
 
 export const AssignmentHeader = ({date, title, deadline}) => (

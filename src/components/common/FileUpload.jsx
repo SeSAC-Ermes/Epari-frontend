@@ -1,11 +1,11 @@
-import React, { useState, useRef } from 'react';
-import { UploadCloud, X, File, CheckCircle } from 'lucide-react';
+import React, {useState, useRef} from 'react';
+import {UploadCloud, X, File, CheckCircle} from 'lucide-react';
 
 /**
-  파일 업로드 컴포넌트 입니다.
+ 파일 업로드 컴포넌트 입니다.
  */
 
-const FileUpload = ({ onFilesChange }) => {
+const FileUpload = ({onFilesChange}) => {
   const [dragActive, setDragActive] = useState(false);
   const [files, setFiles] = useState([]);
   const inputRef = useRef(null);
@@ -74,7 +74,7 @@ const FileUpload = ({ onFilesChange }) => {
           />
 
           <div className="flex flex-col items-center justify-center space-y-4">
-            <UploadCloud className="w-12 h-12 text-gray-400" />
+            <UploadCloud className="w-12 h-12 text-gray-400"/>
             <p className="text-lg text-gray-600">
               파일을 드래그하여 업로드하거나
             </p>
@@ -101,16 +101,16 @@ const FileUpload = ({ onFilesChange }) => {
                         className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
                     >
                       <div className="flex items-center space-x-3">
-                        <File className="w-5 h-5 text-gray-400" />
+                        <File className="w-5 h-5 text-gray-400"/>
                         <span className="text-sm text-gray-600">{file.name}</span>
-                        <CheckCircle className="w-4 h-4 text-green-500" />
+                        <CheckCircle className="w-4 h-4 text-green-500"/>
                       </div>
                       <button
                           type="button"
                           onClick={() => removeFile(file.name)}
                           className="p-1 hover:bg-gray-200 rounded-full"
                       >
-                        <X className="w-4 h-4 text-gray-500" />
+                        <X className="w-4 h-4 text-gray-500"/>
                       </button>
                     </div>
                 ))}

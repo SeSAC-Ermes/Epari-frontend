@@ -2,9 +2,9 @@ import React from 'react';
 import {Search} from 'lucide-react';
 
 /**
-  재사용 가능한 Header 컴포넌트
-  props로 title을 전달받아 페이지별로 다른 제목을 표시할 수 있게 구현
-*/
+ 재사용 가능한 Header 컴포넌트
+ props로 title을 전달받아 페이지별로 다른 제목을 표시할 수 있게 구현
+ */
 
 const Header = ({title}) => (
     <header className="flex justify-between items-center mb-6">
