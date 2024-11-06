@@ -1,5 +1,9 @@
 import {AssignmentContainer} from "./AssignmentContainer.jsx";
 
+/**
+
+ */
+
 export const AssignmentInstructions = ({instructions}) => (
     <div className="bg-gray-50 rounded-lg p-6 mb-8">
       <h3 className="font-bold mb-6">과제안내</h3>

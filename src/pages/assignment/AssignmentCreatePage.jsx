@@ -1,8 +1,13 @@
-import React, {useState} from 'react';
-import {X} from 'lucide-react';
+import React, { useState } from 'react';
+import { X } from 'lucide-react';
 import ReactQuill from 'react-quill';
 import Sidebar from '../../components/layout/Sidebar';
+import FileUpload from '../../components/assignment/FileUpload';
 import 'react-quill/dist/quill.snow.css';
+
+/**
+  과제 출제 페이지 입니다.
+ */
 
 const AssignmentCreatePage = () => {
   const [title, setTitle] = useState('');
@@ -10,7 +15,7 @@ const AssignmentCreatePage = () => {
   const [dueDate, setDueDate] = useState('');
   const [status, setStatus] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
 
   const modules = {
     toolbar: {
@@ -44,6 +49,10 @@ const AssignmentCreatePage = () => {
     }
     console.log('과제가 제출되었습니다.');
     alert('과제가 성공적으로 제출되었습니다.');
+  };
+
+  const handleFilesChange = (newFiles) => {
+    setFiles(newFiles);
   };
 
   return (
@@ -109,25 +118,7 @@ const AssignmentCreatePage = () => {
 
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">파일 첨부</label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
-                  <input
-                      type="file"
-                      onChange={(e) => setFile(e.target.files[0])}
-                      className="w-full"
-                  />
-                  {file && (
-                      <div className="mt-2 flex items-center gap-2 text-sm text-gray-600">
-                        <span>{file.name}</span>
-                        <button
-                            type="button"
-                            onClick={() => setFile(null)}
-                            className="text-gray-500 hover:text-gray-700"
-                        >
-                          <X size={16}/>
-                        </button>
-                      </div>
-                  )}
-                </div>
+                <FileUpload onFilesChange={handleFilesChange} />
               </div>
 
               <div className="flex gap-4 justify-end">
@@ -168,6 +159,16 @@ const AssignmentCreatePage = () => {
                       <div className="text-sm text-gray-500">
                         <p>제출 기한: {dueDate}</p>
                         <p>상태: {status}</p>
+                        {files.length > 0 && (
+                            <div className="mt-2">
+                              <p>첨부 파일:</p>
+                              <ul className="list-disc list-inside">
+                                {files.map(file => (
+                                    <li key={file.name}>{file.name}</li>
+                                ))}
+                              </ul>
+                            </div>
+                        )}
                       </div>
                     </div>
                   </div>

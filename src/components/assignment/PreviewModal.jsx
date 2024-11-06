@@ -1,5 +1,8 @@
 import React from 'react';
 import { X } from 'lucide-react';
+/**
+  과제 출제 미리보기 모달
+ */
 
 const PreviewModal = ({ title, description, dueDate, status, onClose }) => {
   return (
