@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@aws-amplify/auth": "^6.6.0",
+    "aws-amplify": "^6.8.0",
     "axios": "^1.7.7",
     "lucide-react": "^0.454.0",
     "quill-image-resize-module-react": "^3.0.0",
