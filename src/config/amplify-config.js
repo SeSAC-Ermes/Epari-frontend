@@ -3,8 +3,8 @@ import { Amplify } from 'aws-amplify';
 Amplify.configure({
   Auth: {
     Cognito: {
-      userPoolId: 'ap-northeast-2_pD4FKh81Z',
-      userPoolClientId: '3qonkcahudsvh9eathk7h6v9su',
+      userPoolId: import.meta.env.VITE_USER_POOL_ID,
+      userPoolClientId: import.meta.env.VITE_USER_POOL_CLIENT_ID,
       region: 'ap-northeast-2',
       loginWith: {
         email: true,
@@ -12,11 +12,11 @@ Amplify.configure({
         username: false
       },
       oauth: {
-        domain: '202533495554epari-pool.auth.ap-northeast-2.amazoncognito.com',
+        domain: import.meta.env.VITE_COGNITO_DOMAIN,
         scopes: ['email', 'profile', 'openid'],
         responseType: 'code',
-        redirectSignIn: 'http://localhost:5173/courselist',
-        redirectSignOut: 'http://localhost:5173'
+        redirectSignIn: import.meta.env.VITE_REDIRECT_SIGN_IN,
+        redirectSignOut: import.meta.env.VITE_REDIRECT_SIGN_OUT
       }
     }
   }
