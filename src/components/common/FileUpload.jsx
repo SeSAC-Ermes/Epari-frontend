@@ -2,7 +2,7 @@ import React, {useState, useRef} from 'react';
 import {UploadCloud, X, File, CheckCircle} from 'lucide-react';
 
 /**
- 파일 업로드 컴포넌트 입니다.
+ * 파일 업로드 컴포넌트 입니다.
  */
 
 const FileUpload = ({onFilesChange}) => {

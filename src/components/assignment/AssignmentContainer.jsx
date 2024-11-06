@@ -1,5 +1,5 @@
 /**
- 임시로 만들어둔 과제 제출페이지 더미 컨텐츠
+ * 임시로 만들어둔 과제 제출페이지 더미 컨텐츠
  */
 
 export const AssignmentContainer = ({logo, arrows}) => {

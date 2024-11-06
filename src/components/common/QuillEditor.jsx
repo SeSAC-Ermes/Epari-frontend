@@ -3,7 +3,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
 /**
-  텍스트 박스 컴포넌트 입니다.
+ * 텍스트 박스 컴포넌트 입니다.
  */
 
 const QuillEditor = ({ value, onChange }) => {

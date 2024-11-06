@@ -1,7 +1,7 @@
 import {AssignmentContainer} from "./AssignmentContainer.jsx";
 
 /**
- *  임시로 만들어둔 AssignmentContainer 컴포넌트를 불러오는 더미 컴포넌트
+ * 임시로 만들어둔 AssignmentContainer 컴포넌트를 불러오는 더미 컴포넌트
  */
 export const AssignmentInstructions = ({instructions}) => (
     <div className="bg-gray-50 rounded-lg p-6 mb-8">
