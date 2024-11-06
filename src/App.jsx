@@ -15,8 +15,6 @@ import AssignmentSubmitPage from "./pages/assignment/AssignmentSubmitPage.jsx";
 import AttendanceManagementPage from "./pages/attendance/AttendanceManagementPage.jsx";
 import AssignmentCreatePage from "./pages/assignment/AssignmentCreatePage.jsx";
 
-
-
 function App() {
   return (
       <Router>
