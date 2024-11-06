@@ -1,6 +1,7 @@
 import React from 'react';
 import Logo from '../assets/epariLogo.jpg'
 import { useNavigate } from 'react-router-dom';
+import GoogleLoginButton from "../components/common/button/GoogleLoginButton.jsx";
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -83,6 +84,8 @@ const SignIn = () => {
               >
                 Sign Up
               </button>
+
+              <GoogleLoginButton/>
             </div>
           </form>
         </div>
