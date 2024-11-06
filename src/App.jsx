@@ -12,6 +12,7 @@ import CurriculumPage from "./pages/CurriculumPage.jsx";
 import AccountPage from "./pages/AccountPage.jsx";
 import AssignmentPage from "./pages/assignment/AssignmentPage.jsx";
 import AssignmentSubmitPage from "./pages/assignment/AssignmentSubmitPage.jsx";
+import AttendanceManagementPage from "./pages/attendance/AttendanceManagementPage.jsx";
 import AssignmentCreatePage from "./pages/assignment/AssignmentCreatePage.jsx";
 
 
@@ -26,13 +27,14 @@ function App() {
           <Route path="/assignmentcreate" element={<AssignmentCreatePage/>}/>
           <Route path="/assignmentsubmit" element={<AssignmentSubmitPage/>}/>
           <Route path="/courselist" element={<CourseListPage/>}/>
-          <Route path="/coursedetail" element={<CourseDetailPage />} />
-          <Route path="/lecturenoticelist" element={<LectureNoticeListPage />} />
-          <Route path="/qnalist" element={<QnAListPage />} />
-          <Route path="/qna/write" element={<QnAWritePage />} />
-          <Route path="/qnalist/:num" element={<QnADetailPage />} />
-          <Route path="/curriculum" element={<CurriculumPage />} />
-          <Route path="/account" element={<AccountPage />} />
+          <Route path="/coursedetail" element={<CourseDetailPage/>}/>
+          <Route path="/lecturenoticelist" element={<LectureNoticeListPage/>}/>
+          <Route path="/qnalist" element={<QnAListPage/>}/>
+          <Route path="/qna/write" element={<QnAWritePage/>}/>
+          <Route path="/qnalist/:num" element={<QnADetailPage/>}/>
+          <Route path="/curriculum" element={<CurriculumPage/>}/>
+          <Route path="/account" element={<AccountPage/>}/>
+          <Route path="/attendancemanagement" element={<AttendanceManagementPage/>}/>
         </Routes>
       </Router>
   );
