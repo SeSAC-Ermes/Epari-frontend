@@ -2,10 +2,9 @@ import React from 'react';
 import Sidebar from '../../components/layout/Sidebar';
 import AssignmentDetail from '../../components/Assignment/AssignmentDetail.jsx';
 
-/*
-  SideBar + AssignmentDetail로 구성된 과제 상세페이지
+/**
+ * SideBar + AssignmentDetail로 구성된 과제 상세페이지
  */
-
 const AssignmentPage = () => {
   return (
       <div className="flex min-h-screen bg-gray-50">

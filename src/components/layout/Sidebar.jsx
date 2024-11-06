@@ -3,6 +3,10 @@ import { Link, useLocation } from 'react-router-dom';
 import Logo from '../../assets/epariLogo.jpg';
 import { Calendar, Database, FileText, Layout, MessageSquare, Settings, User } from 'lucide-react';
 
+/**
+ * 페이지 왼쪽에 위치한 공용 사이드바 컴포넌트입니다.
+ */
+
 const Sidebar = () => {
   const location = useLocation();
 

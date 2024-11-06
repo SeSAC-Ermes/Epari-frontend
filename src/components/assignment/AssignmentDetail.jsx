@@ -1,7 +1,7 @@
 import React from 'react';
 
-/*
-  과제 상세페이지 컴포넌트 Sidebar 컴포넌트와 구성해 AssignmentPage에 구현
+/**
+ * 과제 상세페이지 컴포넌트 Sidebar 컴포넌트와 구성해 AssignmentPage에 구현
  */
 
 const AssignmentDetail = () => {

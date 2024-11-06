@@ -1,3 +1,7 @@
+/**
+ * 과제 제출페이지 헤더 컴포넌트
+ */
+
 export const AssignmentHeader = ({date, title, deadline}) => (
     <>
       <div className="mb-4 text-sm text-gray-500">

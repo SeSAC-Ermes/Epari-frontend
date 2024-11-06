@@ -12,6 +12,7 @@ import CurriculumPage from "./pages/CurriculumPage.jsx";
 import AccountPage from "./pages/AccountPage.jsx";
 import AssignmentPage from "./pages/assignment/AssignmentPage.jsx";
 import AssignmentSubmitPage from "./pages/assignment/AssignmentSubmitPage.jsx";
+import AssignmentCreatePage from "./pages/assignment/AssignmentCreatePage.jsx";
 
 
 
@@ -21,8 +22,9 @@ function App() {
         <Routes>
           <Route path="/signin" element={<SignInPage/>}/>
           <Route path="/signup" element={<SignUpPage/>}/>
-          <Route path="/assign" element={<AssignmentPage/>}/>
-          <Route path="/assignsubmit" element={<AssignmentSubmitPage/>}/>
+          <Route path="/assignment" element={<AssignmentPage/>}/>
+          <Route path="/assignmentcreate" element={<AssignmentCreatePage/>}/>
+          <Route path="/assignmentsubmit" element={<AssignmentSubmitPage/>}/>
           <Route path="/courselist" element={<CourseListPage/>}/>
           <Route path="/coursedetail" element={<CourseDetailPage />} />
           <Route path="/lecturenoticelist" element={<LectureNoticeListPage />} />

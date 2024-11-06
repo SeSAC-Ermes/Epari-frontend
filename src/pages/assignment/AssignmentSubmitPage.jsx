@@ -4,6 +4,10 @@ import Header from '../../components/Assignment/Header.jsx';
 import { AssignmentHeader } from '../../components/Assignment/AssignmentHeader.jsx';
 import { AssignmentInstructions } from '../../components/Assignment/AssignmentInstructions.jsx';
 
+/**
+  과제 제출 페이지
+ */
+
 const AssignmentSubmission = () => {
   const [submissionText, setSubmissionText] = useState('');
 
