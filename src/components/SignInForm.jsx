@@ -71,7 +71,7 @@ const SignInForm = () => {
 
       localStorage.setItem('token', token);
 
-      const response = await fetch('http://localhost:8080/api/auth/validate', {
+      const response = await fetch('http://localhost:8080/api/auth/validate', { // TODO: 환경 변수 설정 및 fetch -> axios 라이브러리로 변경하기
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
