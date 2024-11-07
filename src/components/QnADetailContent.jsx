@@ -1,14 +1,14 @@
-// QnADetailContent.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 const QnADetailContent = () => {
-  const { num } = useParams(); // URL에서 num 파라미터 추출
+  const { num } = useParams();
   const [post, setPost] = useState(null);
   const [isAuthor, setIsAuthor] = useState(false);
+  const [comment, setComment] = useState('');
+  const [comments, setComments] = useState([]);
 
   useEffect(() => {
-    // 여기서 실제 데이터를 가져오는 API 호출을 구현하세요
     const fetchPost = async () => {
       try {
         // const response = await axios.get(`/api/posts/${num}`);
@@ -21,6 +21,29 @@ const QnADetailContent = () => {
 
     fetchPost();
   }, [num]);
+
+  const handleCommentSubmit = async (e) => {
+    e.preventDefault();
+    if (!comment.trim()) return;
+
+    const newComment = {
+      id: Date.now(), // 임시 ID
+      content: comment,
+      createdAt: new Date().toISOString(),
+      author: {
+        name: '사용자', // 실제 구현시 로그인한 사용자 정보를 사용
+        avatar: '/api/placeholder/32/32'
+      }
+    };
+
+    try {
+      // await axios.post(`/api/posts/${num}/comments`, { content: comment });
+      setComments(prevComments => [...prevComments, newComment]);
+      setComment('');
+    } catch (error) {
+      console.error('Error posting comment:', error);
+    }
+  };
 
   return (
       <div className="p-6 bg-white">
@@ -49,15 +72,14 @@ const QnADetailContent = () => {
                 />
               </div>
               <div className="flex-1 min-h-[200px]">
-                {/* 질문 내용은 여기에 표시됩니다 */}
                 {post?.content}
               </div>
             </div>
           </div>
         </div>
 
-        {/* Answer section - 회색 배경으로 변경 */}
-        <div className="bg-gray-100 rounded-lg p-6 relative">
+        {/* Answer section */}
+        <div className="bg-gray-100 rounded-lg p-6 relative mb-6">
           <div className="absolute top-4 right-4">
             <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
               <img
@@ -81,10 +103,46 @@ const QnADetailContent = () => {
           </div>
         </div>
 
-        {/* Bottom section */}
-        <div className="flex justify-between items-center mt-4">
-          <span className="text-sm text-purple-400">댓글을 작성해주세요</span>
-          <button className="p-2 bg-green-400 rounded-lg">
+        {/* Comments section */}
+        <div className="space-y-4 mb-6">
+          {comments.map((comment) => (
+              <div key={comment.id} className="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg">
+                <div className="w-8 h-8 rounded-full bg-gray-200 overflow-hidden flex-shrink-0">
+                  <img
+                      src={comment.author.avatar}
+                      alt={`${comment.author.name}'s avatar`}
+                      className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center space-x-2 mb-1">
+                    <span className="font-medium text-sm">{comment.author.name}</span>
+                    <span className="text-xs text-gray-500">
+                  {new Date(comment.createdAt).toLocaleDateString()}
+                </span>
+                  </div>
+                  <p className="text-sm text-gray-700">{comment.content}</p>
+                </div>
+              </div>
+          ))}
+        </div>
+
+        {/* Divider line */}
+        <div className="border-b border-gray-200 mb-4"></div>
+
+        {/* Comment input section */}
+        <form onSubmit={handleCommentSubmit} className="flex items-center gap-2">
+          <input
+              type="text"
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="댓글을 작성해주세요"
+              className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-purple-400"
+          />
+          <button
+              type="submit"
+              className="p-2 bg-green-400 rounded-lg hover:bg-green-500 transition-colors"
+          >
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="w-6 h-6 text-white"
@@ -96,10 +154,9 @@ const QnADetailContent = () => {
               <path d="M12 8v8m-4-4h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
             </svg>
           </button>
-        </div>
+        </form>
       </div>
   );
 };
-
 
 export default QnADetailContent;
