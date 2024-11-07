@@ -13,6 +13,7 @@ import AccountPage from "./pages/AccountPage.jsx";
 import AssignmentPage from "./pages/assignment/AssignmentPage.jsx";
 import AssignmentSubmitPage from "./pages/assignment/AssignmentSubmitPage.jsx";
 import AssignmentCreatePage from "./pages/assignment/AssignmentCreatePage.jsx";
+import NoticeListPage from "./pages/NoticeListPage.jsx";
 
 
 
@@ -27,7 +28,9 @@ function App() {
           <Route path="/assignmentsubmit" element={<AssignmentSubmitPage/>}/>
           <Route path="/courselist" element={<CourseListPage/>}/>
           <Route path="/coursedetail" element={<CourseDetailPage />} />
+          <Route path="/noticelist" element={<NoticeListPage />} />
           <Route path="/lecturenoticelist" element={<LectureNoticeListPage />} />
+
           <Route path="/qnalist" element={<QnAListPage />} />
           <Route path="/qna/write" element={<QnAWritePage />} />
           <Route path="/qnalist/:num" element={<QnADetailPage />} />
