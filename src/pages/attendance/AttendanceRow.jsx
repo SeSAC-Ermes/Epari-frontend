@@ -7,7 +7,7 @@ const AttendanceRow = ({ student, onStatusChange }) => {
   const statuses = [
     { key: '출석', color: 'green', bgClass: 'bg-green-500', borderClass: 'border-green-500 hover:border-green-400' },
     { key: '지각', color: 'orange', bgClass: 'bg-orange-500', borderClass: 'border-orange-500 hover:border-orange-400' },
-    { key: '병가', color: 'gray', bgClass: 'bg-gray-500', borderClass: 'border-gray-500 hover:border-gray-400' },
+    { key: '병결', color: 'gray', bgClass: 'bg-gray-500', borderClass: 'border-gray-500 hover:border-gray-400' },
     { key: '결석', color: 'blue', bgClass: 'bg-blue-500', borderClass: 'border-blue-500 hover:border-blue-400' }
   ];
 
@@ -25,7 +25,7 @@ const AttendanceRow = ({ student, onStatusChange }) => {
       case '결석':
         className += 'bg-blue-50 text-blue-700';
         break;
-      case '병가':
+      case '병결':
         className += 'bg-gray-50 text-gray-700';
         break;
       case '지각':
