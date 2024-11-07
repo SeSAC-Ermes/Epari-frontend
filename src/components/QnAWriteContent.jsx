@@ -1,18 +1,23 @@
 import React, { useRef, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { User } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const QnAWriteContent = ({
-                           // onComplete,
                            onTitleChange,
-                           onContentChange,
-                           onNavigate
+                           onContentChange
                          }) => {
+  const navigate = useNavigate();
   const imageFileInputRef = useRef();
   const attachmentFileInputRef = useRef();
   const [contentBlocks, setContentBlocks] = useState([{ type: 'text', content: '' }]);
   const [profileImage, setProfileImage] = useState(null);
-  const [attachedFiles, setAttachedFiles] = useState(new Set());
+  const [attachments, setAttachments] = useState([]);
+  const [uploadedImageNames, setUploadedImageNames] = useState(new Set()); // 이미지 파일명 추적
+
+  const handleComplete = () => {
+    navigate('/qnalist');
+  };
 
   const adjustTextareaHeight = (textarea) => {
     if (textarea) {
@@ -40,16 +45,22 @@ const QnAWriteContent = ({
 
     files.forEach(file => {
       if (file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setContentBlocks(prev => [...prev, {
-            type: 'image',
-            content: reader.result,
-            id: Date.now() + Math.random(),
-            name: file.name
-          }, { type: 'text', content: '' }]);
-        };
-        reader.readAsDataURL(file);
+        // 이미 업로드된 이미지인지 확인
+        if (!uploadedImageNames.has(file.name)) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setContentBlocks(prev => [...prev, {
+              type: 'image',
+              content: reader.result,
+              id: Date.now() + Math.random(),
+              name: file.name
+            }, { type: 'text', content: '' }]);
+
+            // 업로드된 이미지 파일명 추가
+            setUploadedImageNames(prev => new Set([...prev, file.name]));
+          };
+          reader.readAsDataURL(file);
+        }
       }
     });
     event.target.value = '';
@@ -67,58 +78,38 @@ const QnAWriteContent = ({
     const files = Array.from(event.target.files);
 
     files.forEach(file => {
-      if (!attachedFiles.has(file.name)) {
-        setAttachedFiles(prev => new Set([...prev, file.name]));
+      // 이미 존재하는 파일인지 확인
+      const isExisting = attachments.some(att => att.name === file.name);
 
-        const fileInfo = `[첨부파일: ${file.name} (${formatFileSize(file.size)})]`;
-
-        setContentBlocks(prev => {
-          const newBlocks = [...prev];
-          const lastTextBlockIndex = prev.findLastIndex(block => block.type === 'text');
-
-          if (lastTextBlockIndex !== -1) {
-            if (!newBlocks[lastTextBlockIndex].content.includes(fileInfo)) {
-              const currentContent = newBlocks[lastTextBlockIndex].content;
-              const separator = currentContent && !currentContent.endsWith('\n') ? '\n' : '';
-              newBlocks[lastTextBlockIndex].content += separator + fileInfo;
-            }
-          } else {
-            newBlocks.push({ type: 'text', content: fileInfo });
-          }
-
-          return newBlocks;
-        });
+      if (!isExisting) {
+        const newAttachment = {
+          id: Date.now() + Math.random(),
+          name: file.name,
+          size: formatFileSize(file.size)
+        };
+        setAttachments(prev => [...prev, newAttachment]);
       }
     });
     event.target.value = '';
   };
 
-  const handleTextChange = (index, value) => {
-    const newBlocks = [...contentBlocks];
-    const oldContent = newBlocks[index].content;
-    newBlocks[index].content = value;
-    setContentBlocks(newBlocks);
-
-    const oldFiles = [...attachedFiles].filter(fileName =>
-        oldContent.includes(`[첨부파일: ${fileName}`) && !value.includes(`[첨부파일: ${fileName}`));
-
-    if (oldFiles.length > 0) {
-      setAttachedFiles(prev => {
-        const newSet = new Set(prev);
-        oldFiles.forEach(fileName => newSet.delete(fileName));
-        return newSet;
-      });
-    }
-
-    const fullContent = newBlocks
-        .map(block => block.type === 'text' ? block.content : `[Image: ${block.name}]`)
-        .join('\n');
-    onContentChange(fullContent);
+  const handleAttachmentRemove = (attachmentId) => {
+    setAttachments(prev => prev.filter(att => att.id !== attachmentId));
   };
 
   const handleImageRemove = (index) => {
     setContentBlocks(prev => {
       const newBlocks = [...prev];
+      // 삭제된 이미지의 파일명을 uploadedImageNames에서 제거
+      const removedBlock = newBlocks[index];
+      if (removedBlock.type === 'image') {
+        setUploadedImageNames(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(removedBlock.name);
+          return newSet;
+        });
+      }
+
       newBlocks.splice(index, 1);
 
       if (index < newBlocks.length && index > 0 &&
@@ -128,6 +119,17 @@ const QnAWriteContent = ({
       }
       return newBlocks;
     });
+  };
+
+  const handleTextChange = (index, value) => {
+    const newBlocks = [...contentBlocks];
+    newBlocks[index].content = value;
+    setContentBlocks(newBlocks);
+
+    const fullContent = newBlocks
+        .map(block => block.type === 'text' ? block.content : `[Image: ${block.name}]`)
+        .join('\n');
+    onContentChange(fullContent);
   };
 
   const handleProfileImageChange = (event) => {
@@ -160,7 +162,7 @@ const QnAWriteContent = ({
               />
             </div>
             <button
-                onClick={() => onNavigate('/qnalist')}
+                onClick={handleComplete}
                 className="px-6 py-2 text-sm border border-blue-500 text-blue-500 rounded-full hover:bg-blue-50 whitespace-nowrap"
             >
               작성 완료
@@ -171,7 +173,8 @@ const QnAWriteContent = ({
             <div className="flex justify-between items-center p-2 border-b bg-white">
               <div
                   className="relative w-12 h-12 rounded-full border border-gray-300 overflow-hidden bg-gray-50 cursor-pointer"
-                  onClick={() => document.getElementById('profile-image-input').click()}>
+                  onClick={() => document.getElementById('profile-image-input').click()}
+              >
                 {profileImage ? (
                     <img
                         src={profileImage}
@@ -216,7 +219,6 @@ const QnAWriteContent = ({
                     />
                   </svg>
                 </button>
-
                 <button
                     className="p-2 hover:bg-gray-100 rounded-lg border border-gray-200"
                     onClick={handleAttachmentButtonClick}
@@ -240,6 +242,29 @@ const QnAWriteContent = ({
             </div>
 
             <div className="p-6 bg-white">
+              {/* 첨부파일 목록 */}
+              {attachments.length > 0 && (
+                  <div className="mb-4 space-y-2">
+                    {attachments.map((file) => (
+                        <div key={file.id} className="relative border border-gray-200 rounded-lg p-2">
+                          <span>[첨부파일: {file.name} ({file.size})]</span>
+                          <button
+                              onClick={() => handleAttachmentRemove(file.id)}
+                              className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
+                              style={{
+                                lineHeight: '0',
+                                fontSize: '20px',
+                                paddingBottom: '1px'
+                              }}
+                          >
+                            ×
+                          </button>
+                        </div>
+                    ))}
+                  </div>
+              )}
+
+              {/* 텍스트 에디터 및 이미지 영역 */}
               <div className="space-y-4">
                 {contentBlocks.map((block, index) => (
                     <div key={block.type === 'image' ? block.id : index} className="w-full">
@@ -310,17 +335,13 @@ const QnAWriteContent = ({
 };
 
 QnAWriteContent.propTypes = {
-  onComplete: PropTypes.func,
   onTitleChange: PropTypes.func,
-  onContentChange: PropTypes.func,
-  onNavigate: PropTypes.func
+  onContentChange: PropTypes.func
 };
 
 QnAWriteContent.defaultProps = {
-  onComplete: () => {},
   onTitleChange: () => {},
-  onContentChange: () => {},
-  onNavigate: () => {}
+  onContentChange: () => {}
 };
 
 export default QnAWriteContent;
