@@ -1,20 +1,32 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';  // useEffect 추가
 import { User } from 'lucide-react';
 
 const QnAWriteContent = ({
-                           onComplete = () => {
-                           },
-                           onTitleChange = () => {
-                           },
-                           onContentChange = () => {
-                           },
-                           onNavigate = () => {
-                           }
+                           onComplete = () => {},
+                           onTitleChange = () => {},
+                           onContentChange = () => {},
+                           onNavigate = () => {}
                          }) => {
   const imageFileInputRef = useRef();
   const attachmentFileInputRef = useRef();
   const [contentBlocks, setContentBlocks] = useState([{ type: 'text', content: '' }]);
   const [profileImage, setProfileImage] = useState(null);
+  const [attachedFiles, setAttachedFiles] = useState(new Set());
+
+  // textarea 높이 자동 조절 함수
+  const adjustTextareaHeight = (textarea) => {
+    if (textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  };
+
+  // contentBlocks가 변경될 때마다 모든 textarea 높이 자동 조절
+  useEffect(() => {
+    document.querySelectorAll('textarea').forEach(textarea => {
+      adjustTextareaHeight(textarea);
+    });
+  }, [contentBlocks]);
 
   const handleImageButtonClick = () => {
     imageFileInputRef.current.click();
@@ -44,30 +56,6 @@ const QnAWriteContent = ({
     event.target.value = '';
   };
 
-  const handleAttachmentFileChange = (event) => {
-    const files = Array.from(event.target.files);
-
-    files.forEach(file => {
-      // 현재 커서 위치에 파일 이름과 확장자를 추가
-      const fileExtension = file.name.split('.').pop();
-      const fileInfo = `[첨부파일: ${file.name} (${formatFileSize(file.size)})]`;
-
-      setContentBlocks(prev => {
-        const newBlocks = [...prev];
-        // 마지막 텍스트 블록을 찾아서 파일 정보를 추가
-        const lastTextBlockIndex = newBlocks.length - 1;
-        if (newBlocks[lastTextBlockIndex].type === 'text') {
-          newBlocks[lastTextBlockIndex].content +=
-              (newBlocks[lastTextBlockIndex].content ? '\n' : '') + fileInfo;
-        } else {
-          newBlocks.push({ type: 'text', content: fileInfo });
-        }
-        return newBlocks;
-      });
-    });
-    event.target.value = '';
-  };
-
   const formatFileSize = (bytes) => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -76,10 +64,52 @@ const QnAWriteContent = ({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
+  const handleAttachmentFileChange = (event) => {
+    const files = Array.from(event.target.files);
+
+    files.forEach(file => {
+      if (!attachedFiles.has(file.name)) {
+        setAttachedFiles(prev => new Set([...prev, file.name]));
+
+        const fileInfo = `[첨부파일: ${file.name} (${formatFileSize(file.size)})]`;
+
+        setContentBlocks(prev => {
+          const newBlocks = [...prev];
+          const lastTextBlockIndex = prev.findLastIndex(block => block.type === 'text');
+
+          if (lastTextBlockIndex !== -1) {
+            if (!newBlocks[lastTextBlockIndex].content.includes(fileInfo)) {
+              const currentContent = newBlocks[lastTextBlockIndex].content;
+              const separator = currentContent && !currentContent.endsWith('\n') ? '\n' : '';
+              newBlocks[lastTextBlockIndex].content += separator + fileInfo;
+            }
+          } else {
+            newBlocks.push({ type: 'text', content: fileInfo });
+          }
+
+          return newBlocks;
+        });
+      }
+    });
+    event.target.value = '';
+  };
+
   const handleTextChange = (index, value) => {
     const newBlocks = [...contentBlocks];
+    const oldContent = newBlocks[index].content;
     newBlocks[index].content = value;
     setContentBlocks(newBlocks);
+
+    const oldFiles = [...attachedFiles].filter(fileName =>
+        oldContent.includes(`[첨부파일: ${fileName}`) && !value.includes(`[첨부파일: ${fileName}`));
+
+    if (oldFiles.length > 0) {
+      setAttachedFiles(prev => {
+        const newSet = new Set(prev);
+        oldFiles.forEach(fileName => newSet.delete(fileName));
+        return newSet;
+      });
+    }
 
     const fullContent = newBlocks
         .map(block => block.type === 'text' ? block.content : `[Image: ${block.name}]`)
@@ -138,7 +168,7 @@ const QnAWriteContent = ({
             </button>
           </div>
 
-          <div className="border rounded-lg min-h-[calc(100vh-16rem)] bg-white">
+          <div className="border border-gray-200 rounded-lg min-h-[calc(100vh-16rem)] bg-white overflow-hidden">
             <div className="flex justify-between items-center p-2 border-b bg-white">
               <div
                   className="relative w-12 h-12 rounded-full border border-gray-300 overflow-hidden bg-gray-50 cursor-pointer"
@@ -219,7 +249,13 @@ const QnAWriteContent = ({
                               className="w-full min-h-[100px] resize-none focus:outline-none bg-white"
                               placeholder={index === 0 ? "내용을 입력해주세요" : ""}
                               value={block.content}
-                              onChange={(e) => handleTextChange(index, e.target.value)}
+                              onChange={(e) => {
+                                adjustTextareaHeight(e.target);
+                                handleTextChange(index, e.target.value);
+                              }}
+                              style={{
+                                overflow: 'hidden'  // 스크롤바 제거
+                              }}
                           />
                       ) : (
                           <div className="relative inline-block w-full border border-gray-200 rounded-lg p-2">
@@ -231,6 +267,11 @@ const QnAWriteContent = ({
                             <button
                                 onClick={() => handleImageRemove(index)}
                                 className="absolute top-4 right-4 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
+                                style={{
+                                  lineHeight: '0',  // 텍스트의 라인 높이를 0으로 설정
+                                  fontSize: '20px', // x 크기 조정
+                                  paddingBottom: '1px' // 미세 조정을 위한 패딩
+                                }}
                             >
                               ×
                             </button>
