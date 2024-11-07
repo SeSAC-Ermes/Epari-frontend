@@ -1,11 +1,12 @@
-import React, { useRef, useState, useEffect } from 'react';  // useEffect 추가
+import React, { useRef, useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { User } from 'lucide-react';
 
 const QnAWriteContent = ({
-                           onComplete = () => {},
-                           onTitleChange = () => {},
-                           onContentChange = () => {},
-                           onNavigate = () => {}
+                           // onComplete,
+                           onTitleChange,
+                           onContentChange,
+                           onNavigate
                          }) => {
   const imageFileInputRef = useRef();
   const attachmentFileInputRef = useRef();
@@ -13,7 +14,6 @@ const QnAWriteContent = ({
   const [profileImage, setProfileImage] = useState(null);
   const [attachedFiles, setAttachedFiles] = useState(new Set());
 
-  // textarea 높이 자동 조절 함수
   const adjustTextareaHeight = (textarea) => {
     if (textarea) {
       textarea.style.height = 'auto';
@@ -21,7 +21,6 @@ const QnAWriteContent = ({
     }
   };
 
-  // contentBlocks가 변경될 때마다 모든 textarea 높이 자동 조절
   useEffect(() => {
     document.querySelectorAll('textarea').forEach(textarea => {
       adjustTextareaHeight(textarea);
@@ -181,7 +180,7 @@ const QnAWriteContent = ({
                     />
                 ) : (
                     <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                      <User className="w-8 h-8 text-gray-400"/>
+                      <User className="w-8 h-8 text-gray-400" />
                     </div>
                 )}
               </div>
@@ -254,7 +253,7 @@ const QnAWriteContent = ({
                                 handleTextChange(index, e.target.value);
                               }}
                               style={{
-                                overflow: 'hidden'  // 스크롤바 제거
+                                overflow: 'hidden'
                               }}
                           />
                       ) : (
@@ -268,9 +267,9 @@ const QnAWriteContent = ({
                                 onClick={() => handleImageRemove(index)}
                                 className="absolute top-4 right-4 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
                                 style={{
-                                  lineHeight: '0',  // 텍스트의 라인 높이를 0으로 설정
-                                  fontSize: '20px', // x 크기 조정
-                                  paddingBottom: '1px' // 미세 조정을 위한 패딩
+                                  lineHeight: '0',
+                                  fontSize: '20px',
+                                  paddingBottom: '1px'
                                 }}
                             >
                               ×
@@ -308,6 +307,20 @@ const QnAWriteContent = ({
         />
       </div>
   );
+};
+
+QnAWriteContent.propTypes = {
+  onComplete: PropTypes.func,
+  onTitleChange: PropTypes.func,
+  onContentChange: PropTypes.func,
+  onNavigate: PropTypes.func
+};
+
+QnAWriteContent.defaultProps = {
+  onComplete: () => {},
+  onTitleChange: () => {},
+  onContentChange: () => {},
+  onNavigate: () => {}
 };
 
 export default QnAWriteContent;
