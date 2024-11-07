@@ -32,7 +32,7 @@ function App() {
           <Route path="/qnalist/:num" element={<QnADetailPage/>}/>
           <Route path="/curriculum" element={<CurriculumPage/>}/>
           <Route path="/account" element={<AccountPage/>}/>
-          <Route path="/attendancemanagement" element={<AttendanceManagementPage/>}/>
+          <Route path="/instructor/lectures/:lectureId/attendance" element={<AttendanceManagementPage/>}/>
         </Routes>
       </Router>
   );
