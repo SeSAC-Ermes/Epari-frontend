@@ -108,6 +108,8 @@ const AttendanceManagementPage = () => {
   const fetchAttendances = async (date) => {
     try {
       setIsLoading(true);
+
+      // TODO: 전역 Axios 인스턴스 사용
       const token = localStorage.getItem("token");
       const { data } = await axios.get(`http://localhost:8080/api/instructor/lectures/${lectureId}/attendances`, {
         params: { date },
