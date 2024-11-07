@@ -53,7 +53,7 @@ const AssignmentCreatePage = () => {
       }
 
       alert('과제가 성공적으로 생성되었습니다.');
-      navigate('/assignments');
+      navigate('/assignment');
     } catch (err) {
       console.error('Submit Error:', err);
       setError(err.message);

@@ -5,7 +5,7 @@ const AssignmentAPI = () => {
 
   // 인증 토큰을 가져오는 함수
   const getAuthHeader = () => {
-    const token = localStorage.getItem('token'); // 또는 세션스토리지에서 가져올 수 있음
+    const token = localStorage.getItem('token');
     return token ? {Authorization: `Bearer ${token}`} : {};
   };
 
@@ -31,11 +31,10 @@ const AssignmentAPI = () => {
       const date = new Date(assignmentData.dueDate);
       date.setHours(23, 59, 59, 0);
 
+      const formattedDate = date.toISOString().split('.')[0];
+
       const requestData = {
-        title: assignmentData.title,
-        description: assignmentData.description,
-        deadline: date.toISOString().split('T')[0], // yyyy-MM-dd 형식으로 전송
-        score: 0
+        title: assignmentData.title, description: assignmentData.description, deadline: formattedDate, score: 0
       };
 
       console.log('Sending assignment data:', requestData);
@@ -118,7 +117,6 @@ const AssignmentAPI = () => {
         title: assignmentData.title,
         description: assignmentData.description,
         deadline: formattedDate,
-        score: assignmentData.score || 0
       });
       return response.data;
     } catch (error) {
