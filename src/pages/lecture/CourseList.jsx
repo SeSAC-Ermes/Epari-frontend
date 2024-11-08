@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import TopBar from "../components/layout/TopBar";
+import React, { useState } from 'react';
+import TopBar from "../../components/layout/TopBar.jsx";
 
 const CourseList = () => {
   const [activeTab, setActiveTab] = useState('notice');
