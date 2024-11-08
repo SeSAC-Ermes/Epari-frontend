@@ -1,6 +1,6 @@
 import React from 'react';
-import TopBar from "../components/layout/TopBar";
-import CourseListContent from '../components/CourseListContent.jsx';
+import TopBar from "../../components/layout/TopBar.jsx";
+import CourseListContent from '../../components/lecture/dashboard/CourseListContent.jsx';
 
 const CourseListPage = () => {
   return (
