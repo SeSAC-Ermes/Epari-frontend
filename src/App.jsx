@@ -2,18 +2,19 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import React from 'react';
 import SignInPage from './pages/SignInPage.jsx';
 import SignUpPage from './pages/SignUpPage.jsx';
-import CourseListPage from "./pages/CourseListPage.jsx";
-import CourseDetailPage from "./pages/CourseDetailPage.jsx";
+import CourseListPage from "./pages/lecture/CourseListPage.jsx";
+import CourseDetailPage from "./pages/lecture/CourseDetailPage.jsx";
 import LectureNoticeListPage from "./pages/LectureNoticeListPage.jsx";
 import QnAListPage from "./pages/QnAListPage.jsx";
 import QnADetailPage from "./pages/QnADetailPage.jsx";
 import QnAWritePage from "./pages/QnAWritePage.jsx";
-import CurriculumPage from "./pages/CurriculumPage.jsx";
+import CurriculumPage from "./pages/lecture/CurriculumPage.jsx";
 import AccountPage from "./pages/AccountPage.jsx";
 import AssignmentPage from "./pages/assignment/AssignmentPage.jsx";
 import AssignmentSubmitPage from "./pages/assignment/AssignmentSubmitPage.jsx";
 import AttendanceManagementPage from "./pages/attendance/AttendanceManagementPage.jsx";
 import AssignmentCreatePage from "./pages/assignment/AssignmentCreatePage.jsx";
+
 
 function App() {
   return (
