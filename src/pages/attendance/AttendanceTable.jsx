@@ -23,7 +23,7 @@ const AttendanceTable = ({ students, onStudentStatusChange }) => {
             <th className="py-3 px-4 text-center text-sm font-medium text-gray-600">수강생 이름</th>
             <th className="py-3 px-4 text-center text-sm font-medium text-gray-600">출석</th>
             <th className="py-3 px-4 text-center text-sm font-medium text-gray-600">지각</th>
-            <th className="py-3 px-4 text-center text-sm font-medium text-gray-600">병가</th>
+            <th className="py-3 px-4 text-center text-sm font-medium text-gray-600">병결</th>
             <th className="py-3 px-4 text-center text-sm font-medium text-gray-600">결석</th>
             <th className="py-3 px-4 text-center text-sm font-medium text-gray-600">상태</th>
           </tr>
