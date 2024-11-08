@@ -71,6 +71,14 @@ const CourseListContent = () => {
     return ['No.', '제목', '작성자', '날짜', '조회수'];
   };
 
+  const handleViewAll = () => {
+    if (activeTab === 'notice') {
+      navigate('/noticelist');
+    } else {
+      navigate('/lecturenoticelist');
+    }
+  };
+
   return (
       <main className="max-w-7xl mx-auto px-4 py-8">
         <h1 className="text-2xl font-bold mb-6">현재 수강 중인 강의</h1>
@@ -115,26 +123,34 @@ const CourseListContent = () => {
         </div>
 
         <div className="bg-white rounded-lg p-6 mt-8">
-          <div className="flex gap-6 mb-6 border-b">
+          <div className="flex justify-between items-center mb-6 border-b">
+            <div className="flex gap-6">
+              <button
+                  className={`pb-2 font-medium ${
+                      activeTab === 'notice'
+                          ? 'text-green-500 border-b-2 border-green-500'
+                          : 'text-gray-400'
+                  }`}
+                  onClick={() => setActiveTab('notice')}
+              >
+                공지사항
+              </button>
+              <button
+                  className={`pb-2 font-medium ${
+                      activeTab === 'courseNotice'
+                          ? 'text-green-500 border-b-2 border-green-500'
+                          : 'text-gray-400'
+                  }`}
+                  onClick={() => setActiveTab('courseNotice')}
+              >
+                강의 공지사항
+              </button>
+            </div>
             <button
-                className={`pb-2 font-medium ${
-                    activeTab === 'notice'
-                        ? 'text-green-500 border-b-2 border-green-500'
-                        : 'text-gray-400'
-                }`}
-                onClick={() => setActiveTab('notice')}
+                onClick={handleViewAll}
+                className="text-sm text-green-500 hover:text-green-600"
             >
-              공지사항
-            </button>
-            <button
-                className={`pb-2 font-medium ${
-                    activeTab === 'courseNotice'
-                        ? 'text-green-500 border-b-2 border-green-500'
-                        : 'text-gray-400'
-                }`}
-                onClick={() => setActiveTab('courseNotice')}
-            >
-              강의 공지사항
+              전체보기
             </button>
           </div>
 
