@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useRef, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { User } from 'lucide-react';
@@ -9,26 +8,10 @@ const QnAWriteContent = ({
                            onContentChange
                          }) => {
   const navigate = useNavigate();
-=======
-import React, { useRef, useState } from 'react';
-import { User } from 'lucide-react';
-
-const QnAWriteContent = ({
-                           onComplete = () => {
-                           },
-                           onTitleChange = () => {
-                           },
-                           onContentChange = () => {
-                           },
-                           onNavigate = () => {
-                           }
-                         }) => {
->>>>>>> main
   const imageFileInputRef = useRef();
   const attachmentFileInputRef = useRef();
   const [contentBlocks, setContentBlocks] = useState([{ type: 'text', content: '' }]);
   const [profileImage, setProfileImage] = useState(null);
-<<<<<<< HEAD
   const [attachments, setAttachments] = useState([]);
   const [uploadedImageNames, setUploadedImageNames] = useState(new Set()); // 이미지 파일명 추적
 
@@ -158,103 +141,6 @@ const QnAWriteContent = ({
       };
       reader.readAsDataURL(file);
     }
-=======
-
-  const handleImageButtonClick = () => {
-    imageFileInputRef.current.click();
-  };
-
-  const handleAttachmentButtonClick = () => {
-    attachmentFileInputRef.current.click();
-  };
-
-  const handleImageFileChange = (event) => {
-    const files = Array.from(event.target.files);
-
-    files.forEach(file => {
-      if (file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setContentBlocks(prev => [...prev, {
-            type: 'image',
-            content: reader.result,
-            id: Date.now() + Math.random(),
-            name: file.name
-          }, { type: 'text', content: '' }]);
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-    event.target.value = '';
-  };
-
-  const handleAttachmentFileChange = (event) => {
-    const files = Array.from(event.target.files);
-
-    files.forEach(file => {
-      // 현재 커서 위치에 파일 이름과 확장자를 추가
-      const fileExtension = file.name.split('.').pop();
-      const fileInfo = `[첨부파일: ${file.name} (${formatFileSize(file.size)})]`;
-
-      setContentBlocks(prev => {
-        const newBlocks = [...prev];
-        // 마지막 텍스트 블록을 찾아서 파일 정보를 추가
-        const lastTextBlockIndex = newBlocks.length - 1;
-        if (newBlocks[lastTextBlockIndex].type === 'text') {
-          newBlocks[lastTextBlockIndex].content +=
-              (newBlocks[lastTextBlockIndex].content ? '\n' : '') + fileInfo;
-        } else {
-          newBlocks.push({ type: 'text', content: fileInfo });
-        }
-        return newBlocks;
-      });
-    });
-    event.target.value = '';
-  };
-
-  const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
-
-  const handleTextChange = (index, value) => {
-    const newBlocks = [...contentBlocks];
-    newBlocks[index].content = value;
-    setContentBlocks(newBlocks);
-
-    const fullContent = newBlocks
-        .map(block => block.type === 'text' ? block.content : `[Image: ${block.name}]`)
-        .join('\n');
-    onContentChange(fullContent);
-  };
-
-  const handleImageRemove = (index) => {
-    setContentBlocks(prev => {
-      const newBlocks = [...prev];
-      newBlocks.splice(index, 1);
-
-      if (index < newBlocks.length && index > 0 &&
-          newBlocks[index].type === 'text' && newBlocks[index - 1].type === 'text') {
-        newBlocks[index - 1].content += newBlocks[index].content;
-        newBlocks.splice(index, 1);
-      }
-      return newBlocks;
-    });
-  };
-
-  const handleProfileImageChange = (event) => {
-    const file = event.target.files[0];
-    if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfileImage(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
->>>>>>> main
     event.target.value = '';
   };
 
@@ -276,31 +162,19 @@ const QnAWriteContent = ({
               />
             </div>
             <button
-<<<<<<< HEAD
                 onClick={handleComplete}
-=======
-                onClick={() => onNavigate('/qnalist')}
->>>>>>> main
                 className="px-6 py-2 text-sm border border-blue-500 text-blue-500 rounded-full hover:bg-blue-50 whitespace-nowrap"
             >
               작성 완료
             </button>
           </div>
 
-<<<<<<< HEAD
           <div className="border border-gray-200 rounded-lg min-h-[calc(100vh-16rem)] bg-white overflow-hidden">
             <div className="flex justify-between items-center p-2 border-b bg-white">
               <div
                   className="relative w-12 h-12 rounded-full border border-gray-300 overflow-hidden bg-gray-50 cursor-pointer"
                   onClick={() => document.getElementById('profile-image-input').click()}
               >
-=======
-          <div className="border rounded-lg min-h-[calc(100vh-16rem)] bg-white">
-            <div className="flex justify-between items-center p-2 border-b bg-white">
-              <div
-                  className="relative w-12 h-12 rounded-full border border-gray-300 overflow-hidden bg-gray-50 cursor-pointer"
-                  onClick={() => document.getElementById('profile-image-input').click()}>
->>>>>>> main
                 {profileImage ? (
                     <img
                         src={profileImage}
@@ -309,11 +183,7 @@ const QnAWriteContent = ({
                     />
                 ) : (
                     <div className="w-full h-full flex items-center justify-center bg-gray-100">
-<<<<<<< HEAD
                       <User className="w-8 h-8 text-gray-400" />
-=======
-                      <User className="w-8 h-8 text-gray-400"/>
->>>>>>> main
                     </div>
                 )}
               </div>
@@ -349,10 +219,6 @@ const QnAWriteContent = ({
                     />
                   </svg>
                 </button>
-<<<<<<< HEAD
-=======
-
->>>>>>> main
                 <button
                     className="p-2 hover:bg-gray-100 rounded-lg border border-gray-200"
                     onClick={handleAttachmentButtonClick}
@@ -376,7 +242,6 @@ const QnAWriteContent = ({
             </div>
 
             <div className="p-6 bg-white">
-<<<<<<< HEAD
               {/* 첨부파일 목록 */}
               {attachments.length > 0 && (
                   <div className="mb-4 space-y-2">
@@ -400,8 +265,6 @@ const QnAWriteContent = ({
               )}
 
               {/* 텍스트 에디터 및 이미지 영역 */}
-=======
->>>>>>> main
               <div className="space-y-4">
                 {contentBlocks.map((block, index) => (
                     <div key={block.type === 'image' ? block.id : index} className="w-full">
@@ -410,7 +273,6 @@ const QnAWriteContent = ({
                               className="w-full min-h-[100px] resize-none focus:outline-none bg-white"
                               placeholder={index === 0 ? "내용을 입력해주세요" : ""}
                               value={block.content}
-<<<<<<< HEAD
                               onChange={(e) => {
                                 adjustTextareaHeight(e.target);
                                 handleTextChange(index, e.target.value);
@@ -418,9 +280,6 @@ const QnAWriteContent = ({
                               style={{
                                 overflow: 'hidden'
                               }}
-=======
-                              onChange={(e) => handleTextChange(index, e.target.value)}
->>>>>>> main
                           />
                       ) : (
                           <div className="relative inline-block w-full border border-gray-200 rounded-lg p-2">
@@ -432,14 +291,11 @@ const QnAWriteContent = ({
                             <button
                                 onClick={() => handleImageRemove(index)}
                                 className="absolute top-4 right-4 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
-<<<<<<< HEAD
                                 style={{
                                   lineHeight: '0',
                                   fontSize: '20px',
                                   paddingBottom: '1px'
                                 }}
-=======
->>>>>>> main
                             >
                               ×
                             </button>

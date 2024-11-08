@@ -26,26 +26,16 @@ function App() {
           <Route path="/assignmentcreate" element={<AssignmentCreatePage/>}/>
           <Route path="/assignmentsubmit" element={<AssignmentSubmitPage/>}/>
           <Route path="/courselist" element={<CourseListPage/>}/>
-<<<<<<< HEAD
           <Route path="/coursedetail" element={<CourseDetailPage />} />
           <Route path="/noticelist" element={<NoticeListPage />} />
           <Route path="/lecturenoticelist" element={<LectureNoticeListPage />} />
-
           <Route path="/qnalist" element={<QnAListPage />} />
           <Route path="/qna/write" element={<QnAWritePage />} />
           <Route path="/qnalist/:num" element={<QnADetailPage />} />
           <Route path="/curriculum" element={<CurriculumPage />} />
           <Route path="/account" element={<AccountPage />} />
-=======
-          <Route path="/coursedetail" element={<CourseDetailPage/>}/>
-          <Route path="/lecturenoticelist" element={<LectureNoticeListPage/>}/>
-          <Route path="/qnalist" element={<QnAListPage/>}/>
-          <Route path="/qna/write" element={<QnAWritePage/>}/>
-          <Route path="/qnalist/:num" element={<QnADetailPage/>}/>
-          <Route path="/curriculum" element={<CurriculumPage/>}/>
-          <Route path="/account" element={<AccountPage/>}/>
           <Route path="/attendancemanagement" element={<AttendanceManagementPage/>}/>
->>>>>>> main
+
         </Routes>
       </Router>
   );
