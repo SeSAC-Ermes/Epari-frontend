@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
+/**
+ * 사용지가 현재 수강 중인 강의와 관련된 정보를 표시하는 컴포넌트
+ */
 const CourseListContent = () => {
   const [activeTab, setActiveTab] = useState('notice');
+  const navigate = useNavigate();
 
   const courses = [
     {
@@ -74,7 +79,11 @@ const CourseListContent = () => {
           <div className="w-2/3">
             <div className="grid grid-cols-2 gap-4">
               {courses.map(course => (
-                  <div key={course.id} className="bg-white rounded-lg shadow-sm overflow-hidden">
+                  <div
+                      key={course.id}
+                      className="bg-white rounded-lg shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition-shadow" // cursor-pointer 추가
+                      onClick={() => navigate('/coursedetail')}
+                  >
                     <div className="h-32 bg-blue-100 relative">
                       <div
                           className={`absolute bottom-2 left-2 ${

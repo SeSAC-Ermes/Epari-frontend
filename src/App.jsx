@@ -19,7 +19,7 @@ function App() {
   return (
       <Router>
         <Routes>
-          <Route path="/signin" element={<SignInPage/>}/>
+          <Route path="/" element={<SignInPage/>}/>
           <Route path="/signup" element={<SignUpPage/>}/>
           <Route path="/assignment" element={<AssignmentPage/>}/>
           <Route path="/assignmentcreate" element={<AssignmentCreatePage/>}/>
