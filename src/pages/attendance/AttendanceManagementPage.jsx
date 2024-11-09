@@ -4,7 +4,7 @@ import Sidebar from "../../components/layout/Sidebar.jsx";
 import TopBar from "../../components/layout/TopBar.jsx";
 import AttendanceTable from "./AttendanceTable.jsx";
 import { useParams } from "react-router-dom";
-import axios from "axios";
+import apiClient from "../../api/axios.js";
 
 /**
  * 출석부 관리를 위한 메인 페이지 컴포넌트
@@ -25,32 +25,80 @@ const AttendanceManagementPage = () => {
     present: 0,
     late: 0,
     sick: 0,
-    absent: 0,
+    absent: 0
   });
-  const [currentDate, setCurrentDate] = useState(new Date().toISOString().split('T')[0]); // 오늘 날짜로 초기화
+  const [currentDate, setCurrentDate] = useState(new Date().toISOString().split('T')[0]);
 
-  // 토스트 메시지 처리
-  useEffect(() => {
-    if (showToast) {
-      const timer = setTimeout(() => {
-        setShowToast(false);
-      }, 3000);
-      return () => clearTimeout(timer);
+  // API 호출 함수들
+  const fetchAttendances = async (date) => {
+    try {
+      setIsLoading(true);
+      const { data } = await apiClient.get(`/api/instructor/lectures/${lectureId}/attendances`, {
+        params: { date }
+      });
+
+      // API 응답 데이터를 프론트엔드 형식으로 변환
+      const formattedData = data.map((item, index) => ({
+        no: index + 1,
+        studentId: item.studentId, // API 응답에서 학생 ID 추가
+        name: item.name,
+        status: item.status
+      }));
+
+      setStudents(formattedData);
+      updateStats(formattedData);
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || '출석 정보를 불러오는데 실패했습니다.';
+      showToastMessage('error', errorMessage);
+    } finally {
+      setIsLoading(false);
     }
-  }, [showToast]);
+  };
 
-  // 페이지 이탈 방지
-  useEffect(() => {
-    const handleBeforeUnload = (e) => {
-      if (modifiedStudents.size > 0) {
-        e.preventDefault();
-        e.returnValue = '';
-      }
+  const saveAttendances = async () => {
+    try {
+      setIsLoading(true);
+
+      // 변경된 데이터만 필터링하여 API 요청 형식으로 변환
+      const updateData = students
+          .filter(student => modifiedStudents.has(student.no))
+          .map(student => ({
+            studentId: student.studentId,
+            status: convertStatusToEnum(student.status)
+          }));
+
+      await apiClient.patch(
+          `/api/instructor/lectures/${lectureId}/attendances`,
+          updateData,
+          { params: { date: currentDate } }
+      );
+
+      setModifiedStudents(new Set());
+      showToastMessage('success', '출석 정보가 성공적으로 저장되었습니다.');
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || '출석 정보 저장 중 오류가 발생했습니다.';
+      showToastMessage('error', errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 출석 상태를 백엔드 enum 형식으로 변환
+  const convertStatusToEnum = (status) => {
+    const statusMap = {
+      '출석': 'PRESENT',
+      '지각': 'LATE',
+      '결석': 'ABSENT',
+      '병결': 'SICK_LEAVE'
     };
+    return statusMap[status];
+  };
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [modifiedStudents]);
+  // 토스트 메시지 표시 함수
+  const showToastMessage = (type, message) => {
+    setToastMessage({ type, message });
+    setShowToast(true);
+  };
 
   // 통계 업데이트
   const updateStats = (studentList) => {
@@ -75,79 +123,46 @@ const AttendanceManagementPage = () => {
     setModifiedStudents(prev => new Set(prev).add(updatedStudent.no));
   };
 
-  // 변경사항 저장
-  const handleSave = async () => {
-    try {
-      setIsLoading(true);
-      const modifiedData = students.filter(student =>
-          modifiedStudents.has(student.no)
-      );
-
-      // TODO: API 연동 후 실제 호출로 변경
-      // await api.updateAttendance(modifiedData);
-      await new Promise(resolve => setTimeout(resolve, 1000)); // 임시 딜레이
-
-      setModifiedStudents(new Set());
-      setToastMessage({ type: 'success', message: '출석 정보가 성공적으로 저장되었습니다.' });
-      setShowToast(true);
-    } catch (error) {
-      setToastMessage({ type: 'error', message: '출석 정보 저장 중 오류가 발생했습니다.' });
-      setShowToast(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   // 날짜 변경 핸들러
   const handleDateChange = (e) => {
     setCurrentDate(e.target.value);
     fetchAttendances(e.target.value);
   };
 
-  // API 호출 함수
-  const fetchAttendances = async (date) => {
-    try {
-      setIsLoading(true);
-
-      // TODO: 전역 Axios 인스턴스 사용
-      const token = localStorage.getItem("token");
-      const { data } = await axios.get(`http://localhost:8080/api/instructor/lectures/${lectureId}/attendances`, {
-        params: { date },
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      const formattedData = data.map((item, index) => ({
-        no: index + 1,
-        name: item.name,
-        status: item.status
-      }));
-
-      setStudents(formattedData);
-      updateStats(formattedData);
-    } catch (error) {
-      setToastMessage({
-        type: 'error',
-        message: error.response?.data?.message || '출석 정보를 불러오는데 실패했습니다.'
-      });
-      setShowToast(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // 컴포넌트 마운트 시 데이터 로드
-  useEffect(() => {
-    fetchAttendances(currentDate);
-  }, []);
-
   // 변경사항 초기화
   const resetChanges = async () => {
-    await fetchAttendances(currentDate); // 서버에서 다시 데이터를 불러옴
+    await fetchAttendances(currentDate);
     setModifiedStudents(new Set());
     setShowUnsavedDialog(false);
   };
+
+  // 토스트 메시지 자동 제거
+  useEffect(() => {
+    if (showToast) {
+      const timer = setTimeout(() => {
+        setShowToast(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showToast]);
+
+  // 페이지 이탈 방지
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (modifiedStudents.size > 0) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [modifiedStudents]);
+
+  // 초기 데이터 로드
+  useEffect(() => {
+    fetchAttendances(currentDate);
+  }, [lectureId]);
 
   return (
       <div className="min-h-screen bg-gray-50 flex">
@@ -173,6 +188,7 @@ const AttendanceManagementPage = () => {
                     />
                   </>
               )}
+
               {/* 토스트 메시지 */}
               {showToast && (
                   <div className={`fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 
@@ -210,7 +226,7 @@ const AttendanceManagementPage = () => {
                       취소
                     </button>
                     <button
-                        onClick={handleSave}
+                        onClick={saveAttendances}
                         disabled={isLoading}
                         className="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 disabled:opacity-50 transition-colors duration-200 flex items-center gap-2"
                     >
