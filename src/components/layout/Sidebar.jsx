@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Logo from '../../assets/epariLogo.jpg';
-import { Bell, Calendar, Database, FileText, Layout, MessageSquare, Settings, User } from 'lucide-react';
+import { Bell, Calendar, Database, FileText, Layout, Library, MessageSquare, Settings, User } from 'lucide-react';
 
 /**
  * 페이지 왼쪽에 위치한 공용 사이드바 컴포넌트입니다.
@@ -16,7 +16,7 @@ const Sidebar = () => {
     { icon: <Database size={20}/>, text: 'Q&A 게시판', path: '/qnalist' },
     { icon: <MessageSquare size={20}/>, text: '커리큘럼', path: '/curriculum' },
     { icon: <Calendar size={20}/>, text: '시험 및 과제', path: '/exams' },
-    { icon: <Calendar size={20}/>, text: '화이팅', path: '/schedule' },
+    { icon: <Library size={20}/>, text: '강의 자료', path: '/coursefile' },
     { icon: <User size={20}/>, text: '내정보', path: '/account' },
     { icon: <Settings size={20}/>, text: 'Settings', path: '/settings' }
   ];
