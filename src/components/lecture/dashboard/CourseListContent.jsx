@@ -5,15 +5,28 @@ import { Pencil, Plus, Trash2 } from 'lucide-react';
 import NoticeTabs from './NoticeTabs';
 import NoticeTable from './NoticeTable';
 
+/**
+ * 강의 목록 페이지의 메인 컴포넌트
+ * 사용자의 수강/강의 목록을 표시하고 강사용 강의 관리 기능(생성/수정/삭제) 제공
+ * 하단에 공지사항 섹션 포함
+ */
 
 const getIsInstructorFromToken = () => {
   const token = localStorage.getItem('token');
-  if (!token) return false;
+  if (!token) {
+    console.log('No token found');
+    return false;
+  }
 
   try {
     const payload = token.split('.')[1];
     const decodedPayload = JSON.parse(atob(payload));
-    return decodedPayload.roles?.includes('ROLE_INSTRUCTOR') || false;
+    console.log('Decoded token payload:', decodedPayload);
+
+    // cognito:groups 배열에서 'INSTRUCTOR' 확인
+    const isInstructor = decodedPayload['cognito:groups']?.includes('INSTRUCTOR') || false;
+    console.log('Is instructor:', isInstructor);
+    return isInstructor;
   } catch (e) {
     console.error('Token parsing error:', e);
     return false;
@@ -87,6 +100,11 @@ const CourseListContent = () => {
       throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
     }
 
+    // DELETE 요청이거나 응답이 비어있는 경우 처리
+    if (response.status === 204 || response.headers.get('content-length') === '0') {
+      return null;
+    }
+
     return response.json();
   };
 
@@ -94,25 +112,34 @@ const CourseListContent = () => {
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const data = await fetchApi('/lectures/userlectures');
-        if (data.length > 0 && data[0].instructor) {
-          // 첫 번째 강의의 강사 정보가 있고, 그 강사가 현재 사용자인 경우
-          setIsInstructor(true);
-          setCurrentUserId(data[0].instructor.id);
+        const instructorStatus = getIsInstructorFromToken();
+        setIsInstructor(instructorStatus);
+
+        const data = await fetchApi('/courses/usercourses');
+        console.log('API response:', data);
+
+        // instructor ID 설정 로직 수정
+        if (instructorStatus && data.length > 0) {
+          // 첫 번째 강의의 instructor.id를 사용
+          const instructorId = data[0]?.instructor?.id;
+          if (instructorId) {
+            setCurrentUserId(instructorId);
+            console.log('Setting currentUserId:', instructorId);
+          }
         }
 
-        const formattedCourses = data.map(lecture => ({
-          id: lecture.id,
-          title: lecture.name,
-          startDate: lecture.startDate,
-          endDate: lecture.endDate,
-          instructor: lecture.instructor?.name || '강사 미정',
-          instructorTitle: lecture.instructor?.title || 'Instructor',
-          classroom: lecture.classroom
+        const formattedCourses = data.map(course => ({
+          id: course.id,
+          title: course.name,
+          name: course.name,
+          startDate: course.startDate,
+          endDate: course.endDate,
+          instructor: course.instructor,
+          classroom: course.classroom
         }));
         setCourses(formattedCourses);
       } catch (err) {
-        setError('사용자 정보를 불러오는데 실패했습니다.');
+        setError('강의 목록을 불러오는데 실패했습니다.');
         console.error('Error:', err);
       } finally {
         setLoading(false);
@@ -148,13 +175,15 @@ const CourseListContent = () => {
 
     if (window.confirm('정말로 이 강의를 삭제하시겠습니까?')) {
       try {
-        await fetchApi(`/lectures/${lectureId}?instructorId=${currentUserId}`, {
+        await fetchApi(`/courses/${lectureId}?instructorId=${currentUserId}`, {
           method: 'DELETE'
         });
+        // 성공적으로 삭제되면 상태 업데이트
         setCourses(prevCourses => prevCourses.filter(course => course.id !== lectureId));
+        alert('강의가 성공적으로 삭제되었습니다.');
       } catch (error) {
         console.error('강의 삭제 실패:', error);
-        alert(error.message || '강의 삭제에 실패했습니다.');
+        alert('강의 삭제에 실패했습니다. ' + (error.message || ''));
       }
     }
   };
@@ -167,21 +196,41 @@ const CourseListContent = () => {
 
     try {
       if (selectedLecture) {
-        const data = await fetchApi(`/lectures/${selectedLecture.id}?instructorId=${currentUserId}`, {
+        const data = await fetchApi(`/courses/${selectedLecture.id}?instructorId=${currentUserId}`, {
           method: 'PUT',
           body: JSON.stringify(formData)
         });
+        // 응답 데이터를 형식에 맞게 변환
+        const updatedCourse = {
+          id: data.id,
+          title: data.name,
+          name: data.name,
+          startDate: data.startDate,
+          endDate: data.endDate,
+          instructor: data.instructor,
+          classroom: data.classroom
+        };
         setCourses(prevCourses =>
             prevCourses.map(course =>
-                course.id === selectedLecture.id ? { ...course, ...data } : course
+                course.id === selectedLecture.id ? updatedCourse : course
             )
         );
       } else {
-        const data = await fetchApi(`/lectures?instructorId=${currentUserId}`, {
+        const data = await fetchApi(`/courses?instructorId=${currentUserId}`, {
           method: 'POST',
           body: JSON.stringify(formData)
         });
-        setCourses(prevCourses => [...prevCourses, data]);
+        // 새로운 강의 데이터도 동일한 형식으로 변환
+        const newCourse = {
+          id: data.id,
+          title: data.name,
+          name: data.name,
+          startDate: data.startDate,
+          endDate: data.endDate,
+          instructor: data.instructor,
+          classroom: data.classroom
+        };
+        setCourses(prevCourses => [...prevCourses, newCourse]);
       }
       setIsModalOpen(false);
     } catch (error) {
@@ -226,7 +275,10 @@ const CourseListContent = () => {
               <div key={course.id} className="relative">
                 <CourseCard course={course}/>
                 {isInstructor && (
-                    <div className="absolute top-2 right-2 flex gap-2">
+                    <div
+                        className="absolute top-2 right-2 flex gap-2 z-10"
+                        onClick={(e) => e.stopPropagation()} // 이벤트 버블링 방지
+                    >
                       <button
                           onClick={() => handleEditLecture(course)}
                           className="p-2 bg-white rounded-full shadow hover:bg-gray-50"
