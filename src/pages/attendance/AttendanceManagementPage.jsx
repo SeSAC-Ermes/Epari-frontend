@@ -3,43 +3,31 @@ import AttendanceStatusSection from './AttendanceStatusSection';
 import Sidebar from "../../components/layout/Sidebar.jsx";
 import TopBar from "../../components/layout/TopBar.jsx";
 import AttendanceTable from "./AttendanceTable.jsx";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 
 /**
  * 출석부 관리를 위한 메인 페이지 컴포넌트
  * 출석 상태 변경, 저장 및 통계 기능 제공
  */
 const AttendanceManagementPage = () => {
-  // 초기 학생 데이터
-  const initialStudents = [
-    { no: 1, name: '김경환', status: '출석' },
-    { no: 2, name: '박은화', status: '출석' },
-    { no: 3, name: '박종호', status: '출석' },
-    { no: 4, name: '성기범', status: '출석' },
-    { no: 5, name: '신동진', status: '병가' },
-    { no: 6, name: '오승찬', status: '출석' },
-    { no: 7, name: '오찬근', status: '결석' },
-    { no: 8, name: '이한나', status: '출석' },
-    { no: 9, name: '임진희', status: '출석' },
-    { no: 10, name: '임혜린', status: '출석' },
-    { no: 11, name: '정진욱', status: '출석' },
-    { no: 12, name: '홍인표', status: '출석' },
-    { no: 13, name: '황신욱', status: '출석' },
-  ];
+  const { lectureId } = useParams();
 
   // 상태 관리
-  const [students, setStudents] = useState(initialStudents);
+  const [students, setStudents] = useState([]);
   const [modifiedStudents, setModifiedStudents] = useState(new Set());
   const [isLoading, setIsLoading] = useState(false);
   const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState({ type: '', message: '' });
   const [stats, setStats] = useState({
-    total: initialStudents.length,
-    present: initialStudents.filter(s => s.status === '출석').length,
-    late: initialStudents.filter(s => s.status === '지각').length,
-    sick: initialStudents.filter(s => s.status === '병가').length,
-    absent: initialStudents.filter(s => s.status === '결석').length,
+    total: 0,
+    present: 0,
+    late: 0,
+    sick: 0,
+    absent: 0,
   });
+  const [currentDate, setCurrentDate] = useState(new Date().toISOString().split('T')[0]); // 오늘 날짜로 초기화
 
   // 토스트 메시지 처리
   useEffect(() => {
@@ -70,7 +58,7 @@ const AttendanceManagementPage = () => {
       total: studentList.length,
       present: studentList.filter(s => s.status === '출석').length,
       late: studentList.filter(s => s.status === '지각').length,
-      sick: studentList.filter(s => s.status === '병가').length,
+      sick: studentList.filter(s => s.status === '병결').length,
       absent: studentList.filter(s => s.status === '결석').length,
     });
   };
@@ -110,11 +98,54 @@ const AttendanceManagementPage = () => {
     }
   };
 
+  // 날짜 변경 핸들러
+  const handleDateChange = (e) => {
+    setCurrentDate(e.target.value);
+    fetchAttendances(e.target.value);
+  };
+
+  // API 호출 함수
+  const fetchAttendances = async (date) => {
+    try {
+      setIsLoading(true);
+
+      // TODO: 전역 Axios 인스턴스 사용
+      const token = localStorage.getItem("token");
+      const { data } = await axios.get(`http://localhost:8080/api/instructor/lectures/${lectureId}/attendances`, {
+        params: { date },
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      const formattedData = data.map((item, index) => ({
+        no: index + 1,
+        name: item.name,
+        status: item.status
+      }));
+
+      setStudents(formattedData);
+      updateStats(formattedData);
+    } catch (error) {
+      setToastMessage({
+        type: 'error',
+        message: error.response?.data?.message || '출석 정보를 불러오는데 실패했습니다.'
+      });
+      setShowToast(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 컴포넌트 마운트 시 데이터 로드
+  useEffect(() => {
+    fetchAttendances(currentDate);
+  }, []);
+
   // 변경사항 초기화
-  const resetChanges = () => {
-    setStudents(initialStudents);
+  const resetChanges = async () => {
+    await fetchAttendances(currentDate); // 서버에서 다시 데이터를 불러옴
     setModifiedStudents(new Set());
-    updateStats(initialStudents);
     setShowUnsavedDialog(false);
   };
 
@@ -125,12 +156,23 @@ const AttendanceManagementPage = () => {
           <TopBar/>
           <div className="p-6 bg-gray-50 min-h-screen">
             <div className="max-w-7xl mx-auto space-y-6">
-              <AttendanceStatusSection stats={stats}/>
-              <AttendanceTable
-                  students={students}
-                  onStudentStatusChange={handleStudentStatusChange}
-              />
-
+              {isLoading ? (
+                  <div className="flex justify-center items-center h-64">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"/>
+                  </div>
+              ) : (
+                  <>
+                    <AttendanceStatusSection
+                        stats={stats}
+                        currentDate={currentDate}
+                        onDateChange={handleDateChange}
+                    />
+                    <AttendanceTable
+                        students={students}
+                        onStudentStatusChange={handleStudentStatusChange}
+                    />
+                  </>
+              )}
               {/* 토스트 메시지 */}
               {showToast && (
                   <div className={`fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 

@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import React from 'react';
 import SignInPage from './pages/SignInPage.jsx';
 import SignUpPage from './pages/SignUpPage.jsx';
+import NoticeListPage from "./pages/NoticeListPage.jsx";
 import CourseListPage from "./pages/lecture/CourseListPage.jsx";
 import CourseDetailPage from "./pages/lecture/CourseDetailPage.jsx";
 import LectureNoticeListPage from "./pages/LectureNoticeListPage.jsx";
@@ -20,20 +21,21 @@ function App() {
   return (
       <Router>
         <Routes>
-          <Route path="/signin" element={<SignInPage/>}/>
+          <Route path="/" element={<SignInPage/>}/>
           <Route path="/signup" element={<SignUpPage/>}/>
           <Route path="/assignment" element={<AssignmentPage/>}/>
           <Route path="/assignmentcreate" element={<AssignmentCreatePage/>}/>
           <Route path="/assignmentsubmit" element={<AssignmentSubmitPage/>}/>
           <Route path="/courselist" element={<CourseListPage/>}/>
           <Route path="/coursedetail" element={<CourseDetailPage/>}/>
+          <Route path="/noticelist" element={<NoticeListPage />} />
           <Route path="/lecturenoticelist" element={<LectureNoticeListPage/>}/>
           <Route path="/qnalist" element={<QnAListPage/>}/>
           <Route path="/qna/write" element={<QnAWritePage/>}/>
           <Route path="/qnalist/:num" element={<QnADetailPage/>}/>
           <Route path="/curriculum" element={<CurriculumPage/>}/>
           <Route path="/account" element={<AccountPage/>}/>
-          <Route path="/attendancemanagement" element={<AttendanceManagementPage/>}/>
+          <Route path="/instructor/lectures/:lectureId/attendance" element={<AttendanceManagementPage/>}/>
         </Routes>
       </Router>
   );

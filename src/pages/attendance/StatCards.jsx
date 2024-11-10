@@ -28,7 +28,7 @@ const StatCards = ({ stats }) => {
         />
         <StatCard
             icon={<Stethoscope className="w-6 h-6 text-gray-500"/>}
-            label="병가"
+            label="병결"
             count={stats.sick}
             bgColor="gray"
         />
