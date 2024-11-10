@@ -1,80 +1,57 @@
-// src/api/lecture/lectureApi.js
-import axios from 'axios';
-import { fetchAuthSession } from '@aws-amplify/auth';
+import apiClient from '../axios.js';
 
-const lectureApi = axios.create({
-  baseURL: 'http://localhost:8080/api',
-});
-
-lectureApi.interceptors.request.use(
-    async (config) => {
-      try {
-        const session = await fetchAuthSession();
-        // tokens 객체에서 정확한 경로로 접근
-        const token = session.tokens?.accessToken?.toString();
-
-        if (!token) {
-          throw new Error('No authentication token available');
-        }
-
-        config.headers.Authorization = `Bearer ${token}`;
-        return config;
-      } catch (error) {
-        console.error('Auth error:', error);
-        return Promise.reject(error);
-      }
-    },
-    (error) => {
-      return Promise.reject(error);
-    }
-);
+/**
+ * 강의 관련 API 호출 모음
+ * 강의 목록 조회, 상세 조회, 생성, 수정, 삭제 등의
+ * API 요청 함수들을 제공하는 모듈
+ */
 
 export const LectureAPI = {
   getUserLectures: async () => {
     try {
-      const response = await lectureApi.get('/lectures/userlectures');
+      const response = await apiClient.get('/api/courses/usercourses');
       return response.data;
     } catch (error) {
-      console.error('Error fetching lectures:', error);
+      console.error('Error fetching courses:', error);
       throw error;
     }
   },
 
-  // 강의 상세 정보 조회 API 추가
   getLectureDetail: async (lectureId) => {
     try {
-      const response = await lectureApi.get(`/lectures/${lectureId}`);
+      const response = await apiClient.get(`/api/courses/${lectureId}`);
       return response.data;
     } catch (error) {
-      console.error('Error fetching lecture detail:', error);
-      throw error;
-    }
-  },
-  createLecture: async (lectureData) => {
-    try {
-      const response = await lectureApi.post('/lectures', lectureData);
-      return response.data;
-    } catch (error) {
-      console.error('Error creating lecture:', error);
+      console.error('Error fetching course detail:', error);
       throw error;
     }
   },
 
-  updateLecture: async (lectureId, lectureData) => {
+  createLecture: async (lectureData, instructorId) => {
     try {
-      const response = await lectureApi.put(`/lectures/${lectureId}`, lectureData);
+      const response = await apiClient.post(`/api/courses?instructorId=${instructorId}`, lectureData);
       return response.data;
     } catch (error) {
-      console.error('Error updating lecture:', error);
+      console.error('Error creating course:', error);
       throw error;
     }
   },
 
-  deleteLecture: async (lectureId) => {
+  updateLecture: async (lectureId, lectureData, instructorId) => {
     try {
-      await lectureApi.delete(`/lectures/${lectureId}`);
+      const response = await apiClient.put(`/api/courses/${lectureId}?instructorId=${instructorId}`, lectureData);
+      return response.data;
     } catch (error) {
-      console.error('Error deleting lecture:', error);
+      console.error('Error updating course:', error);
+      throw error;
+    }
+  },
+
+  deleteLecture: async (lectureId, instructorId) => {
+    try {
+      await apiClient.delete(`/api/courses/${lectureId}?instructorId=${instructorId}`);
+    } catch (error) {
+      console.error('Error deleting course:', error);
       throw error;
     }
   }
