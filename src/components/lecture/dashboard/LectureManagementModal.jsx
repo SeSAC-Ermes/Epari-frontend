@@ -1,14 +1,44 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+
+/**
+ * 강의 생성/수정을 위한 모달 컴포넌트
+ * 강의명, 시작일, 종료일, 강의실 정보를 입력받아 처리
+ * 강사 권한을 가진 사용자만 접근 가능
+ */
 
 const LectureManagementModal = ({ isOpen, onClose, lecture = null, onSubmit }) => {
+  const formatDateForInput = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0];
+  };
+
   const [formData, setFormData] = useState({
-    name: lecture?.title || '',
-    startDate: lecture?.startDate || '',
-    endDate: lecture?.endDate || '',
-    classroom: lecture?.classroom || ''
+    name: '',
+    startDate: '',
+    endDate: '',
+    classroom: ''
   });
 
-  if (!isOpen) return null;
+  // 모달이 열릴 때마다 데이터 초기화
+  useEffect(() => {
+    if (isOpen && lecture) {
+      setFormData({
+        name: lecture.name || lecture.title || '',
+        startDate: lecture.startDate ? formatDateForInput(lecture.startDate) : '',
+        endDate: lecture.endDate ? formatDateForInput(lecture.endDate) : '',
+        classroom: lecture.classroom || ''
+      });
+    } else if (isOpen && !lecture) {
+      // 새로운 강의 생성 시 폼 초기화
+      setFormData({
+        name: '',
+        startDate: '',
+        endDate: '',
+        classroom: ''
+      });
+    }
+  }, [isOpen, lecture]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,6 +52,8 @@ const LectureManagementModal = ({ isOpen, onClose, lecture = null, onSubmit }) =
     e.preventDefault();
     onSubmit(formData);
   };
+
+  if (!isOpen) return null;
 
   return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
