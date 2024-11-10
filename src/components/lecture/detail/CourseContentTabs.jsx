@@ -1,5 +1,10 @@
 import React from 'react';
 
+/**
+ * 강의 페이지의 탭 컴포넌트
+ * 공지사항, Q&A, 시험 및 과제 탭을 관리하고 각 탭의 내용을 테이블 형태로 표시
+ */
+
 const ViewAllButton = ({ activeTab, onNavigate }) => {
   const handleClick = () => {
     switch (activeTab) {

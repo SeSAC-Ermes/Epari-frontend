@@ -1,5 +1,10 @@
 import React from 'react';
 
+/**
+ * 공지사항 목록을 테이블 형태로 표시하는 컴포넌트
+ * 번호, 제목, 작성자, 날짜, 조회수 정보를 컬럼으로 표시
+ */
+
 const NoticeTable = ({ notices }) => {
   const headers = ['No.', '제목', '작성자', '날짜', '조회수'];
 

@@ -6,6 +6,11 @@ import CourseMaterialsGrid from './CourseMaterialsGrid';
 import CourseContentTabs from './CourseContentTabs';
 import { LectureAPI } from '../../../api/lecture/lectureApi.js';
 
+/**
+ * 강의 상세 페이지의 메인 컴포넌트
+ * 강의 정보, 강사 정보, 강의 자료, 공지사항/Q&A/시험 탭을 관리하고 표시
+ */
+
 const CourseDetailContent = () => {
   const [activeTab, setActiveTab] = useState('notice');
   const [courseInfo, setCourseInfo] = useState(null);
@@ -96,6 +101,7 @@ const CourseDetailContent = () => {
       try {
         setLoading(true);
         const response = await LectureAPI.getLectureDetail(courseId);
+        console.log('API Response:', response); // API 응답 데이터 확인용
 
         // API 응답을 컴포넌트에서 사용하는 형식으로 변환
         const formattedCourseInfo = {
@@ -106,14 +112,15 @@ const CourseDetailContent = () => {
           instructor: {
             name: response.instructor?.name || '강사 정보가 없습니다.',
             email: response.instructor?.email || 'Email 정보가 없습니다.',
-            phoneNumber: response.instructor.phoneNumber || '전화번호 정보가 없습니다.'
+            phoneNumber: response.instructor?.phoneNumber || response.instructor?.phone || '전화번호 정보가 없습니다.'
           }
         };
 
+        console.log('Formatted Course Info:', formattedCourseInfo); // 변환된 데이터 확인용
         setCourseInfo(formattedCourseInfo);
       } catch (error) {
-        setError('강의 정보를 불러오는데 실패했습니다.');
         console.error('Error fetching course details:', error);
+        setError('강의 정보를 불러오는데 실패했습니다.');
       } finally {
         setLoading(false);
       }

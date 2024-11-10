@@ -1,6 +1,11 @@
 import React from 'react';
 import { FileText } from 'lucide-react';
 
+/**
+ * 강의 자료를 그리드 형태로 표시하는 컴포넌트
+ * 시험/과제 목록과 자료실을 2열 그리드로 표시
+ */
+
 const CourseMaterialsGrid = ({ materials }) => (
     <div className="grid grid-cols-2 gap-6 mb-8">
       <div className="bg-white rounded-lg p-6">

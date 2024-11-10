@@ -1,6 +1,11 @@
 import React from 'react';
 import { MapPin } from 'lucide-react';
 
+/**
+ * 강의 페이지 상단의 헤더 컴포넌트
+ * 강의명, 교육 기간, 강의실 정보를 표시
+ */
+
 const CourseHeader = ({ title, period, classroom }) => (
     <div className="bg-white rounded-lg p-6 mb-6">
       <h1 className="text-2xl font-bold mb-4">{title}</h1>
