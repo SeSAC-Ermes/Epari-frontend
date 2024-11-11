@@ -19,7 +19,7 @@ const CourseDetailContent = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const courseid = searchParams.get('courseid');
+  const courseId = searchParams.get('id');
 
   // 강의 자료 더미 데이터 (API 연동 전까지 유지)
   const courseMaterials = [
@@ -93,14 +93,14 @@ const CourseDetailContent = () => {
 
   useEffect(() => {
     const fetchCourseDetails = async () => {
-      if (!courseid) {
+      if (!courseId) {
         setError('강의 ID가 없습니다.');
         return;
       }
 
       try {
         setLoading(true);
-        const response = await LectureAPI.getLectureDetail(courseid);
+        const response = await LectureAPI.getLectureDetail(courseId);
         console.log('API Response:', response); // API 응답 데이터 확인용
 
         // API 응답을 컴포넌트에서 사용하는 형식으로 변환
@@ -127,7 +127,7 @@ const CourseDetailContent = () => {
     };
 
     fetchCourseDetails();
-  }, [courseid]);
+  }, [courseId]);
 
   const handleNavigate = (path) => {
     navigate(path);

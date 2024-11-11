@@ -7,20 +7,20 @@ import apiClient from "../axios.js";
  */
 
 export const AssignmentAPI = {
-  createAssignment: async (courseid, assignmentData) => {
+  createAssignment: async (courseId, assignmentData) => {
     try {
       const date = new Date(assignmentData.dueDate);
       date.setHours(23, 59, 59, 0);
       const formattedDate = date.toISOString().split('.')[0];
 
       const requestData = {
-        courseid: courseid,
+        courseId: courseId,
         title: assignmentData.title,
         description: assignmentData.description,
         deadline: formattedDate,
       };
 
-      const response = await apiClient.post(`/api/courses/${courseid}/assignments`, requestData);
+      const response = await apiClient.post(`/api/courses/${courseId}/assignments`, requestData);
       return response.data;
     } catch (error) {
       console.error('Error creating assignment:', error);
@@ -28,18 +28,18 @@ export const AssignmentAPI = {
     }
   },
 
-  uploadFiles: async (courseid, files, assignmentid) => {
+  uploadFiles: async (courseId, files, assignmentId) => {
     try {
       const formData = new FormData();
       files.forEach((file) => {
         formData.append('files', file);
       });
 
-      if (assignmentid) {
-        formData.append('assignmentid', assignmentid);
+      if (assignmentId) {
+        formData.append('assignmentId', assignmentId);
       }
 
-      const response = await apiClient.post(`/api/courses/${courseid}/assignments/files`, formData, {
+      const response = await apiClient.post(`/api/courses/${courseId}/assignments/files`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         },
@@ -51,9 +51,9 @@ export const AssignmentAPI = {
     }
   },
 
-  getAssignments: async (courseid) => {
+  getAssignments: async (courseId) => {
     try {
-      const response = await apiClient.get(`/api/courses/${courseid}/assignments`);
+      const response = await apiClient.get(`/api/courses/${courseId}/assignments`);
       return response.data;
     } catch (error) {
       console.error('Error fetching assignments:', error);
@@ -61,9 +61,9 @@ export const AssignmentAPI = {
     }
   },
 
-  getAssignmentById: async (courseid, assignmentid) => {
+  getAssignmentById: async (courseId, assignmentId) => {
     try {
-      const response = await apiClient.get(`/api/courses/${courseid}/assignments/${assignmentid}`);
+      const response = await apiClient.get(`/api/courses/${courseId}/assignments/${assignmentId}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching assignment:', error);
@@ -71,13 +71,13 @@ export const AssignmentAPI = {
     }
   },
 
-  updateAssignment: async (courseid, assignmentid, assignmentData) => {
+  updateAssignment: async (courseId, assignmentId, assignmentData) => {
     try {
       const date = new Date(assignmentData.dueDate);
       date.setHours(23, 59, 59, 0);
       const formattedDate = date.toISOString().split('.')[0];
 
-      const response = await apiClient.put(`/api/courses/${courseid}/assignments/${assignmentid}`, {
+      const response = await apiClient.put(`/api/courses/${courseId}/assignments/${assignmentId}`, {
         title: assignmentData.title,
         description: assignmentData.description,
         deadline: formattedDate,
@@ -89,9 +89,9 @@ export const AssignmentAPI = {
     }
   },
 
-  deleteAssignment: async (courseid, assignmentid) => {
+  deleteAssignment: async (courseId, assignmentId) => {
     try {
-      await apiClient.delete(`/api/courses/${courseid}/assignments/${assignmentid}`);
+      await apiClient.delete(`/api/courses/${courseId}/assignments/${assignmentId}`);
     } catch (error) {
       console.error('Error deleting assignment:', error);
       throw error;
