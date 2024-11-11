@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { signIn, confirmSignIn, fetchAuthSession } from 'aws-amplify/auth';
+import { confirmSignIn, fetchAuthSession, signIn } from 'aws-amplify/auth';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../assets/epariLogo.jpg';
 import apiClient from '../api/axios';
