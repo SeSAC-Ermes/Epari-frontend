@@ -71,7 +71,7 @@ const AssignmentDetail = () => {
       <div className="flex-1 overflow-y-auto p-4 lg:p-6">
         <div className="max-w-5xl mx-auto">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">시험 및 과제</h1>
+            <h1 className="text-2xl font-bold text-gray-900">과제</h1>
             <button
                 onClick={handleCreateClick}
                 className="flex items-center gap-2 bg-green-500 text-white px-5 py-3 rounded-lg text-sm font-medium hover:bg-green-600 transition-colors"
