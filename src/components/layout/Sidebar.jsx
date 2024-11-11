@@ -1,7 +1,15 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import Logo from '../../assets/epariLogo.jpg';
-import { Bell, Calendar, Database, FileText, Layout, MessageSquare, Settings, User, ClipboardList } from 'lucide-react';
+import {
+  Bell,
+  Layout,
+  MessageSquare,
+  Settings,
+  User,
+  ClipboardList,
+  NotebookPen, Clipboard
+} from 'lucide-react';
 import { RoleBasedComponent } from '../../auth/RoleBasedComponent';
 import { ROLES } from '../../constants/auth';
 
@@ -10,11 +18,11 @@ import { ROLES } from '../../constants/auth';
  */
 const Sidebar = () => {
   const location = useLocation();
-
+  const {courseId} = useParams();
   // 기본 메뉴 아이템 (모든 사용자 공통)
   const baseMenuItems = [
     { icon: <Bell size={20}/>, text: '공지사항', path: '/noticelist' },
-    { icon: <FileText size={20}/>, text: '강의 공지사항', path: '/lecturenoticelist' }
+    { icon: <Bell size={20}/>, text: '강의 공지사항', path: '/lecturenoticelist' }
   ];
 
   // 강사 전용 메뉴
@@ -28,10 +36,10 @@ const Sidebar = () => {
 
   // 공통 메뉴 (출석 관리 이후 메뉴들)
   const commonMenuItems = [
-    { icon: <Database size={20}/>, text: 'Q&A 게시판', path: '/qnalist' },
+    { icon: <Clipboard size={20}/>, text: 'Q&A 게시판', path: '/qnalist' },
     { icon: <MessageSquare size={20}/>, text: '커리큘럼', path: '/curriculum' },
-    { icon: <Calendar size={20}/>, text: '시험 및 과제', path: '/exams' },
-    { icon: <Calendar size={20}/>, text: '화이팅', path: '/schedule' },
+    { icon: <NotebookPen size={20}/>, text: '시험', path: '/exams' },
+    { icon: <NotebookPen size={20}/>, text: '과제', path: `/courses/${courseId}/assignments` },
     { icon: <User size={20}/>, text: '내정보', path: '/account' },
     { icon: <Settings size={20}/>, text: 'Settings', path: '/settings' }
   ];
