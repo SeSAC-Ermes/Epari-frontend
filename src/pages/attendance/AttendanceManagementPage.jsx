@@ -5,6 +5,7 @@ import TopBar from "../../components/layout/TopBar.jsx";
 import AttendanceTable from "./AttendanceTable.jsx";
 import { useParams } from "react-router-dom";
 import apiClient from "../../api/axios.js";
+import { withPageAuth } from '../../auth/WithAuth.jsx';
 
 /**
  * 출석부 관리를 위한 메인 페이지 컴포넌트
@@ -281,4 +282,4 @@ const AttendanceManagementPage = () => {
   );
 };
 
-export default AttendanceManagementPage;
+export default withPageAuth(AttendanceManagementPage, 'ATTENDANCE_MANAGEMENT');
