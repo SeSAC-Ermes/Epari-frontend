@@ -4,7 +4,7 @@ import AssignmentDetail from '../../components/Assignment/AssignmentDetail.jsx';
 import TopBar from "../../components/layout/TopBar.jsx";
 
 /**
- * 구성된 과제 상세페이지
+ * 과제 상세페이지
  */
 const AssignmentPage = () => {
   return (
