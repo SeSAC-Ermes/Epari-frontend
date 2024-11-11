@@ -2,6 +2,11 @@ import React from 'react';
 import Logo from '../../assets/epariLogo.jpg'
 import { useNavigate } from 'react-router-dom';
 
+/**
+ * 페이지 상단의 네비게이션 바 컴포넌트
+ * 로고, 서비스명 표시 및 마이페이지 링크 제공
+ */
+
 const TopBar = () => {
   const navigate = useNavigate();
 

@@ -1,7 +1,7 @@
 import React from 'react';
-import TopBar from '../components/layout/TopBar';
-import Sidebar from '../components/layout/Sidebar.jsx';
-import CurriculumContent from '../components/CurriculumContent.jsx';
+import TopBar from '../../components/layout/TopBar.jsx';
+import Sidebar from '../../components/layout/Sidebar.jsx';
+import CurriculumContent from '../../components/lecture/dashboard/CurriculumContent.jsx';
 
 const CurriculumPage = () => {
   return (

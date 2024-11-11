@@ -1,7 +1,7 @@
-import React, {useState} from 'react';
-import {X} from 'lucide-react';
+import React, { useState } from 'react';
+import { X } from 'lucide-react';
 import ReactQuill from 'react-quill';
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/layout/Sidebar';
 import FileUpload from "../../components/common/FileUpload.jsx";
 import AssignmentAPI from "../../components/assignment/hooks/AssignmentAPI.js";
