@@ -12,7 +12,7 @@ import { withPageAuth } from '../../auth/WithAuth.jsx';
  * 출석 상태 변경, 저장 및 통계 기능 제공
  */
 const AttendanceManagementPage = () => {
-  const { lectureId } = useParams();
+  const { courseId } = useParams();
 
   // 상태 관리
   const [students, setStudents] = useState([]);
@@ -34,7 +34,7 @@ const AttendanceManagementPage = () => {
   const fetchAttendances = async (date) => {
     try {
       setIsLoading(true);
-      const { data } = await apiClient.get(`/api/instructor/lectures/${lectureId}/attendances`, {
+      const { data } = await apiClient.get(`/api/instructor/courses/${courseId}/attendances`, {
         params: { date }
       });
 
@@ -69,7 +69,7 @@ const AttendanceManagementPage = () => {
           }));
 
       await apiClient.patch(
-          `/api/instructor/lectures/${lectureId}/attendances`,
+          `/api/instructor/courses/${courseId}/attendances`,
           updateData,
           { params: { date: currentDate } }
       );
@@ -163,7 +163,7 @@ const AttendanceManagementPage = () => {
   // 초기 데이터 로드
   useEffect(() => {
     fetchAttendances(currentDate);
-  }, [lectureId]);
+  }, [courseId]);
 
   return (
       <div className="min-h-screen bg-gray-50 flex">
