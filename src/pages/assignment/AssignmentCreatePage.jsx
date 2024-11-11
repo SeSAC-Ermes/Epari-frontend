@@ -1,16 +1,16 @@
-import React, {useState} from 'react';
-import {X} from 'lucide-react';
+import React, { useState } from 'react';
+import { X } from 'lucide-react';
 import ReactQuill from 'react-quill';
-import {useNavigate, useParams} from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Sidebar from '../../components/layout/Sidebar';
 import FileUpload from "../../components/common/FileUpload.jsx";
-import {AssignmentAPI} from "../../api/assignment/AssignmentApi.js";
+import { AssignmentAPI } from "../../api/assignment/AssignmentApi.js";
 import 'react-quill/dist/quill.snow.css';
 import TopBar from "../../components/layout/TopBar.jsx";
 
 const AssignmentCreatePage = () => {
   const navigate = useNavigate();
-  const {courseId} = useParams();
+  const { courseId } = useParams();
 
   // 과제 컨테이너
   const [title, setTitle] = useState('');
@@ -30,12 +30,12 @@ const AssignmentCreatePage = () => {
   const modules = {
         toolbar: {
           container: [
-            [{'size': ['small', false, 'large', 'huge']}],
-            [{'font': []}],
+            [{ 'size': ['small', false, 'large', 'huge'] }],
+            [{ 'font': [] }],
             ['bold', 'italic', 'underline', 'strike'],
-            [{'color': []}, {'background': []}],
-            [{'list': 'ordered'}, {'list': 'bullet'}],
-            [{'align': []}],
+            [{ 'color': [] }, { 'background': [] }],
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+            [{ 'align': [] }],
             ['link', 'image'],
             ['clean']
           ],
@@ -56,14 +56,14 @@ const AssignmentCreatePage = () => {
     try {
       setIsSubmitting(true);
 
-      // 1. 과제 데이터 생성
+      // 과제 생성 요청
       const assignmentResponse = await AssignmentAPI.createAssignment(courseId, {
         title,
         description,
         dueDate
       });
 
-      // 2. 파일이 있고 과제가 성공적으로 생성된 경우에만 파일 업로드
+      // 파일 업로드 (파일이 있는 경우)
       if (files.length > 0 && assignmentResponse.id) {
         await AssignmentAPI.uploadFiles(courseId, files, assignmentResponse.id);
       }
@@ -112,7 +112,7 @@ const AssignmentCreatePage = () => {
 
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700">설명</label>
-                  <div className="border border-gray-300 rounded-lg" style={{height: '400px'}}>
+                  <div className="border border-gray-300 rounded-lg" style={{ height: '400px' }}>
                     <ReactQuill
                         theme="snow"
                         value={description}
@@ -177,7 +177,7 @@ const AssignmentCreatePage = () => {
                         <h3 className="font-medium">{title}</h3>
                         <div
                             className="text-gray-600"
-                            dangerouslySetInnerHTML={{__html: description}}
+                            dangerouslySetInnerHTML={{ __html: description }}
                         />
                         <div className="text-sm text-gray-500">
                           <p>제출 기한: {dueDate}</p>
