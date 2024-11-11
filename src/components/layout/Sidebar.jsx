@@ -1,15 +1,7 @@
 import React from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import Logo from '../../assets/epariLogo.jpg';
-import {
-  Bell,
-  Layout,
-  MessageSquare,
-  Settings,
-  User,
-  ClipboardList,
-  NotebookPen, Clipboard
-} from 'lucide-react';
+import { Bell, Clipboard, ClipboardList, Layout, MessageSquare, NotebookPen, Settings, User } from 'lucide-react';
 import { RoleBasedComponent } from '../../auth/RoleBasedComponent';
 import { ROLES } from '../../constants/auth';
 
@@ -18,7 +10,7 @@ import { ROLES } from '../../constants/auth';
  */
 const Sidebar = () => {
   const location = useLocation();
-  const {courseId} = useParams();
+  const { courseId } = useParams();
   // 기본 메뉴 아이템 (모든 사용자 공통)
   const baseMenuItems = [
     { icon: <Bell size={20}/>, text: '공지사항', path: '/noticelist' },
@@ -30,7 +22,7 @@ const Sidebar = () => {
     {
       icon: <ClipboardList size={20}/>,
       text: '출석 관리',
-      path: '/instructor/lectures/1/attendance'  // 실제 lectureId에 맞게 수정 필요
+      path: `/instructor/courses/1/attendance`  // TODO: 추후 courseId로 변경 필요
     }
   ];
 
