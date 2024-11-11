@@ -10,7 +10,7 @@ import TopBar from "../../components/layout/TopBar.jsx";
 
 const AssignmentCreatePage = () => {
   const navigate = useNavigate();
-  const {courseId} = useParams();
+  const {courseid} = useParams();
 
   // 과제 컨테이너
   const [title, setTitle] = useState('');
@@ -57,7 +57,7 @@ const AssignmentCreatePage = () => {
       setIsSubmitting(true);
 
       // 1. 과제 데이터 생성
-      const assignmentResponse = await AssignmentAPI.createAssignment(courseId, {
+      const assignmentResponse = await AssignmentAPI.createAssignment(courseid, {
         title,
         description,
         dueDate
@@ -65,11 +65,11 @@ const AssignmentCreatePage = () => {
 
       // 2. 파일이 있고 과제가 성공적으로 생성된 경우에만 파일 업로드
       if (files.length > 0 && assignmentResponse.id) {
-        await AssignmentAPI.uploadFiles(courseId, files, assignmentResponse.id);
+        await AssignmentAPI.uploadFiles(courseid, files, assignmentResponse.id);
       }
 
       alert('과제가 성공적으로 생성되었습니다.');
-      navigate(`/courses/${courseId}/assignments`);
+      navigate(`/courses/${courseid}/assignments`);
     } catch (err) {
       console.error('Submit Error:', err);
       setError(err.response?.data?.message || '과제 생성 중 오류가 발생했습니다.');

@@ -18,7 +18,7 @@ import { ROLES } from '../../constants/auth';
  */
 const Sidebar = () => {
   const location = useLocation();
-  const {courseId} = useParams();
+  const {courseid} = useParams();
   // 기본 메뉴 아이템 (모든 사용자 공통)
   const baseMenuItems = [
     { icon: <Bell size={20}/>, text: '공지사항', path: '/noticelist' },
@@ -39,7 +39,7 @@ const Sidebar = () => {
     { icon: <Clipboard size={20}/>, text: 'Q&A 게시판', path: '/qnalist' },
     { icon: <MessageSquare size={20}/>, text: '커리큘럼', path: '/curriculum' },
     { icon: <NotebookPen size={20}/>, text: '시험', path: '/exams' },
-    { icon: <NotebookPen size={20}/>, text: '과제', path: `/courses/${courseId}/assignments` },
+    { icon: <NotebookPen size={20}/>, text: '과제', path: `/courses/${courseid}/assignments` },
     { icon: <User size={20}/>, text: '내정보', path: '/account' },
     { icon: <Settings size={20}/>, text: 'Settings', path: '/settings' }
   ];

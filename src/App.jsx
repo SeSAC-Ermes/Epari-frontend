@@ -30,10 +30,10 @@ function App() {
             {/* Assignment Routes - 개발용 경로 포함 */}
             <Route path="/assignments" element={<AssignmentPage/>}/> {/* 개발용 */}
             <Route path="/assignments/create" element={<AssignmentCreatePage/>}/> {/* 개발용 */}
-            <Route path="/assignments/:assignmentId" element={<AssignmentDeatilPage/>}/> {/* 개발용 */}
-            <Route path="/courses/:courseId/assignments" element={<AssignmentPage/>}/>
-            <Route path="/courses/:courseId/assignments/create" element={<AssignmentCreatePage/>}/>
-            <Route path="/courses/:courseId/assignments/:assignmentId" element={<AssignmentDeatilPage/>}/>
+            <Route path="/assignments/:assignmentid" element={<AssignmentDeatilPage/>}/> {/* 개발용 */}
+            <Route path="/courses/:courseid/assignments" element={<AssignmentPage/>}/>
+            <Route path="/courses/:courseid/assignments/create" element={<AssignmentCreatePage/>}/>
+            <Route path="/courses/:courseid/assignments/:assignmentid" element={<AssignmentDeatilPage/>}/>
             <Route path="/courselist" element={<CourseListPage/>}/>
             <Route path="/coursedetail" element={<CourseDetailPage/>}/>
             <Route path="/noticelist" element={<NoticeListPage/>}/>

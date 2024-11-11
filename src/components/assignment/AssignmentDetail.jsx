@@ -7,7 +7,7 @@ import {useNavigate, useParams} from 'react-router-dom';
 
 const AssignmentDetail = () => {
   const navigate = useNavigate();
-  const {courseId} = useParams();
+  const {courseid} = useParams();
 
   const assignments = [
     {
@@ -31,7 +31,7 @@ const AssignmentDetail = () => {
   ];
 
   const handleCreateClick = () => {
-    navigate(`/courses/${courseId}/assignments/create`);
+    navigate(`/courses/${courseid}/assignments/create`);
   };
 
   return (
@@ -62,7 +62,7 @@ const AssignmentDetail = () => {
                     <tr
                         key={assignment.id}
                         className="hover:bg-gray-50 border-b border-gray-200 last:border-0 cursor-pointer"
-                        onClick={() => navigate(`/courses/${courseId}/assignments/${assignment.id}`)}
+                        onClick={() => navigate(`/courses/${courseid}/assignments/${assignment.id}`)}
                     >
                       <td className="px-6 py-4 text-sm text-gray-600">{assignment.id}</td>
                       <td className="px-6 py-4 text-sm text-gray-600">{assignment.title}</td>
