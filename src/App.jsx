@@ -16,8 +16,8 @@ import AssignmentSubmitPage from "./pages/assignment/AssignmentSubmitPage.jsx";
 import AttendanceManagementPage from "./pages/attendance/AttendanceManagementPage.jsx";
 import AssignmentCreatePage from "./pages/assignment/AssignmentCreatePage.jsx";
 import CourseFilePage from "./pages/lecture/CourseFilePage.jsx";
-import CourseFileCreatePage from "./components/lecture/CourseFileCreatePage.jsx";
-
+import CourseFileCreatePage from "./pages/lecture/CourseFileCreatePage.jsx";
+import CourseFileContent from "./components/lecture/file/CourseFileContent.jsx";
 
 function App() {
   return (
@@ -28,9 +28,12 @@ function App() {
           <Route path="/assignment" element={<AssignmentPage/>}/>
           <Route path="/assignmentcreate" element={<AssignmentCreatePage/>}/>
           <Route path="/assignmentsubmit" element={<AssignmentSubmitPage/>}/>
-          <Route path="/courselist" element={<CourseListPage/>}/>
-          <Route path="/coursedetail" element={<CourseDetailPage/>}/>
-          <Route path="/noticelist" element={<NoticeListPage />} />
+          <Route path="/courses" element={<CourseListPage/>}/>
+          <Route path="/courses/:courseId" element={<CourseDetailPage/>}/>
+          <Route path="/courses/:courseId/files" element={<CourseFilePage/>}/>
+          <Route path="/courses/:courseId/files/create" element={<CourseFileCreatePage/>}/>
+          <Route path="/courses/:courseId/files/:fileId" element={<CourseFileContent/>}/>
+          <Route path="/noticelist" element={<NoticeListPage/>}/>
           <Route path="/lecturenoticelist" element={<LectureNoticeListPage/>}/>
           <Route path="/qnalist" element={<QnAListPage/>}/>
           <Route path="/qna/write" element={<QnAWritePage/>}/>
@@ -38,8 +41,6 @@ function App() {
           <Route path="/curriculum" element={<CurriculumPage/>}/>
           <Route path="/account" element={<AccountPage/>}/>
           <Route path="/instructor/lectures/:lectureId/attendance" element={<AttendanceManagementPage/>}/>
-          <Route path="/coursefile" element={<CourseFilePage/>}/>
-          <Route path="/coursefile/create" element={<CourseFileCreatePage/>}/>
         </Routes>
       </Router>
   );
