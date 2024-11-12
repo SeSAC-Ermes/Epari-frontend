@@ -1,67 +1,174 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import ReactQuill from 'react-quill';
 import Sidebar from '../../components/layout/Sidebar';
-import Header from '../../components/assignment/Header.jsx';
-import { AssignmentHeader } from '../../components/assignment/AssignmentHeader.jsx';
-import { AssignmentInstructions } from '../../components/assignment/AssignmentInstructions.jsx';
+import TopBar from '../../components/layout/TopBar';
+import { AssignmentHeader } from '../../components/assignment/AssignmentHeader';
+import { AssignmentAPI } from '../../api/assignment/AssignmentApi';
+import FileUpload from '../../components/common/FileUpload';
+import 'react-quill/dist/quill.snow.css';
 
-/**
-  과제 제출 페이지
- */
+const AssignmentDetailPage = () => {
+  const navigate = useNavigate();
+  const { courseId, assignmentId } = useParams();
+  const [assignment, setAssignment] = useState(null);
+  const [submissionContent, setSubmissionContent] = useState('');
+  const [files, setFiles] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-const AssignmentSubmission = () => {
-  const [submissionText, setSubmissionText] = useState('');
-
-  // 예시 데이터 - 실제로는 props나 API를 통해 받아올 것입니다
-  const assignmentData = {
-    title: '[AWS] 리액트 - 스프링부트 - MySQL 배포 실습 과제',
-    date: '2024.10.30',
-    deadline: 'D-3 12:00:01',
-    instructions: `위 이미지와 같이 될 Dockerfile을 대체하지 않음 : Docker Compose는 Dockerfile을 대체하는 도구가 아닙니다.
-    Dockerfile과 함께 작동하여 이미지를 빌드하고 컨테이너를 실행할 수 있도록 돕는 도구입니다.
-
-    위 구조로 배포한 후 실습 파일을 다운로드 받은 후, 수정한 부분을 표현하여 파일을 업로드 하여 주세요`
+  const modules = {
+    toolbar: {
+      container: [
+        [{ 'size': ['small', false, 'large', 'huge'] }],
+        [{ 'font': [] }],
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ 'color': [] }, { 'background': [] }],
+        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+        [{ 'align': [] }],
+        ['link', 'image'],
+        ['clean']
+      ],
+    }
   };
 
+  const formats = ['font', 'size', 'bold', 'italic', 'underline', 'strike', 'color', 'background', 'list', 'bullet', 'align', 'link', 'image'];
+
+  useEffect(() => {
+    fetchAssignmentDetails();
+  }, [courseId, assignmentId]);
+
+  const fetchAssignmentDetails = async () => {
+    try {
+      setIsLoading(true);
+      const data = await AssignmentAPI.getAssignmentById(courseId, assignmentId);
+      setAssignment(data);
+    } catch (err) {
+      setError('과제 정보를 불러오는데 실패했습니다.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('ko-KR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(date);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+
+    if (!submissionContent.trim()) {
+      setError('내용을 입력해 주세요.');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      await AssignmentAPI.submitAssignment(courseId, assignmentId, {
+        content: submissionContent,
+        files: files
+      });
+      alert('과제가 성공적으로 제출되었습니다.');
+      navigate(`/courses/${courseId}/assignments`);
+    } catch (err) {
+      setError(err.response?.data?.message || '과제 제출 중 오류가 발생했습니다.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleFilesChange = (newFiles) => {
+    setFiles(newFiles);
+  };
+
+  if (isLoading) {
+    return (
+        <div className="flex h-screen bg-gray-50">
+          <Sidebar />
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <TopBar />
+            <div className="flex-1 flex items-center justify-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
+            </div>
+          </div>
+        </div>
+    );
+  }
+
   return (
-      <div className="flex min-h-screen bg-gray-50">
+      <div className="flex h-screen bg-gray-50">
         <Sidebar />
-        <div className="p-8 w-full bg-white">
-          <Header title="과제 제출" />
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <TopBar />
+          <div className="flex-1 overflow-y-auto p-8">
+            <div className="max-w-4xl mx-auto">
+              {error && (
+                  <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6">
+                    {error}
+                  </div>
+              )}
 
-          <AssignmentHeader
-              date={assignmentData.date}
-              title={assignmentData.title}
-              deadline={assignmentData.deadline}
-          />
+              {assignment && (
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <AssignmentHeader
+                        date={formatDate(assignment.createdAt)}
+                        title={assignment.title}
+                        deadline={assignment.deadline}
+                    />
 
-          <AssignmentInstructions instructions={assignmentData.instructions} />
+                    <div>
+                      <h2 className="text-lg mb-4">과제안내</h2>
+                      <div className="bg-white rounded-lg p-6">
+                        <div className="prose max-w-none"
+                             dangerouslySetInnerHTML={{ __html: assignment.description || '' }}
+                        />
+                      </div>
+                    </div>
 
-          <div>
-            <h3 className="font-bold mb-4">과제 제출</h3>
-            {/* 임시 텍스트 필드 */}
-            <textarea
-                value={submissionText}
-                onChange={(e) => setSubmissionText(e.target.value)}
-                className="w-full h-40 p-2 border rounded-md mb-6"
-                placeholder="과제 내용을 작성하세요."
-            />
-            {/* 임시 파일 업로드 버튼 */}
-            <input
-                type="file"
-                className="mb-6"
-            />
+                    <div className="space-y-6">
+                      <div className="space-y-2">
+                        <h2 className="text-lg font-medium">과제 제출</h2>
+                        <div className="border border-gray-300 rounded-lg" style={{ height: '400px' }}>
+                          <ReactQuill
+                              theme="snow"
+                              value={submissionContent}
+                              onChange={setSubmissionContent}
+                              modules={modules}
+                              formats={formats}
+                              className="h-[350px]"
+                              placeholder="과제 내용을 입력하세요"
+                          />
+                        </div>
+                      </div>
 
-            {/*<SubmissionTextArea*/}
-            {/*    value={submissionText}*/}
-            {/*    onChange={(e) => setSubmissionText(e.target.value)}*/}
-            {/*/>*/}
-            {/*<FileDropZone />*/}
+                      <div className="space-y-2">
+                        <label className="block text-sm font-medium text-gray-700">파일 첨부</label>
+                        <FileUpload onFilesChange={handleFilesChange} />
+                      </div>
 
-            {/* 제출하기 버튼 */}
-            <div className="flex justify-end">
-              <button className="bg-blue-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-all ease-in-out duration-200 mt-6 shadow-lg">
-                제출하기
-              </button>
+                      <div className="flex justify-end pb-8">
+                        <button
+                            type="submit"
+                            className={`px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 
+                        ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            disabled={isSubmitting}
+                        >
+                          {isSubmitting ? '제출 중...' : '과제 제출하기'}
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+              )}
             </div>
           </div>
         </div>
@@ -69,4 +176,4 @@ const AssignmentSubmission = () => {
   );
 };
 
-export default AssignmentSubmission;
+export default AssignmentDetailPage;

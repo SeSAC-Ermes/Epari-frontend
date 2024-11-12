@@ -3,10 +3,10 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
 /**
- * 텍스트 박스 컴포넌트 입니다.
+ * 텍스트 박스 컴포넌트
  */
 
-const QuillEditor = ({ value, onChange }) => {
+const QuillEditor = ({ value, onChange, readOnly = false }) => {
   const quillRef = useRef(null);
 
   // 이미지 업로드 핸들러
@@ -42,24 +42,27 @@ const QuillEditor = ({ value, onChange }) => {
 
   // 툴바 설정
   const modules = {
-    toolbar: {
+    toolbar: readOnly ? false : {
       container: [
-        [{ 'header': [1, 2, 3, false] }], // 헤더 스타일 (1, 2, 3, 기본)
-        ['bold', 'italic', 'underline', 'strike'], // 텍스트 스타일 (굵게, 기울임, 밑줄, 취소선)
-        [{ 'list': 'ordered' }, { 'list': 'bullet' }], // 목록 스타일 (순서 목록, 순서 없는 목록)
-        [{ 'align': [] }], // 정렬 (왼쪽, 가운데, 오른쪽)
-        ['link', 'image'], // 링크, 이미지 추가
-        ['clean'], // 포맷 초기화
+        [{ 'header': [1, 2, 3, false] }],
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+        [{ 'align': [] }],
+        ['link', 'image'],
+        ['clean']
       ],
       handlers: {
-        image: imageHandler, // 이미지 핸들러 설정
-      },
-    },
+        image: imageHandler
+      }
+    }
   };
 
-  // 사용할 포맷 지정
   const formats = [
-    'header', 'bold', 'italic', 'underline', 'strike', 'list', 'bullet', 'align', 'link', 'image',
+    'header',
+    'bold', 'italic', 'underline', 'strike',
+    'list', 'bullet',
+    'align',
+    'link', 'image'
   ];
 
   return (
@@ -70,6 +73,8 @@ const QuillEditor = ({ value, onChange }) => {
             onChange={onChange}
             modules={modules}
             formats={formats}
+            readOnly={readOnly}
+            theme="snow"
         />
       </div>
   );
