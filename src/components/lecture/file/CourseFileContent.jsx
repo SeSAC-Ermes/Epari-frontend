@@ -169,15 +169,18 @@ const CourseFileContent = () => {
     setExpandedId(expandedId === fileId ? null : fileId);
   };
 
+// handleRemoveExistingFile 함수를 다시 원래대로 수정
   const handleRemoveExistingFile = async (fileId, contentId) => {
     try {
       await CourseFileAPI.deleteFile(courseId, contentId, fileId);
 
-      // 현재 편집 중인 파일의 데이터만 업데이트
+      // 현재 편집 중인 파일의 파일 목록만 업데이트
       const updatedContent = await CourseFileAPI.getCourseFileDetail(courseId, contentId);
+
+      // 기존 파일 목록 업데이트
       setExistingFiles(updatedContent.files || []);
 
-      // fileData 전체 목록도 업데이트
+      // fileData 전체 목록도 업데이트 (수정 모드는 유지)
       setFileData(prevData =>
           prevData.map(file =>
               file.id === contentId
@@ -258,7 +261,10 @@ const CourseFileContent = () => {
                   <div className="grid grid-cols-5 p-4 hover:bg-gray-50">
                     <div
                         className="col-span-4 grid grid-cols-4 cursor-pointer"
-                        onClick={() => handleRowClick(file.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleToggleClick(e, file.id);
+                        }}
                     >
                       <div className="text-center">{file.date}</div>
                       <div className="text-center">{file.instructor?.name || '정보 없음'}</div>
@@ -384,6 +390,7 @@ const CourseFileContent = () => {
                                         files={file.files}
                                         courseId={courseId}
                                         contentId={file.id}
+                                        onDelete={(fileId) => handleRemoveExistingFile(fileId, file.id)}
                                     />
                                   </div>
                               )}

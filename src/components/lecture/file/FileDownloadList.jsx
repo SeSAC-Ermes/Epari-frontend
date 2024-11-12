@@ -86,6 +86,7 @@ const FileDownloadList = ({ files, courseId, contentId, onDelete, isEditMode = f
               <div
                   key={file.id}
                   className="flex items-center p-3 bg-white rounded-lg border border-gray-200 hover:shadow-sm transition-shadow"
+                  onClick={(e) => e.stopPropagation()}
               >
                 {!isEditMode && (
                     <input
@@ -112,7 +113,11 @@ const FileDownloadList = ({ files, courseId, contentId, onDelete, isEditMode = f
                 </div>
                 {isEditMode && (
                     <button
-                        onClick={() => onDelete && onDelete(file.id)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          onDelete && onDelete(file.id);
+                        }}
                         className="ml-2 p-1.5 text-red-500 hover:bg-red-50 rounded-full transition-colors"
                     >
                       <Trash2 size={16} />
