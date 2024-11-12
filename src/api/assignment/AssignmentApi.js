@@ -105,5 +105,21 @@ export const AssignmentAPI = {
       console.error('Error searching assignments:', error);
       throw error;
     }
+  },
+
+  submitAssignment: async (courseId, assignmentId, submissionData) => {
+    try {
+      const response = await apiClient.post(
+          `/api/courses/${courseId}/assignments/${assignmentId}/submit`,
+          {
+            content: submissionData.content,
+            files: submissionData.files
+          }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error submitting assignment:', error);
+      throw error;
+    }
   }
 };
