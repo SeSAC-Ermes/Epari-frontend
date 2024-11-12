@@ -1,15 +1,19 @@
 import React from 'react';
 import Sidebar from '../../components/layout/Sidebar';
-import AssignmentDetail from '../../components/Assignment/AssignmentDetail.jsx';
+import AssignmentDetail from '../../components/assignment/AssignmentDetail.jsx';
+import TopBar from "../../components/layout/TopBar.jsx";
 
 /**
- * SideBar + AssignmentDetail로 구성된 과제 상세페이지
+ * 과제 리스트페이지
  */
 const AssignmentPage = () => {
   return (
-      <div className="flex min-h-screen bg-gray-50">
+      <div className="flex h-screen bg-gray-50">
         <Sidebar/>
-        <AssignmentDetail/>
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <TopBar/>
+          <AssignmentDetail/>
+        </div>
       </div>
   );
 };
