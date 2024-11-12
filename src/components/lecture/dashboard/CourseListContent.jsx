@@ -4,6 +4,7 @@ import LectureManagementModal from './LectureManagementModal';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import NoticeTabs from './NoticeTabs';
 import NoticeTable from './NoticeTable';
+import { LectureAPI } from "../../../api/lecture/lectureApi.js";
 
 /**
  * 강의 목록 페이지의 메인 컴포넌트
@@ -23,7 +24,6 @@ const getIsInstructorFromToken = () => {
     const decodedPayload = JSON.parse(atob(payload));
     console.log('Decoded token payload:', decodedPayload);
 
-    // cognito:groups 배열에서 'INSTRUCTOR' 확인
     const isInstructor = decodedPayload['cognito:groups']?.includes('INSTRUCTOR') || false;
     console.log('Is instructor:', isInstructor);
     return isInstructor;
@@ -77,50 +77,16 @@ const CourseListContent = () => {
     ]
   });
 
-  const getAuthToken = () => {
-    return localStorage.getItem('token');
-  };
-
-  const fetchApi = async (url, options = {}) => {
-    const token = localStorage.getItem('token');
-    const baseUrl = 'http://localhost:8080/api';
-
-    const defaultOptions = {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      ...options
-    };
-
-    const response = await fetch(`${baseUrl}${url}`, defaultOptions);
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-    }
-
-    // DELETE 요청이거나 응답이 비어있는 경우 처리
-    if (response.status === 204 || response.headers.get('content-length') === '0') {
-      return null;
-    }
-
-    return response.json();
-  };
-
-
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
         const instructorStatus = getIsInstructorFromToken();
         setIsInstructor(instructorStatus);
 
-        const data = await fetchApi('/courses/usercourses');
+        const data = await LectureAPI.getUserLectures();
         console.log('API response:', data);
 
-        // instructor ID 설정 로직 수정
         if (instructorStatus && data.length > 0) {
-          // 첫 번째 강의의 instructor.id를 사용
           const instructorId = data[0]?.instructor?.id;
           if (instructorId) {
             setCurrentUserId(instructorId);
@@ -175,10 +141,7 @@ const CourseListContent = () => {
 
     if (window.confirm('정말로 이 강의를 삭제하시겠습니까?')) {
       try {
-        await fetchApi(`/courses/${lectureId}?instructorId=${currentUserId}`, {
-          method: 'DELETE'
-        });
-        // 성공적으로 삭제되면 상태 업데이트
+        await LectureAPI.deleteLecture(lectureId, currentUserId);
         setCourses(prevCourses => prevCourses.filter(course => course.id !== lectureId));
         alert('강의가 성공적으로 삭제되었습니다.');
       } catch (error) {
@@ -195,12 +158,9 @@ const CourseListContent = () => {
     }
 
     try {
+      let data;
       if (selectedLecture) {
-        const data = await fetchApi(`/courses/${selectedLecture.id}?instructorId=${currentUserId}`, {
-          method: 'PUT',
-          body: JSON.stringify(formData)
-        });
-        // 응답 데이터를 형식에 맞게 변환
+        data = await LectureAPI.updateLecture(selectedLecture.id, currentUserId, formData);
         const updatedCourse = {
           id: data.id,
           title: data.name,
@@ -216,11 +176,7 @@ const CourseListContent = () => {
             )
         );
       } else {
-        const data = await fetchApi(`/courses?instructorId=${currentUserId}`, {
-          method: 'POST',
-          body: JSON.stringify(formData)
-        });
-        // 새로운 강의 데이터도 동일한 형식으로 변환
+        data = await LectureAPI.createLecture(currentUserId, formData);
         const newCourse = {
           id: data.id,
           title: data.name,

@@ -27,22 +27,23 @@ export const LectureAPI = {
     }
   },
 
-  createLecture: async (lectureData, instructorId) => {
+  // 새로 추가되는 메서드들
+  createLecture: async (instructorId, lectureData) => {
     try {
       const response = await apiClient.post(`/api/courses?instructorId=${instructorId}`, lectureData);
       return response.data;
     } catch (error) {
-      console.error('Error creating course:', error);
+      console.error('Error creating lecture:', error);
       throw error;
     }
   },
 
-  updateLecture: async (lectureId, lectureData, instructorId) => {
+  updateLecture: async (lectureId, instructorId, lectureData) => {
     try {
       const response = await apiClient.put(`/api/courses/${lectureId}?instructorId=${instructorId}`, lectureData);
       return response.data;
     } catch (error) {
-      console.error('Error updating course:', error);
+      console.error('Error updating lecture:', error);
       throw error;
     }
   },
@@ -51,8 +52,10 @@ export const LectureAPI = {
     try {
       await apiClient.delete(`/api/courses/${lectureId}?instructorId=${instructorId}`);
     } catch (error) {
-      console.error('Error deleting course:', error);
+      console.error('Error deleting lecture:', error);
       throw error;
     }
   }
 };
+
+export default LectureAPI;

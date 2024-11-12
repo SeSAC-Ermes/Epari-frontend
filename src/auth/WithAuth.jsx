@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuth } from './AuthContext.jsx';
 import { ProtectedRoute } from './ProtectedRoute';
 import { RoleBasedComponent } from './RoleBasedComponent';
-import { PAGE_PERMISSIONS, FEATURE_PERMISSIONS } from '../constants/auth.js';
+import { FEATURE_PERMISSIONS, PAGE_PERMISSIONS } from '../constants/auth.js';
 
 /**
  * withPageAuth와 withFeatureAuth는 컴포넌트의 권한 검사를 수행하는 HOC

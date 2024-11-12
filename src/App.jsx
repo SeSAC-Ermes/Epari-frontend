@@ -14,6 +14,9 @@ import AccountPage from "./pages/AccountPage.jsx";
 import AssignmentPage from "./pages/assignment/AssignmentPage.jsx";
 import AttendanceManagementPage from "./pages/attendance/AttendanceManagementPage.jsx";
 import AssignmentCreatePage from "./pages/assignment/AssignmentCreatePage.jsx";
+import CourseFilePage from "./pages/lecture/CourseFilePage.jsx";
+import CourseFileCreatePage from "./pages/lecture/CourseFileCreatePage.jsx";
+import CourseFileContent from "./components/lecture/file/CourseFileContent.jsx";
 import { AuthProvider } from "./auth/AuthContext.jsx";
 import UnauthorizedPage from './pages/auth/UnauthorizedPage.jsx';
 import RootRedirect from "./components/auth/RootRedirect.jsx";
@@ -34,8 +37,11 @@ function App() {
             <Route path="/courses/:courseId/assignments" element={<AssignmentPage/>}/>
             <Route path="/courses/:courseId/assignments/create" element={<AssignmentCreatePage/>}/>
             <Route path="/courses/:courseId/assignments/:assignmentId" element={<AssignmentDeatilPage/>}/>
-            <Route path="/courselist" element={<CourseListPage/>}/>
-            <Route path="/coursedetail" element={<CourseDetailPage/>}/>
+            <Route path="/courses" element={<CourseListPage/>}/>
+            <Route path="/courses/:courseId" element={<CourseDetailPage/>}/>
+            <Route path="/courses/:courseId/files" element={<CourseFilePage/>}/>
+            <Route path="/courses/:courseId/files/create" element={<CourseFileCreatePage/>}/>
+            <Route path="/courses/:courseId/files/:fileId" element={<CourseFileContent/>}/>
             <Route path="/noticelist" element={<NoticeListPage/>}/>
             <Route path="/lecturenoticelist" element={<LectureNoticeListPage/>}/>
             <Route path="/qnalist" element={<QnAListPage/>}/>
