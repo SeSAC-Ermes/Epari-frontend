@@ -154,7 +154,7 @@ const SignInForm = () => {
 
       // 토큰 저장 및 리다이렉트
       localStorage.setItem('token', token);
-      navigate('/courselist');
+      navigate('/courses');
 
     } catch (error) {
       console.error('Session/token handling error:', error);
