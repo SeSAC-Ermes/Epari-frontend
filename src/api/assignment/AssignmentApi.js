@@ -14,7 +14,6 @@ export const AssignmentAPI = {
       const formattedDate = date.toISOString().split('.')[0];
 
       const requestData = {
-        courseId: courseId,
         title: assignmentData.title,
         description: assignmentData.description,
         deadline: formattedDate,
@@ -94,6 +93,16 @@ export const AssignmentAPI = {
       await apiClient.delete(`/api/courses/${courseId}/assignments/${assignmentId}`);
     } catch (error) {
       console.error('Error deleting assignment:', error);
+      throw error;
+    }
+  },
+
+  searchAssignments: async (keyword) => {
+    try {
+      const response = await apiClient.get(`/api/assignments/search?title=${encodeURIComponent(keyword)}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error searching assignments:', error);
       throw error;
     }
   }
