@@ -1,5 +1,5 @@
 // AssignmentDetail.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AssignmentAPI } from "../../api/assignment/AssignmentApi.js";
 

@@ -1,9 +1,20 @@
 import React from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import Logo from '../../assets/epariLogo.jpg';
-import { Bell, Clipboard, ClipboardList, Layout, MessageSquare, NotebookPen, Settings, User } from 'lucide-react';
+import {
+  Bell,
+  Clipboard,
+  ClipboardList,
+  Layout,
+  Library,
+  MessageSquare,
+  NotebookPen,
+  Settings,
+  User,
+} from 'lucide-react';
 import { RoleBasedComponent } from '../../auth/RoleBasedComponent';
 import { ROLES } from '../../constants/auth';
+
 
 /**
  * 페이지 왼쪽에 위치한 공용 사이드바 컴포넌트
@@ -32,6 +43,7 @@ const Sidebar = () => {
     { icon: <MessageSquare size={20}/>, text: '커리큘럼', path: '/curriculum' },
     { icon: <NotebookPen size={20}/>, text: '시험', path: '/exams' },
     { icon: <NotebookPen size={20}/>, text: '과제', path: `/courses/${courseId}/assignments` },
+    { icon: <Library size={20}/>, text: '강의 자료 목록', path: courseId ? `/courses/${courseId}/files` : '/courses' },
     { icon: <User size={20}/>, text: '내정보', path: '/account' },
     { icon: <Settings size={20}/>, text: 'Settings', path: '/settings' }
   ];
@@ -51,17 +63,13 @@ const Sidebar = () => {
   return (
       <div className="w-64 min-h-screen bg-white p-6 border-r border-gray-200">
         <Link to="/" className="flex items-center gap-1 text-inherit no-underline mb-6 px-2">
-          <img
-              src={Logo}
-              className="w-12 h-12"
-              alt="Logo"
-          />
+          <img src={Logo} className="w-12 h-12" alt="Logo"/>
           <span className="text-lg font-semibold text-black">SeSAC</span>
           <sup className="text-xs text-gray-500 font-normal">epari</sup>
         </Link>
 
         <Link
-            to="/coursedetail"
+            to={courseId ? `/courses/${courseId}` : '/courses'}
             className="flex items-center gap-3 p-3 bg-green-500 rounded-lg text-white no-underline mb-4"
         >
           <Layout size={20}/>

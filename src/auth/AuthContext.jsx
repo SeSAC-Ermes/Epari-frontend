@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { getCurrentUser, fetchAuthSession } from 'aws-amplify/auth';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { fetchAuthSession, getCurrentUser } from 'aws-amplify/auth';
 
 /**
  * 전역적인 인증 상태를 관리

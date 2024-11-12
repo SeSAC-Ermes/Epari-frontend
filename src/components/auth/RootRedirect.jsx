@@ -18,7 +18,7 @@ const RootRedirect = () => {
   }
 
   // 인증 상태에 따라 리다이렉트
-  return user ? <Navigate to="/courselist" replace/> : <Navigate to="/signin" replace/>;
+  return user ? <Navigate to="/courses" replace/> : <Navigate to="/signin" replace/>;
 };
 
 export default RootRedirect;

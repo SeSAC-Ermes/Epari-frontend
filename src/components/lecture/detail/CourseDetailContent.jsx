@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import CourseHeader from './CourseHeader';
 import InstructorCard from './InstructorCard';
 import CourseMaterialsGrid from './CourseMaterialsGrid';
@@ -17,9 +17,7 @@ const CourseDetailContent = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const courseId = searchParams.get('id');
+  const { courseId } = useParams();  // URL 파라미터로 변경
 
   // 강의 자료 더미 데이터 (API 연동 전까지 유지)
   const courseMaterials = [
@@ -101,9 +99,8 @@ const CourseDetailContent = () => {
       try {
         setLoading(true);
         const response = await LectureAPI.getLectureDetail(courseId);
-        console.log('API Response:', response); // API 응답 데이터 확인용
+        console.log('API Response:', response);
 
-        // API 응답을 컴포넌트에서 사용하는 형식으로 변환
         const formattedCourseInfo = {
           id: response.id,
           title: response.name,
@@ -116,7 +113,7 @@ const CourseDetailContent = () => {
           }
         };
 
-        console.log('Formatted Course Info:', formattedCourseInfo); // 변환된 데이터 확인용
+        console.log('Formatted Course Info:', formattedCourseInfo);
         setCourseInfo(formattedCourseInfo);
       } catch (error) {
         console.error('Error fetching course details:', error);
@@ -130,7 +127,14 @@ const CourseDetailContent = () => {
   }, [courseId]);
 
   const handleNavigate = (path) => {
-    navigate(path);
+    // URL 구조에 맞게 네비게이션 로직 수정
+    if (path.includes('/lecturenoticelist')) {
+      navigate(`/courses/${courseId}/notices`);
+    } else if (path.includes('/exams')) {
+      navigate(`/courses/${courseId}/exams`);
+    } else {
+      navigate(path);
+    }
   };
 
   if (loading) {
