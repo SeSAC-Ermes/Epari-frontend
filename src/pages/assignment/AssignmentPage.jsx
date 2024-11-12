@@ -1,6 +1,6 @@
 import React from 'react';
 import Sidebar from '../../components/layout/Sidebar';
-import AssignmentDetail from '../../components/Assignment/AssignmentDetail.jsx';
+import AssignmentDetail from '../../components/assignment/AssignmentDetail.jsx';
 import TopBar from "../../components/layout/TopBar.jsx";
 
 /**
@@ -9,10 +9,10 @@ import TopBar from "../../components/layout/TopBar.jsx";
 const AssignmentPage = () => {
   return (
       <div className="flex h-screen bg-gray-50">
-        <Sidebar />
+        <Sidebar/>
         <div className="flex-1 flex flex-col overflow-hidden">
-          <TopBar />
-          <AssignmentDetail />
+          <TopBar/>
+          <AssignmentDetail/>
         </div>
       </div>
   );
