@@ -5,6 +5,7 @@ import Sidebar from '../../components/layout/Sidebar';
 import TopBar from '../../components/layout/TopBar';
 import { AssignmentHeader } from '../../components/assignment/AssignmentHeader';
 import { AssignmentAPI } from '../../api/assignment/AssignmentApi';
+import { formatDate } from "../../utils/DateUtils.js";
 import FileUpload from '../../components/common/FileUpload';
 import 'react-quill/dist/quill.snow.css';
 
@@ -49,18 +50,6 @@ const AssignmentDetailPage = () => {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const formatDate = (dateString) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('ko-KR', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(date);
   };
 
   const handleSubmit = async (e) => {
