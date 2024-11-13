@@ -187,6 +187,7 @@ const AttendanceManagementPage = () => {
                         students={students}
                         onStudentStatusChange={handleStudentStatusChange}
                     />
+                    <div className="h-16"></div>
                   </>
               )}
 
