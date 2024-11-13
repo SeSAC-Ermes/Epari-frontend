@@ -20,7 +20,7 @@ import CourseFileContent from "./components/lecture/file/CourseFileContent.jsx";
 import { AuthProvider } from "./auth/AuthContext.jsx";
 import UnauthorizedPage from './pages/auth/UnauthorizedPage.jsx';
 import RootRedirect from "./components/auth/RootRedirect.jsx";
-import AssignmentDeatilPage from "./pages/assignment/AssignmentDeatilPage.jsx";
+import AssignmentDeatilPage from "./pages/assignment/AssignmentDetailPage.jsx";
 
 function App() {
   return (
@@ -30,10 +30,6 @@ function App() {
             <Route path="/" element={<RootRedirect/>}/>
             <Route path="/signin" element={<SignInPage/>}/>
             <Route path="/signup" element={<SignUpPage/>}/>
-            {/* Assignment Routes - 개발용 경로 포함 */}
-            <Route path="/assignments" element={<AssignmentPage/>}/> {/* 개발용 */}
-            <Route path="/assignments/create" element={<AssignmentCreatePage/>}/> {/* 개발용 */}
-            <Route path="/assignments/:assignmentId" element={<AssignmentDeatilPage/>}/> {/* 개발용 */}
             <Route path="/courses/:courseId/assignments" element={<AssignmentPage/>}/>
             <Route path="/courses/:courseId/assignments/create" element={<AssignmentCreatePage/>}/>
             <Route path="/courses/:courseId/assignments/:assignmentId" element={<AssignmentDeatilPage/>}/>
