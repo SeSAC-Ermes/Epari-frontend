@@ -1,0 +1,57 @@
+name: Pull Request
+on:
+  pull_request:
+    types: [ opened, ready_for_review ]
+
+jobs:
+  specific_review_requested:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: reviewers.json 파일 확인
+        run: |
+          ls -la .github/workflows/
+          cat .github/workflows/reviewers.json
+
+      - name: 리뷰어 목록 가져오기
+        id: reviewers
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const path = require('path');
+            const fs = require('fs');
+            const filePath = path.join(process.env.GITHUB_WORKSPACE, '.github/workflows/reviewers.json');
+            console.log('Reading file from:', filePath);
+            const fileContent = fs.readFileSync(filePath, 'utf8');
+            console.log('File content:', fileContent);
+            const workers = JSON.parse(fileContent);
+            const mention = context.payload.pull_request.requested_reviewers.map((user) => {
+              const login = user.login;
+              const mappedValue = workers[login];
+              return mappedValue ? `<@${mappedValue}>` : `No mapping found for ${login}`;
+            });
+            return mention.join(', ');
+          result-encoding: string
+
+      - name: PR 리뷰어 할당 시 Slack 알림 보내기
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          channel-id: ${{ secrets.ERMES_CHANNEL }}
+          payload: >
+            {
+              "text": "pr review request",
+              "unfurl_links": false,
+              "unfurl_media": false,
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "리뷰어로 할당되었습니다.\n• 제목: ${{ github.event.pull_request.title }}\n• 리뷰어: ${{ steps.reviewers.outputs.result }}\n• 링크: <${{ github.event.pull_request.html_url }}|리뷰하러 가기>"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.ERMES_GITHUB_BOT_TOKEN }}
