@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AssignmentAPI } from "../../api/assignment/AssignmentApi.js";
-import { formatDate, calculateDday, getAssignmentStatus } from "../../utils/DateUtils.js";
+import { calculateDday, formatDate, getAssignmentStatus } from "../../utils/DateUtils.js";
 
 const AssignmentDetail = () => {
   const navigate = useNavigate();

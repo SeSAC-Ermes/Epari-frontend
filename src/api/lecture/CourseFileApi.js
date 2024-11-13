@@ -144,9 +144,30 @@ export const CourseFileAPI = {
       console.error('Error deleting file:', error);
       throw error;
     }
+  },
+
+  // 자료실용 새로운 메서드 추가
+  getCourseFileArchive: async (courseId) => {
+    try {
+      const response = await apiClient.get(`/api/courses/${courseId}/files/archive`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching course file archive:', error);
+      throw error;
+    }
+  },
+
+  // 오늘의 강의 자료 조회
+  getTodayFiles: async (courseId) => {
+    try {
+      const response = await apiClient.get(`/api/courses/${courseId}/contents/today`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching today files:', error);
+      throw error;
+    }
   }
 };
-
 
 
 export default CourseFileAPI;

@@ -5,12 +5,13 @@ import {
   Bell,
   Clipboard,
   ClipboardList,
+  FolderArchive,
   Layout,
   Library,
   MessageSquare,
   NotebookPen,
   Settings,
-  User,
+  User
 } from 'lucide-react';
 import { RoleBasedComponent } from '../../auth/RoleBasedComponent';
 import { ROLES } from '../../constants/auth';
@@ -44,6 +45,11 @@ const Sidebar = () => {
     { icon: <NotebookPen size={20}/>, text: '시험', path: '/exams' },
     { icon: <NotebookPen size={20}/>, text: '과제', path: `/courses/${courseId}/assignments` },
     { icon: <Library size={20}/>, text: '강의 자료 목록', path: courseId ? `/courses/${courseId}/files` : '/courses' },
+    {
+      icon: <FolderArchive size={20}/>,
+      text: '자료실',
+      path: courseId ? `/courses/${courseId}/file-archive` : '/courses'
+    },
     { icon: <User size={20}/>, text: '내정보', path: '/account' },
     { icon: <Settings size={20}/>, text: 'Settings', path: '/settings' }
   ];

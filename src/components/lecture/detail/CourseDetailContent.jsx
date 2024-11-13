@@ -171,7 +171,10 @@ const CourseDetailContent = () => {
 
         <InstructorCard instructor={courseInfo.instructor}/>
 
-        <CourseMaterialsGrid materials={courseMaterials}/>
+        <CourseMaterialsGrid
+            courseId={courseId}
+            materials={courseMaterials}
+        />
 
         <CourseContentTabs
             activeTab={activeTab}
