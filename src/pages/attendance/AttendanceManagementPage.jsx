@@ -250,9 +250,6 @@ const AttendanceManagementPage = () => {
               {modifiedStudents.size > 0 && (
                   <div
                       className="fixed bottom-4 right-4 flex gap-3 items-center backdrop-blur-sm bg-white/30 px-6 py-4 rounded-2xl shadow-lg border border-gray-100">
-                <span className="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded-full">
-                  {modifiedStudents.size}개의 변경사항
-                </span>
                     <button
                         onClick={() => setShowUnsavedDialog(true)}
                         disabled={isLoading}
