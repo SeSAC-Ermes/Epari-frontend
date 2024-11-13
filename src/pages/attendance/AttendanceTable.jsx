@@ -29,13 +29,24 @@ const AttendanceTable = ({ students, onStudentStatusChange }) => {
           </tr>
           </thead>
           <tbody>
-          {students.map((student) => (
-              <AttendanceRow
-                  key={student.no}
-                  student={student}
-                  onStatusChange={onStudentStatusChange}
-              />
-          ))}
+          {students.length > 0 ? (
+              students.map((student, index) => (
+                  <AttendanceRow
+                      key={student.no}
+                      student={student}
+                      onStatusChange={onStudentStatusChange}
+                      style={{
+                        animationDelay: `${index * 50}ms`
+                      }}
+                  />
+              ))
+          ) : (
+              <tr className="animate-[fadeIn_0.3s_ease-in-out_forwards]">
+                <td colSpan="7" className="py-16 text-center">
+                  <p className="text-gray-500">검색 결과가 없습니다</p>
+                </td>
+              </tr>
+          )}
           </tbody>
         </table>
       </div>

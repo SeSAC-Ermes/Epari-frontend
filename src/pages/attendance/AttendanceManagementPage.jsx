@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import AttendanceStatusSection from './AttendanceStatusSection';
 import Sidebar from "../../components/layout/Sidebar.jsx";
 import TopBar from "../../components/layout/TopBar.jsx";
@@ -77,6 +77,7 @@ const AttendanceManagementPage = () => {
 
       setModifiedStudents(new Set());
       showToastMessage('success', '출석 정보가 성공적으로 저장되었습니다.');
+      setSearchQuery("");
     } catch (error) {
       const errorMessage = error.response?.data?.message || '출석 정보 저장 중 오류가 발생했습니다.';
       showToastMessage('error', errorMessage);
@@ -139,9 +140,13 @@ const AttendanceManagementPage = () => {
   };
 
   // 검색 필터링된 학생 목록
-  const filteredStudents = students.filter(student =>
-      student.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredStudents = useMemo(() => {
+    if (!searchQuery.trim()) return students;
+
+    return students.filter(student =>
+        student.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [students, searchQuery]);
 
   // 검색 핸들러
   const handleSearch = (query) => {
