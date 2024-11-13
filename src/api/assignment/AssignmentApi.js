@@ -110,7 +110,7 @@ export const AssignmentAPI = {
   submitAssignment: async (courseId, assignmentId, submissionData) => {
     try {
       const response = await apiClient.post(
-          `/api/courses/${courseId}/assignments/${assignmentId}/submission`,
+          `/api/courses/${courseId}/assignments/${assignmentId}/submit`,
           {
             content: submissionData.content,
             files: submissionData.files
