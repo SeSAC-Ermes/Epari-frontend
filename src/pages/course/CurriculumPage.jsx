@@ -1,18 +1,18 @@
 import React from 'react';
 import TopBar from '../../components/layout/TopBar.jsx';
 import Sidebar from '../../components/layout/Sidebar.jsx';
-import CourseDetailContent from '../../components/lecture/detail/CourseDetailContent.jsx';
+import CurriculumContent from '../../components/course/dashboard/CurriculumContent.jsx';
 
-const CourseDetailPage = () => {
+const CurriculumPage = () => {
   return (
       <div className="min-h-screen bg-gray-50 flex">
         <Sidebar />
         <div className="flex-1">
           <TopBar />
-          <CourseDetailContent />
+          <CurriculumContent />
         </div>
       </div>
   );
 };
 
-export default CourseDetailPage;
+export default CurriculumPage;

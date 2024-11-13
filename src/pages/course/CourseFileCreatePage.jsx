@@ -1,7 +1,7 @@
 import React from 'react';
 import TopBar from '../../components/layout/TopBar.jsx';
 import Sidebar from '../../components/layout/Sidebar.jsx';
-import CourseFileCreateContent from '../../components/lecture/file/CourseFileCreateContent.jsx';
+import CourseFileCreateContent from '../../components/course/file/CourseFileCreateContent.jsx';
 
 const CourseFileCreatePage = () => {
   return (

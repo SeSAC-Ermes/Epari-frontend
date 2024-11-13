@@ -1,7 +1,7 @@
 import React from 'react';
 import TopBar from '../../components/layout/TopBar.jsx';
 import Sidebar from '../../components/layout/Sidebar.jsx';
-import CourseFileContent from '../../components/lecture/file/CourseFileContent.jsx';
+import CourseFileContent from '../../components/course/file/CourseFileContent.jsx';
 import { useSearchParams } from 'react-router-dom';
 
 const CourseFilePage = () => {
