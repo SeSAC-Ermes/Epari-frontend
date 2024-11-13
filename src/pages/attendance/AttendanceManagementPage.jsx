@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import AttendanceStatusSection from './AttendanceStatusSection';
+import React, { useEffect, useMemo, useState } from 'react';
+import AttendanceStatusSection from '../../components/attendance/AttendanceStatusSection.jsx';
 import Sidebar from "../../components/layout/Sidebar.jsx";
 import TopBar from "../../components/layout/TopBar.jsx";
-import AttendanceTable from "./AttendanceTable.jsx";
+import AttendanceTable from "../../components/attendance/AttendanceTable.jsx";
 import { useParams } from "react-router-dom";
 import apiClient from "../../api/axios.js";
 import { withPageAuth } from '../../auth/WithAuth.jsx';
@@ -29,6 +29,7 @@ const AttendanceManagementPage = () => {
     absent: 0
   });
   const [currentDate, setCurrentDate] = useState(new Date().toISOString().split('T')[0]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // API 호출 함수들
   const fetchAttendances = async (date) => {
@@ -76,6 +77,7 @@ const AttendanceManagementPage = () => {
 
       setModifiedStudents(new Set());
       showToastMessage('success', '출석 정보가 성공적으로 저장되었습니다.');
+      setSearchQuery("");
     } catch (error) {
       const errorMessage = error.response?.data?.message || '출석 정보 저장 중 오류가 발생했습니다.';
       showToastMessage('error', errorMessage);
@@ -137,6 +139,20 @@ const AttendanceManagementPage = () => {
     setShowUnsavedDialog(false);
   };
 
+  // 검색 필터링된 학생 목록
+  const filteredStudents = useMemo(() => {
+    if (!searchQuery.trim()) return students;
+
+    return students.filter(student =>
+        student.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [students, searchQuery]);
+
+  // 검색 핸들러
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+  };
+
   // 토스트 메시지 자동 제거
   useEffect(() => {
     if (showToast) {
@@ -165,6 +181,21 @@ const AttendanceManagementPage = () => {
     fetchAttendances(currentDate);
   }, [courseId]);
 
+  const handleMarkAllPresent = () => {
+    // 전원 출석 처리 로직
+    const updatedStudents = students.map(student => ({
+      ...student,
+      status: '출석'
+    }));
+
+    // 변경된 모든 학생의 번호를 modifiedStudents에 추가
+    const newModifiedStudents = new Set(updatedStudents.map(student => student.no));
+
+    setStudents(updatedStudents);
+    setModifiedStudents(prev => new Set([...prev, ...newModifiedStudents]));
+    updateStats(updatedStudents);
+  };
+
   return (
       <div className="min-h-screen bg-gray-50 flex">
         <Sidebar/>
@@ -182,11 +213,14 @@ const AttendanceManagementPage = () => {
                         stats={stats}
                         currentDate={currentDate}
                         onDateChange={handleDateChange}
+                        onMarkAllPresent={handleMarkAllPresent}
+                        onSearch={handleSearch}
                     />
                     <AttendanceTable
-                        students={students}
+                        students={filteredStudents}
                         onStudentStatusChange={handleStudentStatusChange}
                     />
+                    <div className="h-16"></div>
                   </>
               )}
 
@@ -216,9 +250,6 @@ const AttendanceManagementPage = () => {
               {modifiedStudents.size > 0 && (
                   <div
                       className="fixed bottom-4 right-4 flex gap-3 items-center backdrop-blur-sm bg-white/30 px-6 py-4 rounded-2xl shadow-lg border border-gray-100">
-                <span className="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded-full">
-                  {modifiedStudents.size}개의 변경사항
-                </span>
                     <button
                         onClick={() => setShowUnsavedDialog(true)}
                         disabled={isLoading}
