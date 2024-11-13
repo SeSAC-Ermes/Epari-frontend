@@ -1,5 +1,5 @@
 import React from 'react';
-import StatCard from "./StatCard";
+import StatCard from "./StatCard.jsx";
 import { Ban, CheckCircle2, Clock, Stethoscope, Users } from 'lucide-react';
 
 /**

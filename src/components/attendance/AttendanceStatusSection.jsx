@@ -1,6 +1,6 @@
 import React from 'react';
 import { ClipboardList, Search } from 'lucide-react';
-import StatCards from './StatCards';
+import StatCards from './StatCards.jsx';
 import DateNavigation from "./DateNavigation.jsx";
 
 /**
