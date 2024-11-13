@@ -29,6 +29,7 @@ const AttendanceManagementPage = () => {
     absent: 0
   });
   const [currentDate, setCurrentDate] = useState(new Date().toISOString().split('T')[0]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // API 호출 함수들
   const fetchAttendances = async (date) => {
@@ -137,6 +138,16 @@ const AttendanceManagementPage = () => {
     setShowUnsavedDialog(false);
   };
 
+  // 검색 필터링된 학생 목록
+  const filteredStudents = students.filter(student =>
+      student.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // 검색 핸들러
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+  };
+
   // 토스트 메시지 자동 제거
   useEffect(() => {
     if (showToast) {
@@ -198,9 +209,10 @@ const AttendanceManagementPage = () => {
                         currentDate={currentDate}
                         onDateChange={handleDateChange}
                         onMarkAllPresent={handleMarkAllPresent}
+                        onSearch={handleSearch}
                     />
                     <AttendanceTable
-                        students={students}
+                        students={filteredStudents}
                         onStudentStatusChange={handleStudentStatusChange}
                     />
                     <div className="h-16"></div>
