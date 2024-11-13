@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import ReactQuill from 'react-quill';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -7,6 +7,7 @@ import FileUpload from "../../components/common/FileUpload.jsx";
 import { AssignmentAPI } from "../../api/assignment/AssignmentApi.js";
 import 'react-quill/dist/quill.snow.css';
 import TopBar from "../../components/layout/TopBar.jsx";
+import LectureAPI from "../../api/lecture/lectureApi.js";
 
 const AssignmentCreatePage = () => {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ const AssignmentCreatePage = () => {
   const [description, setDescription] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [instructorId, setInstructorId] = useState(null);
   const [files, setFiles] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
@@ -44,9 +46,32 @@ const AssignmentCreatePage = () => {
 
   const formats = ['font', 'size', 'bold', 'italic', 'underline', 'strike', 'color', 'background', 'list', 'bullet', 'align', 'link', 'image'];
 
+  useEffect(() => {
+    const fetchLectureInfo = async () => {
+      try {
+        const lectureResponse = await LectureAPI.getLectureDetail(courseId);  // getLectureDetail 사용
+        if (lectureResponse.instructor) {
+          setInstructorId(lectureResponse.instructor.id);
+        } else {
+          setError('강의 담당 강사 정보를 찾을 수 없습니다.');
+        }
+      } catch (err) {
+        console.error('Error fetching lecture:', err);
+        setError('강의 정보를 불러오는데 실패했습니다.');
+      }
+    };
+
+    fetchLectureInfo();
+  }, [courseId]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+
+    if (!instructorId) {
+      setError('강의 담당 강사 정보가 필요합니다.');
+      return;
+    }
 
     if (!title.trim() || !description.trim() || !dueDate.trim()) {
       setError('모든 필드를 입력해 주세요.');
@@ -56,14 +81,13 @@ const AssignmentCreatePage = () => {
     try {
       setIsSubmitting(true);
 
-      // 과제 생성 요청
+      // 과제 생성 요청 - 강의의 담당 강사 ID 사용
       const assignmentResponse = await AssignmentAPI.createAssignment(courseId, {
         title,
         description,
         dueDate
-      });
+      }, instructorId);
 
-      // 파일 업로드 (파일이 있는 경우)
       if (files.length > 0 && assignmentResponse.id) {
         await AssignmentAPI.uploadFiles(courseId, files, assignmentResponse.id);
       }
