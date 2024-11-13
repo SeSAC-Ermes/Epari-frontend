@@ -21,6 +21,7 @@ import { AuthProvider } from "./auth/AuthContext.jsx";
 import UnauthorizedPage from './pages/auth/UnauthorizedPage.jsx';
 import RootRedirect from "./components/auth/RootRedirect.jsx";
 import AssignmentDeatilPage from "./pages/assignment/AssignmentDeatilPage.jsx";
+import CourseFileArchivePage from "./pages/lecture/CourseFileArchivePage.jsx";
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
             <Route path="/courses/:courseId/files" element={<CourseFilePage/>}/>
             <Route path="/courses/:courseId/files/create" element={<CourseFileCreatePage/>}/>
             <Route path="/courses/:courseId/files/:fileId" element={<CourseFileContent/>}/>
+            <Route path="/courses/:courseId/file-archive" element={<CourseFileArchivePage />} />
             <Route path="/noticelist" element={<NoticeListPage/>}/>
             <Route path="/lecturenoticelist" element={<LectureNoticeListPage/>}/>
             <Route path="/qnalist" element={<QnAListPage/>}/>
