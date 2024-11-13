@@ -165,6 +165,21 @@ const AttendanceManagementPage = () => {
     fetchAttendances(currentDate);
   }, [courseId]);
 
+  const handleMarkAllPresent = () => {
+    // 전원 출석 처리 로직
+    const updatedStudents = students.map(student => ({
+      ...student,
+      status: '출석'
+    }));
+
+    // 변경된 모든 학생의 번호를 modifiedStudents에 추가
+    const newModifiedStudents = new Set(updatedStudents.map(student => student.no));
+
+    setStudents(updatedStudents);
+    setModifiedStudents(prev => new Set([...prev, ...newModifiedStudents]));
+    updateStats(updatedStudents);
+  };
+
   return (
       <div className="min-h-screen bg-gray-50 flex">
         <Sidebar/>
@@ -182,6 +197,7 @@ const AttendanceManagementPage = () => {
                         stats={stats}
                         currentDate={currentDate}
                         onDateChange={handleDateChange}
+                        onMarkAllPresent={handleMarkAllPresent}
                     />
                     <AttendanceTable
                         students={students}
