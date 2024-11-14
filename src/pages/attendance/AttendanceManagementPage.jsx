@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import AttendanceStatusSection from './AttendanceStatusSection';
+import AttendanceStatusSection from './AttendanceStatusSection.jsx';
 import Sidebar from "../../components/layout/Sidebar.jsx";
 import TopBar from "../../components/layout/TopBar.jsx";
 import AttendanceTable from "./AttendanceTable.jsx";

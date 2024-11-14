@@ -5,7 +5,7 @@ import SignUpPage from './pages/SignUpPage.jsx';
 import NoticeListPage from "./pages/NoticeListPage.jsx";
 import CourseListPage from "./pages/course/CourseListPage.jsx";
 import CourseDetailPage from "./pages/course/CourseDetailPage.jsx";
-import LectureNoticeListPage from "./pages/LectureNoticeListPage.jsx";
+import CourseNoticeListPage from "./pages/CourseNoticeListPage.jsx";
 import QnAListPage from "./pages/QnAListPage.jsx";
 import QnADetailPage from "./pages/QnADetailPage.jsx";
 import QnAWritePage from "./pages/QnAWritePage.jsx";
