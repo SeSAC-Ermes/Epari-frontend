@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
-import Logo from '../../assets/epariLogo.jpg';
 import {
   Bell,
   BookOpen,
@@ -123,36 +122,32 @@ const Sidebar = () => {
   );
 
   return (
-      <div className="w-64 min-h-screen bg-white p-6 border-r border-gray-200">
-        <Link to="/" className="flex items-center gap-1 text-inherit no-underline mb-6 px-2">
-          <img src={Logo} className="w-12 h-12" alt="Logo"/>
-          <span className="text-lg font-semibold text-black">SeSAC</span>
-          <sup className="text-xs text-gray-500 font-normal">epari</sup>
-        </Link>
+      <div className="w-64 min-h-[calc(100vh-4rem)] bg-white border-r border-gray-200">
+        <div className="p-6">
+          <Link
+              to={courseId ? `/courses/${courseId}` : '/courses'}
+              className="flex items-center gap-3 p-3 bg-green-500 rounded-lg text-white no-underline mb-4"
+          >
+            <Layout size={20}/>
+            <span className="text-sm font-medium line-clamp-1" title={courseName}>
+            {loading ? '로딩 중...' : error ? '강의명을 불러올 수 없습니다' : courseName}
+          </span>
+          </Link>
 
-        <Link
-            to={courseId ? `/courses/${courseId}` : '/courses'}
-            className="flex items-center gap-3 p-3 bg-green-500 rounded-lg text-white no-underline mb-4"
-        >
-          <Layout size={20}/>
-          <span className="text-sm font-medium line-clamp-1" title={courseName}>
-          {loading ? '로딩 중...' : error ? '강의명을 불러올 수 없습니다' : courseName}
-        </span>
-        </Link>
+          <div className="flex flex-col gap-1">
+            {/* 강사 전용 메뉴 렌더링 */}
+            <RoleBasedComponent requiredRoles={[ROLES.INSTRUCTOR]}>
+              {instructorMenuItems.map(renderMenuItem)}
+            </RoleBasedComponent>
 
-        <div className="flex flex-col gap-1">
-          {/* 강사 전용 메뉴 렌더링 */}
-          <RoleBasedComponent requiredRoles={[ROLES.INSTRUCTOR]}>
-            {instructorMenuItems.map(renderMenuItem)}
-          </RoleBasedComponent>
+            {/* 학생 전용 메뉴 렌더링 */}
+            <RoleBasedComponent requiredRoles={[ROLES.STUDENT]}>
+              {studentMenuItems.map(renderMenuItem)}
+            </RoleBasedComponent>
 
-          {/* 학생 전용 메뉴 렌더링 */}
-          <RoleBasedComponent requiredRoles={[ROLES.STUDENT]}>
-            {studentMenuItems.map(renderMenuItem)}
-          </RoleBasedComponent>
-
-          {/* 공통 메뉴 렌더링 */}
-          {commonMenuItems.map(renderMenuItem)}
+            {/* 공통 메뉴 렌더링 */}
+            {commonMenuItems.map(renderMenuItem)}
+          </div>
         </div>
       </div>
   );

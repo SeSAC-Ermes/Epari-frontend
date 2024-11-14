@@ -7,11 +7,13 @@ import TopBar from "./TopBar.jsx";
  */
 const MainLayout = () => {
   return (
-      <div className="min-h-screen bg-gray-50 flex">
-        <Sidebar/>
-        <div className="flex-1">
-          <TopBar/>
-          <Outlet/>
+      <div className="min-h-screen bg-gray-50">
+        <TopBar/>
+        <div className="flex pt-16"> {/* TopBar 높이만큼 pt-16 추가 */}
+          <Sidebar/>
+          <div className="flex-1">
+            <Outlet/>
+          </div>
         </div>
       </div>
   );
