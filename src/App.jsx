@@ -20,45 +20,50 @@ import CourseFileContent from "./components/course/file/CourseFileContent.jsx";
 import { AuthProvider } from "./auth/AuthContext.jsx";
 import UnauthorizedPage from './pages/auth/UnauthorizedPage.jsx';
 import RootRedirect from "./components/auth/RootRedirect.jsx";
-import AssignmentDeatilPage from "./pages/assignment/AssignmentDeatilPage.jsx";
+import AssignmentDetailPage from "./pages/assignment/AssignmentDetailPage.jsx";
+import CourseFileArchivePage from "./pages/course/CourseFileArchivePage.jsx";
 import ExamPage from "./pages/exam/ExamPage.jsx";
 import ExamCreatePage from "./pages/exam/ExamCreatePage.jsx";
 
 function App() {
   return (
-      <AuthProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={<RootRedirect/>}/>
-            <Route path="/signin" element={<SignInPage/>}/>
-            <Route path="/signup" element={<SignUpPage/>}/>
-            {/* Assignment Routes - 개발용 경로 포함 */}
-            <Route path="/assignments" element={<AssignmentPage/>}/> {/* 개발용 */}
-            <Route path="/assignments/create" element={<AssignmentCreatePage/>}/> {/* 개발용 */}
-            <Route path="/assignments/:assignmentId" element={<AssignmentDeatilPage/>}/> {/* 개발용 */}
-            <Route path="/courses/:courseId/assignments" element={<AssignmentPage/>}/>
-            <Route path="/courses/:courseId/assignments/create" element={<AssignmentCreatePage/>}/>
-            <Route path="/courses/:courseId/assignments/:assignmentId" element={<AssignmentDeatilPage/>}/>
-            <Route path="/courses" element={<CourseListPage/>}/>
-            <Route path="/courses/:courseId" element={<CourseDetailPage/>}/>
-            <Route path="/courses/:courseId/files" element={<CourseFilePage/>}/>
-            <Route path="/courses/:courseId/files/create" element={<CourseFileCreatePage/>}/>
-            <Route path="/courses/:courseId/files/:fileId" element={<CourseFileContent/>}/>
-            <Route path="/courses/:courseId/exams" element={<ExamPage/>}/>
-            <Route path="/courses/:courseId/exams/create" element={<ExamCreatePage/>}/>
-            {/*<Route path="/courses/:courseId/exams/:examId" element={<ExamDetailPage/>}/>*/}
-            <Route path="/noticelist" element={<NoticeListPage/>}/>
-            <Route path="/lecturenoticelist" element={<LectureNoticeListPage/>}/>
-            <Route path="/qnalist" element={<QnAListPage/>}/>
-            <Route path="/qna/write" element={<QnAWritePage/>}/>
-            <Route path="/qnalist/:num" element={<QnADetailPage/>}/>
-            <Route path="/curriculum" element={<CurriculumPage/>}/>
-            <Route path="/account" element={<AccountPage/>}/>
-            <Route path="/instructor/courses/:courseId/attendance" element={<AttendanceManagementPage/>}/>
-            <Route path="/unauthorized" element={<UnauthorizedPage/>}/>
-          </Routes>
-        </Router>
-      </AuthProvider>
+      <Router>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/signin" element={<SignInPage/>}/>
+          <Route path="/signup" element={<SignUpPage/>}/>
+
+          {/* Protected Routes - wrapped with AuthProvider */}
+          <Route path="/*" element={
+            <AuthProvider>
+              <Routes>
+                <Route path="/" element={<RootRedirect/>}/>
+                <Route path="/courses/:courseId/assignments" element={<AssignmentPage/>}/>
+                <Route path="/courses/:courseId/assignments/create" element={<AssignmentCreatePage/>}/>
+                <Route path="/courses/:courseId/assignments/:assignmentId" element={<AssignmentDetailPage/>}/>
+                <Route path="/courses" element={<CourseListPage/>}/>
+                <Route path="/courses/:courseId" element={<CourseDetailPage/>}/>
+                <Route path="/courses/:courseId/files" element={<CourseFilePage/>}/>
+                <Route path="/courses/:courseId/files/create" element={<CourseFileCreatePage/>}/>
+                <Route path="/courses/:courseId/files/:fileId" element={<CourseFileContent/>}/>
+                <Route path="/courses/:courseId/file-archive" element={<CourseFileArchivePage/>}/>
+                <Route path="/courses/:courseId/exams" element={<ExamPage/>}/>
+                <Route path="/courses/:courseId/exams/create" element={<ExamCreatePage/>}/>
+                {/*<Route path="/courses/:courseId/exams/:examId" element={<ExamDetailPage/>}/>*/}
+                <Route path="/noticelist" element={<NoticeListPage/>}/>
+                <Route path="/coursenoticelist" element={<CourseNoticeListPage/>}/>
+                <Route path="/qnalist" element={<QnAListPage/>}/>
+                <Route path="/qna/write" element={<QnAWritePage/>}/>
+                <Route path="/qnalist/:num" element={<QnADetailPage/>}/>
+                <Route path="/curriculum" element={<CurriculumPage/>}/>
+                <Route path="/account" element={<AccountPage/>}/>
+                <Route path="/instructor/courses/:courseId/attendance" element={<AttendanceManagementPage/>}/>
+                <Route path="/unauthorized" element={<UnauthorizedPage/>}/>
+              </Routes>
+            </AuthProvider>
+          }/>
+        </Routes>
+      </Router>
   );
 }
 
