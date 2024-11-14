@@ -1,7 +1,7 @@
 import React from 'react';
-import TopBar from '../components/layout/TopBar';
-import Sidebar from '../components/layout/Sidebar.jsx';
-import LectureNoticeContent from '../components/LectureNoticeContent.jsx';
+import TopBar from '../../components/layout/TopBar.jsx';
+import Sidebar from '../../components/layout/Sidebar.jsx';
+import LectureNoticeContent from '../../components/notice/LectureNoticeContent.jsx';
 
 const LectureNoticeListPage = () => {
   return (

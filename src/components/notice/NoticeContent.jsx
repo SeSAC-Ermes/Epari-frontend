@@ -7,13 +7,15 @@ const LectureNoticeContent = () => {
       id: 1,
       title: '센터 휴관일 안내',
       writer: '새싹관리자',
-      date: '2024/10/13'
+      date: '2024/10/13',
+      views: 245
     },
     {
       id: 2,
       title: 'AWS 계정 안내',
       writer: '새싹관리자',
-      date: '2024/10/14'
+      date: '2024/10/14',
+      views: 189
     }
   ];
 
@@ -35,22 +37,24 @@ const LectureNoticeContent = () => {
             </div>
           </div>
 
-          <table className="w-full">
+          <table className="w-full table-fixed">
             <thead>
             <tr className="border-y">
-              <th className="py-4 text-left">No.</th>
-              <th className="py-4 text-left">제목</th>
-              <th className="py-4 text-left">작성자</th>
-              <th className="py-4 text-left">날짜</th>
+              <th className="py-4 text-center w-20">No.</th>
+              <th className="py-4 text-center w-96">제목</th>
+              <th className="py-4 text-center w-32">작성자</th>
+              <th className="py-4 text-center w-32">날짜</th>
+              <th className="py-4 text-center w-32">조회수</th>
             </tr>
             </thead>
             <tbody>
             {notices.map((notice) => (
                 <tr key={notice.id} className="border-b hover:bg-gray-50 cursor-pointer">
-                  <td className="py-4">{notice.id}</td>
-                  <td className="py-4">{notice.title}</td>
-                  <td className="py-4">{notice.writer}</td>
-                  <td className="py-4">{notice.date}</td>
+                  <td className="py-4 text-center">{notice.id}</td>
+                  <td className="py-4 text-center truncate">{notice.title}</td>
+                  <td className="py-4 text-center">{notice.writer}</td>
+                  <td className="py-4 text-center">{notice.date}</td>
+                  <td className="py-4 text-center">{notice.views}</td>
                 </tr>
             ))}
             </tbody>
