@@ -1,7 +1,19 @@
 import React from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import Logo from '../../assets/epariLogo.jpg';
-import { Bell, Clipboard, ClipboardList, FolderArchive, Layout, Library, NotebookPen } from 'lucide-react';
+import {
+  Bell,
+  BookOpen,
+  ClipboardList,
+  FileText,
+  FolderOpen,
+  Layout,
+  ListChecks,
+  PenTool,
+  ScrollText,
+  Settings,
+  Users
+} from 'lucide-react';
 import { RoleBasedComponent } from '../../auth/RoleBasedComponent';
 import { ROLES } from '../../constants/auth';
 
@@ -17,23 +29,67 @@ const Sidebar = () => {
   const instructorMenuItems = courseId ? [
     {
       icon: <ClipboardList size={20}/>,
-      text: '출석 관리',
+      text: '출결 관리',
       path: `/courses/${courseId}/attendance`
+    },
+    {
+      icon: <Users size={20}/>,
+      text: '수강생 관리',
+      path: `/courses/${courseId}/students`
     }
   ] : [];
 
-  // 공통 메뉴 - path 설정 방식 변경
+  // 학생 전용 메뉴
+  const studentMenuItems = courseId ? [
+    {
+      icon: <ListChecks size={20}/>,
+      text: '나의 학습현황',
+      path: `/courses/${courseId}/my-progress`
+    }
+  ] : [];
+
+  // 공통 메뉴
   const commonMenuItems = courseId ? [
-    { icon: <Bell size={20}/>, text: '강의 공지사항', path: `/courses/${courseId}/notices` },
-    { icon: <Clipboard size={20}/>, text: 'Q&A 게시판', path: `/courses/${courseId}/qna` },
-    { icon: <NotebookPen size={20}/>, text: '과제', path: `/courses/${courseId}/assignments` },
-    { icon: <Library size={20}/>, text: '강의 자료 목록', path: `/courses/${courseId}/files` },
-    { icon: <FolderArchive size={20}/>, text: '자료실', path: `/courses/${courseId}/file-archive` }
+    {
+      icon: <Bell size={20}/>,
+      text: '강의 공지사항',
+      path: `/courses/${courseId}/notices`
+    },
+    {
+      icon: <ScrollText size={20}/>,
+      text: '강의 커리큘럼',
+      path: `/courses/${courseId}/curriculum`
+    },
+    {
+      icon: <Settings size={20}/>,
+      text: '학습 활동',
+      path: `/courses/${courseId}/activities`
+    },
+    {
+      icon: <PenTool size={20}/>,
+      text: '시험',
+      path: `/courses/${courseId}/exams`
+    },
+    {
+      icon: <FileText size={20}/>,
+      text: '과제',
+      path: `/courses/${courseId}/assignments`
+    },
+    {
+      icon: <BookOpen size={20}/>,
+      text: 'Q&A 게시판',
+      path: `/courses/${courseId}/qna`
+    },
+    {
+      icon: <FolderOpen size={20}/>,
+      text: '자료실',
+      path: `/courses/${courseId}/files`
+    }
   ] : [];
 
   const renderMenuItem = (item, index) => (
       <Link
-          key={`${item.path}-${index}`}  // 고유한 key 값 설정
+          key={`${item.path}-${index}`}
           to={item.path}
           className={`flex items-center gap-3 p-3 rounded-lg text-gray-500 no-underline transition-all hover:bg-gray-100 
         ${location.pathname === item.path ? 'bg-gray-100 text-gray-700' : ''}`}
@@ -56,13 +112,18 @@ const Sidebar = () => {
             className="flex items-center gap-3 p-3 bg-green-500 rounded-lg text-white no-underline mb-4"
         >
           <Layout size={20}/>
-          <span className="text-sm font-medium">(영등포 6기) AWS 클라우드...</span>
+          <span className="text-sm font-medium">강의명</span>
         </Link>
 
         <div className="flex flex-col gap-1">
           {/* 강사 전용 메뉴 렌더링 */}
           <RoleBasedComponent requiredRoles={[ROLES.INSTRUCTOR]}>
             {instructorMenuItems.map(renderMenuItem)}
+          </RoleBasedComponent>
+
+          {/* 학생 전용 메뉴 렌더링 */}
+          <RoleBasedComponent requiredRoles={[ROLES.STUDENT]}>
+            {studentMenuItems.map(renderMenuItem)}
           </RoleBasedComponent>
 
           {/* 공통 메뉴 렌더링 */}
