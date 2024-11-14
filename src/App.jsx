@@ -16,12 +16,12 @@ import AttendanceManagementPage from "./pages/attendance/AttendanceManagementPag
 import AssignmentCreatePage from "./pages/assignment/AssignmentCreatePage.jsx";
 import CourseFilePage from "./pages/lecture/CourseFilePage.jsx";
 import CourseFileCreatePage from "./pages/lecture/CourseFileCreatePage.jsx";
-import CourseFileContent from "./components/lecture/file/CourseFileContent.jsx";
 import { AuthProvider } from "./auth/AuthContext.jsx";
 import UnauthorizedPage from './pages/auth/UnauthorizedPage.jsx';
 import RootRedirect from "./components/auth/RootRedirect.jsx";
 import AssignmentDetailPage from "./pages/assignment/AssignmentDetailPage.jsx";
 import CourseFileArchivePage from "./pages/lecture/CourseFileArchivePage.jsx";
+import MainLayout from "./components/layout/MainLayout.jsx";
 
 function App() {
   return (
@@ -30,33 +30,42 @@ function App() {
           {/* Public Routes */}
           <Route path="/signin" element={<SignInPage/>}/>
           <Route path="/signup" element={<SignUpPage/>}/>
+          <Route path="/unauthorized" element={<UnauthorizedPage/>}/>
 
-          {/* Protected Routes - wrapped with AuthProvider */}
-          <Route path="/*" element={
+          {/* Protected Routes with MainLayout */}
+          <Route element={
             <AuthProvider>
-              <Routes>
-                <Route path="/" element={<RootRedirect/>}/>
-                <Route path="/courses/:courseId/assignments" element={<AssignmentPage/>}/>
-                <Route path="/courses/:courseId/assignments/create" element={<AssignmentCreatePage/>}/>
-                <Route path="/courses/:courseId/assignments/:assignmentId" element={<AssignmentDetailPage/>}/>
-                <Route path="/courses" element={<CourseListPage/>}/>
-                <Route path="/courses/:courseId" element={<CourseDetailPage/>}/>
-                <Route path="/courses/:courseId/files" element={<CourseFilePage/>}/>
-                <Route path="/courses/:courseId/files/create" element={<CourseFileCreatePage/>}/>
-                <Route path="/courses/:courseId/files/:fileId" element={<CourseFileContent/>}/>
-                <Route path="/courses/:courseId/file-archive" element={<CourseFileArchivePage/>}/>
-                <Route path="/noticelist" element={<NoticeListPage/>}/>
-                <Route path="/lecturenoticelist" element={<LectureNoticeListPage/>}/>
-                <Route path="/qnalist" element={<QnAListPage/>}/>
-                <Route path="/qna/write" element={<QnAWritePage/>}/>
-                <Route path="/qnalist/:num" element={<QnADetailPage/>}/>
-                <Route path="/curriculum" element={<CurriculumPage/>}/>
-                <Route path="/account" element={<AccountPage/>}/>
-                <Route path="/instructor/courses/:courseId/attendance" element={<AttendanceManagementPage/>}/>
-                <Route path="/unauthorized" element={<UnauthorizedPage/>}/>
-              </Routes>
+              <MainLayout/>
             </AuthProvider>
-          }/>
+          }>
+            <Route path="/" element={<RootRedirect/>}/>
+            <Route path="/courses">
+              <Route index element={<CourseListPage/>}/>
+              <Route path=":courseId">
+                <Route index element={<CourseDetailPage/>}/>
+                <Route path="assignments">
+                  <Route index element={<AssignmentPage/>}/>
+                  <Route path="create" element={<AssignmentCreatePage/>}/>
+                  <Route path=":assignmentId" element={<AssignmentDetailPage/>}/>
+                </Route>
+                <Route path="files">
+                  <Route index element={<CourseFilePage/>}/>
+                  <Route path="create" element={<CourseFileCreatePage/>}/>
+                </Route>
+                <Route path="file-archive" element={<CourseFileArchivePage/>}/>
+              </Route>
+            </Route>
+            <Route path="/noticelist" element={<NoticeListPage/>}/>
+            <Route path="/lecturenoticelist" element={<LectureNoticeListPage/>}/>
+            <Route path="/qnalist">
+              <Route index element={<QnAListPage/>}/>
+              <Route path=":num" element={<QnADetailPage/>}/>
+            </Route>
+            <Route path="/qna/write" element={<QnAWritePage/>}/>
+            <Route path="/curriculum" element={<CurriculumPage/>}/>
+            <Route path="/account" element={<AccountPage/>}/>
+            <Route path="/instructor/courses/:courseId/attendance" element={<AttendanceManagementPage/>}/>
+          </Route>
         </Routes>
       </Router>
   );
