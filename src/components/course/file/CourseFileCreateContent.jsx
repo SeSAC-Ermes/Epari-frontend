@@ -3,7 +3,7 @@ import { X } from 'lucide-react';
 import ReactQuill from 'react-quill';
 import { useNavigate, useParams } from 'react-router-dom'; // useParams로 변경
 import FileUpload from "../../common/FileUpload.jsx";
-import { CourseFileAPI } from '../../../api/lecture/CourseFileApi.js';
+import { CourseFileAPI } from '../../../api/course/CourseFileApi.js';
 import { quillFormats, quillModules } from '../../common/QuillConfig.js';
 import 'react-quill/dist/quill.snow.css';
 

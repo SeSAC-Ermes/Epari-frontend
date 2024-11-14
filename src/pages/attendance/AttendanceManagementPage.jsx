@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import AttendanceStatusSection from './AttendanceStatusSection.jsx';
+import AttendanceStatusSection from '../../components/attendance/AttendanceStatusSection.jsx';
 import Sidebar from "../../components/layout/Sidebar.jsx";
 import TopBar from "../../components/layout/TopBar.jsx";
-import AttendanceTable from "./AttendanceTable.jsx";
+import AttendanceTable from "../../components/attendance/AttendanceTable.jsx";
 import { useParams } from "react-router-dom";
 import apiClient from "../../api/axios.js";
 import { withPageAuth } from '../../auth/WithAuth.jsx';

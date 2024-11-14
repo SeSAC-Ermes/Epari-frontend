@@ -3,7 +3,7 @@ import TopBar from '../components/layout/TopBar';
 import Sidebar from '../components/layout/Sidebar.jsx';
 import CourseNoticeContent from '../components/CourseNoticeContent.jsx';
 
-const LectureNoticeListPage = () => {
+const CourseNoticeListPage = () => {
   return (
       <div className="min-h-screen bg-gray-50 flex">
         <Sidebar />
@@ -15,4 +15,4 @@ const LectureNoticeListPage = () => {
   );
 };
 
-export default LectureNoticeListPage;
+export default CourseNoticeListPage;

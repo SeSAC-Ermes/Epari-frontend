@@ -4,7 +4,7 @@ import CourseHeader from './CourseHeader';
 import InstructorCard from './InstructorCard';
 import CourseMaterialsGrid from './CourseMaterialsGrid';
 import CourseContentTabs from './CourseContentTabs';
-import { LectureAPI } from '../../../api/lecture/lectureApi.js';
+import { CourseApi } from '../../../api/course/courseApi.js';
 
 /**
  * 강의 상세 페이지의 메인 컴포넌트
@@ -98,7 +98,7 @@ const CourseDetailContent = () => {
 
       try {
         setLoading(true);
-        const response = await LectureAPI.getLectureDetail(courseId);
+        const response = await CourseApi.getLectureDetail(courseId);
         console.log('API Response:', response);
 
         const formattedCourseInfo = {

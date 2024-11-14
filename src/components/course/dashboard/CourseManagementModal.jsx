@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
  * 강사 권한을 가진 사용자만 접근 가능
  */
 
-const LectureManagementModal = ({ isOpen, onClose, lecture = null, onSubmit }) => {
+const CourseManagementModal = ({ isOpen, onClose, lecture = null, onSubmit }) => {
   const formatDateForInput = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
@@ -148,4 +148,4 @@ const LectureManagementModal = ({ isOpen, onClose, lecture = null, onSubmit }) =
   );
 };
 
-export default LectureManagementModal;
+export default CourseManagementModal;

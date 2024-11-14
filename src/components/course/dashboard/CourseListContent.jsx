@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import CourseCard from './CourseCard';
-import LectureManagementModal from './LectureManagementModal';
+import CourseManagementModal from './CourseManagementModal.jsx';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import NoticeTabs from './NoticeTabs';
 import NoticeTable from './NoticeTable';
-import { LectureAPI } from "../../../api/lecture/lectureApi.js";
+import { CourseApi } from "../../../api/course/courseApi.js";
 
 /**
  * 강의 목록 페이지의 메인 컴포넌트
@@ -83,7 +83,7 @@ const CourseListContent = () => {
         const instructorStatus = getIsInstructorFromToken();
         setIsInstructor(instructorStatus);
 
-        const data = await LectureAPI.getUserLectures();
+        const data = await CourseApi.getUserLectures();
         console.log('API response:', data);
 
         if (instructorStatus && data.length > 0) {
@@ -141,7 +141,7 @@ const CourseListContent = () => {
 
     if (window.confirm('정말로 이 강의를 삭제하시겠습니까?')) {
       try {
-        await LectureAPI.deleteLecture(lectureId, currentUserId);
+        await CourseApi.deleteLecture(lectureId, currentUserId);
         setCourses(prevCourses => prevCourses.filter(course => course.id !== lectureId));
         alert('강의가 성공적으로 삭제되었습니다.');
       } catch (error) {
@@ -160,7 +160,7 @@ const CourseListContent = () => {
     try {
       let data;
       if (selectedLecture) {
-        data = await LectureAPI.updateLecture(selectedLecture.id, currentUserId, formData);
+        data = await CourseApi.updateLecture(selectedLecture.id, currentUserId, formData);
         const updatedCourse = {
           id: data.id,
           title: data.name,
@@ -176,7 +176,7 @@ const CourseListContent = () => {
             )
         );
       } else {
-        data = await LectureAPI.createLecture(currentUserId, formData);
+        data = await CourseApi.createLecture(currentUserId, formData);
         const newCourse = {
           id: data.id,
           title: data.name,
@@ -259,7 +259,7 @@ const CourseListContent = () => {
           <NoticeTable notices={tabData[activeTab]}/>
         </div>
 
-        <LectureManagementModal
+        <CourseManagementModal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
             lecture={selectedLecture}

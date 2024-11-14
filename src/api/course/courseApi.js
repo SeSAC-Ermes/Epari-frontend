@@ -6,7 +6,7 @@ import apiClient from '../axios.js';
  * API 요청 함수들을 제공하는 모듈
  */
 
-export const LectureAPI = {
+export const CourseApi = {
   getUserLectures: async () => {
     try {
       const response = await apiClient.get('/api/courses/usercourses');
@@ -58,4 +58,4 @@ export const LectureAPI = {
   }
 };
 
-export default LectureAPI;
+export default CourseApi;
