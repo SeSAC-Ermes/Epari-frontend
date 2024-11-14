@@ -34,7 +34,7 @@ const QnAContent = () => {
 
   // 게시글 클릭 시 이동하는 함수
   const handleRowClick = (num) => {
-    navigate(`/qnalist/${num}`);
+    navigate(`${num}`);
   };
 
   return (
@@ -45,7 +45,7 @@ const QnAContent = () => {
             <div className="flex items-center gap-4">
               {/* 검색창 */}
               <div className="flex items-center bg-gray-100 rounded-lg px-4 py-2">
-                <Search className="text-gray-400" size={20} />
+                <Search className="text-gray-400" size={20}/>
                 <input
                     type="text"
                     placeholder="검색"
@@ -54,10 +54,10 @@ const QnAContent = () => {
               </div>
               {/* 글쓰기 버튼 */}
               <button
-                  onClick={() => navigate('/qna/write')}
+                  onClick={() => navigate(`write`)}
                   className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
               >
-                <PenSquare size={20} />
+                <PenSquare size={20}/>
                 글쓰기
               </button>
             </div>

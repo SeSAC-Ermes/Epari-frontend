@@ -6,13 +6,12 @@ import { useNavigate } from 'react-router-dom';
  * 페이지 상단의 네비게이션 바 컴포넌트
  * 로고, 서비스명 표시 및 마이페이지 링크 제공
  */
-
 const TopBar = () => {
   const navigate = useNavigate();
 
   return (
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <header className="fixed top-0 left-0 right-0 bg-white shadow-sm z-50">
+        <div className="max-w-full px-10 py-4 flex justify-between items-center">
           <div
               className="flex items-center gap-2 cursor-pointer"
               onClick={() => navigate('/')}
@@ -23,7 +22,7 @@ const TopBar = () => {
                 className="w-10 h-10 object-contain"
             />
             <span className="text-xl font-semibold">SeSAC</span>
-            <span className="text-sm text-gray-500">epari</span>
+            <sup className="text-sm text-gray-500">epari</sup>
           </div>
 
           <button

@@ -58,7 +58,7 @@ const CourseFileCreateContent = () => {
 
       await CourseFileAPI.uploadCourseFile(courseId, formData);
       alert('강의 자료가 성공적으로 업로드되었습니다.');
-      navigate(`/courses/${courseId}/files`); // URL 경로 수정
+      navigate(`/courses/${courseId}/activities`); // URL 경로 수정
     } catch (err) {
       console.error('Upload Error:', err);
       setError(err.response?.data?.message || '업로드 중 오류가 발생했습니다.');
@@ -112,7 +112,7 @@ const CourseFileCreateContent = () => {
 
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">파일 첨부</label>
-              <FileUpload onFilesChange={handleFilesChange} />
+              <FileUpload onFilesChange={handleFilesChange}/>
             </div>
 
             <div className="flex gap-4 justify-end pb-8">
@@ -144,7 +144,7 @@ const CourseFileCreateContent = () => {
                         onClick={() => setShowModal(false)}
                         className="text-gray-500 hover:text-gray-700"
                     >
-                      <X size={20} />
+                      <X size={20}/>
                     </button>
                   </div>
                   <div className="space-y-4">
