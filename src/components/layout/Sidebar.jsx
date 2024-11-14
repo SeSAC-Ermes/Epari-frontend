@@ -26,7 +26,8 @@ const Sidebar = () => {
   // 기본 메뉴 아이템 (모든 사용자 공통)
   const baseMenuItems = [
     { icon: <Bell size={20}/>, text: '공지사항', path: '/noticelist' },
-    { icon: <Bell size={20}/>, text: '강의 공지사항', path: '/lecturenoticelist' }
+    // { icon: <Bell size={20}/>, text: '강의 공지사항', path: '/lecturenoticelist' }
+    { icon: <Bell size={20}/>, text: '강의 공지사항', path: '/courses/2/notices' }
   ];
 
   // 강사 전용 메뉴

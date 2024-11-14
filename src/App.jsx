@@ -46,7 +46,9 @@ function App() {
                 <Route path="/courses/:courseId/files/:fileId" element={<CourseFileContent/>}/>
                 <Route path="/courses/:courseId/file-archive" element={<CourseFileArchivePage/>}/>
                 <Route path="/noticelist" element={<NoticeListPage/>}/>
-                <Route path="/lecturenoticelist" element={<LectureNoticeListPage/>}/>
+                <Route path="/courses/:courseId/notices" element={<LectureNoticeListPage />} />
+
+
                 <Route path="/qnalist" element={<QnAListPage/>}/>
                 <Route path="/qna/write" element={<QnAWritePage/>}/>
                 <Route path="/qnalist/:num" element={<QnADetailPage/>}/>
