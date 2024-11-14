@@ -23,7 +23,6 @@ import RootRedirect from "./components/auth/RootRedirect.jsx";
 import SimpleLayout from "./components/layout/SimpleLayout.jsx";
 import MainLayout from "./components/layout/MainLayout.jsx";
 import AttendanceManagementPage from "./pages/attendance/AttendanceManagementPage.jsx";
-import LearningActivitiesPage from "./pages/learning/LearningActivitiesPage.jsx";
 
 function App() {
   return (
@@ -69,14 +68,13 @@ function App() {
 
               {/* 파일/자료 */}
               <Route path="files">
-                <Route index element={<CourseFilePage/>}/>
+                <Route index element={<CourseFileArchivePage/>}/>
                 <Route path="create" element={<CourseFileCreatePage/>}/>
               </Route>
-              <Route path="file-archive" element={<CourseFileArchivePage/>}/>
 
               {/* 강의 관리 */}
               <Route path="curriculum" element={<CurriculumPage/>}/>
-              <Route path="activities" element={<LearningActivitiesPage/>}/>
+              <Route path="activities" element={<CourseFilePage/>}/>
 
               {/* 강사 전용 */}
               <Route path="attendance" element={<AttendanceManagementPage/>}/>

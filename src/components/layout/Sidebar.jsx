@@ -3,14 +3,14 @@ import { Link, useLocation, useParams } from 'react-router-dom';
 import {
   Bell,
   BookOpen,
+  Calendar,
   ClipboardList,
   FileText,
   FolderOpen,
+  GraduationCap,
   Layout,
-  ListChecks,
-  PenTool,
+  PenSquare,
   ScrollText,
-  Settings,
   Users
 } from 'lucide-react';
 import { RoleBasedComponent } from '../../auth/RoleBasedComponent';
@@ -47,6 +47,49 @@ const Sidebar = () => {
     fetchCourseName();
   }, [courseId]);
 
+  // 공통 메뉴 - 핵심 학습
+  const mainMenuItems = courseId ? [
+    {
+      icon: <Bell size={20}/>,
+      text: '강의 공지사항',
+      path: `/courses/${courseId}/notices`
+    },
+    {
+      icon: <Calendar size={20}/>,
+      text: '학습 활동',
+      path: `/courses/${courseId}/activities`
+    },
+    {
+      icon: <FileText size={20}/>,
+      text: '과제',
+      path: `/courses/${courseId}/assignments`
+    },
+    {
+      icon: <PenSquare size={20}/>,
+      text: '시험',
+      path: `/courses/${courseId}/exams`
+    }
+  ] : [];
+
+  // 공통 메뉴 - 학습 지원
+  const supportMenuItems = courseId ? [
+    {
+      icon: <BookOpen size={20}/>,
+      text: 'Q&A 게시판',
+      path: `/courses/${courseId}/qna`
+    },
+    {
+      icon: <FolderOpen size={20}/>,
+      text: '자료실',
+      path: `/courses/${courseId}/files`
+    },
+    {
+      icon: <ScrollText size={20}/>,
+      text: '강의 커리큘럼',
+      path: `/courses/${courseId}/curriculum`
+    }
+  ] : [];
+
   // 강사 전용 메뉴
   const instructorMenuItems = courseId ? [
     {
@@ -64,48 +107,9 @@ const Sidebar = () => {
   // 학생 전용 메뉴
   const studentMenuItems = courseId ? [
     {
-      icon: <ListChecks size={20}/>,
+      icon: <GraduationCap size={20}/>,
       text: '나의 학습현황',
       path: `/courses/${courseId}/my-progress`
-    }
-  ] : [];
-
-  // 공통 메뉴
-  const commonMenuItems = courseId ? [
-    {
-      icon: <Bell size={20}/>,
-      text: '강의 공지사항',
-      path: `/courses/${courseId}/notices`
-    },
-    {
-      icon: <ScrollText size={20}/>,
-      text: '강의 커리큘럼',
-      path: `/courses/${courseId}/curriculum`
-    },
-    {
-      icon: <Settings size={20}/>,
-      text: '학습 활동',
-      path: `/courses/${courseId}/activities`
-    },
-    {
-      icon: <PenTool size={20}/>,
-      text: '시험',
-      path: `/courses/${courseId}/exams`
-    },
-    {
-      icon: <FileText size={20}/>,
-      text: '과제',
-      path: `/courses/${courseId}/assignments`
-    },
-    {
-      icon: <BookOpen size={20}/>,
-      text: 'Q&A 게시판',
-      path: `/courses/${courseId}/qna`
-    },
-    {
-      icon: <FolderOpen size={20}/>,
-      text: '자료실',
-      path: `/courses/${courseId}/files`
     }
   ] : [];
 
@@ -121,12 +125,25 @@ const Sidebar = () => {
       </Link>
   );
 
+  const renderMenuSection = (title, items) => (
+      items.length > 0 && (
+          <div className="mb-6">
+            <h3 className="text-xs font-medium text-gray-400 uppercase mb-2 px-3">
+              {title}
+            </h3>
+            <div className="flex flex-col gap-1">
+              {items.map(renderMenuItem)}
+            </div>
+          </div>
+      )
+  );
+
   return (
       <div className="w-64 min-h-[calc(100vh-4rem)] bg-white border-r border-gray-200">
         <div className="p-6">
           <Link
               to={courseId ? `/courses/${courseId}` : '/courses'}
-              className="flex items-center gap-3 p-3 bg-green-500 rounded-lg text-white no-underline mb-4"
+              className="flex items-center gap-3 p-3 bg-green-500 rounded-lg text-white no-underline mb-6"
           >
             <Layout size={20}/>
             <span className="text-sm font-medium line-clamp-1" title={courseName}>
@@ -134,20 +151,21 @@ const Sidebar = () => {
           </span>
           </Link>
 
-          <div className="flex flex-col gap-1">
-            {/* 강사 전용 메뉴 렌더링 */}
-            <RoleBasedComponent requiredRoles={[ROLES.INSTRUCTOR]}>
-              {instructorMenuItems.map(renderMenuItem)}
-            </RoleBasedComponent>
+          {/* 핵심 학습 메뉴 */}
+          {renderMenuSection('핵심 학습', mainMenuItems)}
 
-            {/* 학생 전용 메뉴 렌더링 */}
-            <RoleBasedComponent requiredRoles={[ROLES.STUDENT]}>
-              {studentMenuItems.map(renderMenuItem)}
-            </RoleBasedComponent>
+          {/* 학습 지원 메뉴 */}
+          {renderMenuSection('학습 지원', supportMenuItems)}
 
-            {/* 공통 메뉴 렌더링 */}
-            {commonMenuItems.map(renderMenuItem)}
-          </div>
+          {/* 강사 전용 메뉴 */}
+          <RoleBasedComponent requiredRoles={[ROLES.INSTRUCTOR]}>
+            {renderMenuSection('강의 관리', instructorMenuItems)}
+          </RoleBasedComponent>
+
+          {/* 학생 전용 메뉴 */}
+          <RoleBasedComponent requiredRoles={[ROLES.STUDENT]}>
+            {renderMenuSection('학습 관리', studentMenuItems)}
+          </RoleBasedComponent>
         </div>
       </div>
   );
