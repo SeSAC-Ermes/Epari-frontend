@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import Logo from '../../assets/epariLogo.jpg';
 import {
@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { RoleBasedComponent } from '../../auth/RoleBasedComponent';
 import { ROLES } from '../../constants/auth';
+import LectureAPI from "../../api/lecture/lectureApi.js";
 
 
 /**
@@ -24,6 +25,28 @@ import { ROLES } from '../../constants/auth';
 const Sidebar = () => {
   const location = useLocation();
   const { courseId } = useParams();
+  const [courseName, setCourseName] = useState('강의명');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchCourseName = async () => {
+      if (!courseId) return;
+
+      try {
+        setLoading(true);
+        const response = await LectureAPI.getLectureDetail(courseId);
+        setCourseName(response.name);
+      } catch (err) {
+        console.error('Error fetching course details:', err);
+        setError('강의 정보를 불러오는데 실패했습니다.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourseName();
+  }, [courseId]);
 
   // 강사 전용 메뉴
   const instructorMenuItems = courseId ? [
@@ -112,7 +135,9 @@ const Sidebar = () => {
             className="flex items-center gap-3 p-3 bg-green-500 rounded-lg text-white no-underline mb-4"
         >
           <Layout size={20}/>
-          <span className="text-sm font-medium">강의명</span>
+          <span className="text-sm font-medium line-clamp-1" title={courseName}>
+          {loading ? '로딩 중...' : error ? '강의명을 불러올 수 없습니다' : courseName}
+        </span>
         </Link>
 
         <div className="flex flex-col gap-1">
