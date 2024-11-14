@@ -220,8 +220,8 @@ const AttendanceManagementPage = () => {
 
           {/* 토스트 메시지 */}
           {showToast && (
-              <div className={`fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 
-                ${toastMessage.type === 'success' ? 'bg-green-50 text-green-800 border border-green-200'
+              <div className={`fixed top-20 right-4 px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 
+                ${toastMessage.type === 'success' ? 'bg-green-50 text-green-800 border border-green-200 z-[60]'
                   : 'bg-red-50 text-red-800 border border-red-200'}`}>
                 <div className="flex items-center space-x-2">
                   {toastMessage.type === 'success' ? (
