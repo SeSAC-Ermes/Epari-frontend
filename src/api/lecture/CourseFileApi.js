@@ -1,4 +1,4 @@
-import apiClient from '../axios';
+import apiClient, { s3Client } from '../axios';
 
 export const CourseFileAPI = {
 
@@ -48,48 +48,44 @@ export const CourseFileAPI = {
       throw error;
     }
   },
-  downloadFile: async (courseId, contentId, fileId) => {
+  /**
+   * S3에 저장된 파일을 다운로드합니다.
+   * 처리 과정:
+   * 1. 백엔드 API를 통해 S3 pre-signed URL을 받아옴
+   * 2. pre-signed URL을 사용하여 S3에서 직접 파일을 다운로드
+   * 3. 파일명을 추출하고 브라우저의 다운로드 기능을 실행
+   */
+  downloadFile: async (courseId, contentId, fileId, originalFileName) => {  // originalFileName 파라미터 추가
     try {
+      // 1. presigned URL 받아오기
       const response = await apiClient.get(
-          `/api/courses/${courseId}/contents/${contentId}/files/${fileId}/download`,
-          {
-            responseType: 'blob',  // 파일 데이터를 blob으로 받기
-            headers: {
-              'Accept': '*/*'
-            }
-          }
+          `/api/courses/${courseId}/contents/${contentId}/files/${fileId}/download`
       );
-      return response.data;
+      const presignedUrl = response.data;
+
+      // 2. S3에서 파일 다운로드
+      const fileResponse = await s3Client.get(presignedUrl);
+
+      // 3. 파일 다운로드 (원본 파일명 사용)
+      const blob = new Blob([fileResponse.data], {
+        type: fileResponse.headers['content-type'] || 'application/octet-stream'
+      });
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = originalFileName;  // 원본 파일명 사용
+      link.click();
+
+      window.URL.revokeObjectURL(url);
+
+      return fileResponse.data;
     } catch (error) {
       console.error('Error downloading file:', error);
       throw error;
     }
   },
 
-  // 여러 파일 다운로드 메서드 수정
-  downloadMultipleFiles: async (courseId, contentId, files) => {
-    try {
-      const downloadPromises = files.map(file =>
-          CourseFileAPI.downloadFile(courseId, contentId, file.id)
-      );
-      return await Promise.all(downloadPromises);
-    } catch (error) {
-      console.error('Error downloading multiple files:', error);
-      throw error;
-    }
-  },
-
-  getFileDownloadUrl: async (courseId, contentId, fileId) => {
-    try {
-      const response = await apiClient.get(
-          `/api/courses/${courseId}/contents/${contentId}/files/${fileId}/download`
-      );
-      return response.data;
-    } catch (error) {
-      console.error('Error getting file download URL:', error);
-      throw error;
-    }
-  },
 
   // 강의 자료 수정
   updateCourseFile: async (courseId, contentId, formData) => {
@@ -110,30 +106,6 @@ export const CourseFileAPI = {
     }
   },
 
-  // 파일 업로드 (새로운 메서드)
-  uploadFiles: async (courseId, contentId, files) => {
-    try {
-      const formData = new FormData();
-      files.forEach(file => {
-        formData.append('files', file);
-      });
-
-      const response = await apiClient.post(
-          `/api/courses/${courseId}/contents/${contentId}/files`,
-          formData,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          }
-      );
-      return response.data;
-    } catch (error) {
-      console.error('Error uploading files:', error);
-      throw error;
-    }
-  },
-
   // 파일 삭제 (새로운 메서드)
   deleteFile: async (courseId, contentId, fileId) => {
     try {
@@ -146,16 +118,6 @@ export const CourseFileAPI = {
     }
   },
 
-  // 자료실용 새로운 메서드 추가
-  getCourseFileArchive: async (courseId) => {
-    try {
-      const response = await apiClient.get(`/api/courses/${courseId}/files/archive`);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching course file archive:', error);
-      throw error;
-    }
-  },
 
   // 오늘의 강의 자료 조회
   getTodayFiles: async (courseId) => {
