@@ -9,13 +9,13 @@ const ViewAllButton = ({ activeTab, onNavigate }) => {
   const handleClick = () => {
     switch (activeTab) {
       case 'notice':
-        onNavigate('/lecturenoticelist');
+        onNavigate('notices');
         break;
       case 'qna':
-        onNavigate('/qnalist');
+        onNavigate('qna');
         break;
       case 'exam':
-        onNavigate('/exams');
+        onNavigate('exams');
         break;
       default:
         break;
