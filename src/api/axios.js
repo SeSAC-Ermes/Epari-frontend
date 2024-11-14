@@ -12,6 +12,13 @@ const apiClient = axios.create({
   },
 });
 
+// S3 전용 클라이언트
+const s3Client = axios.create({
+  withCredentials: false,
+  headers: {},
+  responseType: 'blob'  // 파일 다운로드용 기본 설정
+});
+
 // 요청 인터셉터
 apiClient.interceptors.request.use(
     (config) => {
@@ -49,4 +56,4 @@ apiClient.interceptors.response.use(
     }
 );
 
-export default apiClient;
+export { apiClient as default, s3Client };
