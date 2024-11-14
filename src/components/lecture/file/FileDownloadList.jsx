@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import { ArrowDownToLine, Download, Trash2 } from 'lucide-react';
 import { CourseFileAPI } from '../../../api/lecture/CourseFileApi.js';
 
+
+/**
+ * 강의 자료 목록 다운로드 관리
+ */
 const FileDownloadList = ({ files, courseId, contentId, onDelete, isEditMode = false }) => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [downloadingFiles, setDownloadingFiles] = useState(new Set());
@@ -25,23 +29,20 @@ const FileDownloadList = ({ files, courseId, contentId, onDelete, isEditMode = f
   };
 
   const handleDownload = async () => {
-    if (selectedFiles.length === 0) return;
-
-    const selectedFileObjects = files.filter(file => selectedFiles.includes(file.id));
-
     try {
+      // 선택된 파일들 필터링
+      const selectedFileObjects = files.filter(file =>
+          selectedFiles.includes(file.id)
+      );
+
       for (const file of selectedFileObjects) {
         setDownloadingFiles(prev => new Set([...prev, file.id]));
-        const blob = await CourseFileAPI.downloadFile(courseId, contentId, file.id);
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', file.originalFileName);
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        window.URL.revokeObjectURL(url);
-
+        await CourseFileAPI.downloadFile(
+            courseId,
+            contentId,
+            file.id,
+            file.originalFileName  // 원본 파일명 전달
+        );
         setDownloadingFiles(prev => {
           const next = new Set(prev);
           next.delete(file.id);
