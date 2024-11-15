@@ -5,10 +5,10 @@ import React from 'react';
  */
 const AttendanceRow = ({ student, onStatusChange }) => {
   const statuses = [
-    { key: '출석', color: 'green', bgClass: 'bg-green-500', borderClass: 'border-green-500 hover:border-green-400' },
-    { key: '지각', color: 'orange', bgClass: 'bg-orange-500', borderClass: 'border-orange-500 hover:border-orange-400' },
-    { key: '병결', color: 'gray', bgClass: 'bg-gray-500', borderClass: 'border-gray-500 hover:border-gray-400' },
-    { key: '결석', color: 'blue', bgClass: 'bg-blue-500', borderClass: 'border-blue-500 hover:border-blue-400' }
+    { key: '출석', color: 'green', bgClass: 'bg-green-500', borderClass: 'border-green-500' },
+    { key: '지각', color: 'orange', bgClass: 'bg-orange-500', borderClass: 'border-orange-500' },
+    { key: '병결', color: 'gray', bgClass: 'bg-gray-500', borderClass: 'border-gray-500' },
+    { key: '결석', color: 'blue', bgClass: 'bg-blue-500', borderClass: 'border-blue-500' }
   ];
 
   const handleStatusChange = (newStatus) => {
@@ -35,17 +35,15 @@ const AttendanceRow = ({ student, onStatusChange }) => {
         className += 'bg-gray-50 text-gray-700';
     }
 
-    return (
-        <span className={className}>
-        {status}
-      </span>
-    );
+    return <span className={className}>{status}</span>;
   };
 
   return (
-      <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+      <tr className="border-b border-gray-100 hover:bg-gray-50 opacity-0 animate-[fadeIn_0.3s_ease-in-out_forwards]">
         <td className="py-3 px-4 text-center text-sm text-gray-600">{student.no}</td>
-        <td className="py-3 px-4 text-center text-sm font-medium text-gray-900">{student.name}</td>
+        <td className="py-3 px-4 text-center text-sm font-medium text-gray-900">
+          {student.name}
+        </td>
         {statuses.map(({ key, bgClass, borderClass }) => (
             <td key={key} className="py-3 px-4 text-center">
               <label className="cursor-pointer flex justify-center items-center">
@@ -56,8 +54,7 @@ const AttendanceRow = ({ student, onStatusChange }) => {
                     onChange={() => handleStatusChange(key)}
                 />
                 <div className={`w-5 h-5 border-2 rounded-full flex items-center justify-center 
-              ${student.status === key ? borderClass : 'border-gray-300 hover:border-gray-400'} 
-              transition-colors`}
+              ${student.status === key ? borderClass : 'border-gray-300 hover:border-gray-400'}`}
                 >
                   {student.status === key && (
                       <div className={`w-3 h-3 rounded-full ${bgClass}`}/>
@@ -73,4 +70,4 @@ const AttendanceRow = ({ student, onStatusChange }) => {
   );
 };
 
-export default AttendanceRow;
+export default React.memo(AttendanceRow);

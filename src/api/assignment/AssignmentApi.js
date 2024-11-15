@@ -7,7 +7,7 @@ import apiClient from "../axios.js";
  */
 
 export const AssignmentAPI = {
-  createAssignment: async (courseId, assignmentData) => {
+  createAssignment: async (courseId, assignmentData, instructorId) => {
     try {
       const date = new Date(assignmentData.dueDate);
       date.setHours(23, 59, 59, 0);
@@ -19,7 +19,7 @@ export const AssignmentAPI = {
         deadline: formattedDate,
       };
 
-      const response = await apiClient.post(`/api/courses/${courseId}/assignments`, requestData);
+      const response = await apiClient.post(`/api/courses/${courseId}/assignments?instructorId=${instructorId}`, requestData);
       return response.data;
     } catch (error) {
       console.error('Error creating assignment:', error);
