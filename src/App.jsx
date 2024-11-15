@@ -1,20 +1,20 @@
-import { BrowserRouter as Router, Outlet, Route, Routes } from 'react-router-dom';
+import {BrowserRouter as Router, Outlet, Route, Routes} from 'react-router-dom';
 import React from 'react';
 import SignInPage from './pages/SignInPage.jsx';
 import SignUpPage from './pages/SignUpPage.jsx';
-import CourseListPage from "./pages/lecture/CourseListPage.jsx";
-import CourseDetailPage from "./pages/lecture/CourseDetailPage.jsx";
-import LectureNoticeListPage from "./pages/LectureNoticeListPage.jsx";
+import CourseListPage from "./pages/course/CourseListPage.jsx";
+import CourseDetailPage from "./pages/course/CourseDetailPage.jsx";
+import CourseNoticeListPage from "./pages/CourseNoticeListPage.jsx";
 import QnAListPage from "./pages/QnAListPage.jsx";
 import QnADetailPage from "./pages/QnADetailPage.jsx";
 import QnAWritePage from "./pages/QnAWritePage.jsx";
+import CurriculumPage from "./pages/course/CurriculumPage.jsx";
 import AssignmentPage from "./pages/assignment/AssignmentPage.jsx";
 import AssignmentCreatePage from "./pages/assignment/AssignmentCreatePage.jsx";
 import AssignmentDetailPage from "./pages/assignment/AssignmentDetailPage.jsx";
-import CourseFilePage from "./pages/lecture/CourseFilePage.jsx";
-import CourseFileCreatePage from "./pages/lecture/CourseFileCreatePage.jsx";
-import CourseFileArchivePage from "./pages/lecture/CourseFileArchivePage.jsx";
-import CurriculumPage from "./pages/lecture/CurriculumPage.jsx";
+import CourseFilePage from "./pages/course/CourseFilePage.jsx";
+import CourseFileCreatePage from "./pages/course/CourseFileCreatePage.jsx";
+import CourseFileArchivePage from "./pages/course/CourseFileArchivePage.jsx";
 import StudentManagementPage from "./pages/student/StudentManagementPage.jsx";
 import MyProgressPage from "./pages/student/MyProgressPage.jsx";
 import { AuthProvider } from "./auth/AuthContext.jsx";
@@ -23,6 +23,8 @@ import RootRedirect from "./components/auth/RootRedirect.jsx";
 import SimpleLayout from "./components/layout/SimpleLayout.jsx";
 import MainLayout from "./components/layout/MainLayout.jsx";
 import AttendanceManagementPage from "./pages/attendance/AttendanceManagementPage.jsx";
+import ExamPage from "./pages/exam/ExamPage.jsx";
+import ExamCreatePage from "./pages/exam/ExamCreatePage.jsx";
 
 function App() {
   return (
@@ -46,7 +48,7 @@ function App() {
               <Route index element={<CourseDetailPage/>}/>
 
               {/* 공지사항 */}
-              <Route path="notices" element={<LectureNoticeListPage/>}/>
+              <Route path="notices" element={<CourseNoticeListPage/>}/>
 
               {/* Q&A */}
               <Route path="qna">
@@ -64,6 +66,9 @@ function App() {
 
               {/* 시험 */}
               <Route path="exams">
+                <Route index element={<ExamPage/>}/>
+                <Route path="create" element={<ExamCreatePage/>}/>
+                {/*<Route path="/courses/:courseId/exams/:examId" element={<ExamDetailPage/>}/>*/}
               </Route>
 
               {/* 파일/자료 */}

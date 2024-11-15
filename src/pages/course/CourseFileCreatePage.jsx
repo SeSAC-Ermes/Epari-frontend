@@ -1,5 +1,5 @@
 import React from 'react';
-import CourseFileCreateContent from '../../components/lecture/file/CourseFileCreateContent.jsx';
+import CourseFileCreateContent from '../../components/course/file/CourseFileCreateContent.jsx';
 
 const CourseFileCreatePage = () => {
   return (

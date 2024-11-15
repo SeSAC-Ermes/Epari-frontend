@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import CourseCard from './CourseCard';
-import LectureManagementModal from './LectureManagementModal';
+import CourseManagementModal from './CourseManagementModal.jsx';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import NoticeTabs from './NoticeTabs';
 import NoticeTable from './NoticeTable';
-import { LectureAPI } from "../../../api/lecture/lectureApi.js";
+import { CourseAPI } from "../../../api/course/courseAPI.js";
 
 /**
  * 강의 목록 페이지의 메인 컴포넌트
@@ -39,7 +39,7 @@ const CourseListContent = () => {
   const [error, setError] = useState(null);
   const [isInstructor, setIsInstructor] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedLecture, setSelectedLecture] = useState(null);
+  const [selectedCourse, setSelectedCourse] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
 
   const [tabData] = useState({
@@ -83,7 +83,7 @@ const CourseListContent = () => {
         const instructorStatus = getIsInstructorFromToken();
         setIsInstructor(instructorStatus);
 
-        const data = await LectureAPI.getUserLectures();
+        const data = await CourseAPI.getUserCourse();
         console.log('API response:', data);
 
         if (instructorStatus && data.length > 0) {
@@ -116,25 +116,25 @@ const CourseListContent = () => {
     fetchUserInfo();
   }, []);
 
-  const handleCreateLecture = () => {
+  const handleCreateCourse = () => {
     if (!currentUserId) {
       alert('강사 권한이 필요합니다.');
       return;
     }
-    setSelectedLecture(null);
+    setSelectedCourse(null);
     setIsModalOpen(true);
   };
 
-  const handleEditLecture = (lecture) => {
+  const handleEditCourse = (course) => {
     if (!currentUserId) {
       alert('강사 권한이 필요합니다.');
       return;
     }
-    setSelectedLecture(lecture);
+    setSelectedCourse(course);
     setIsModalOpen(true);
   };
 
-  const handleDeleteLecture = async (lectureId) => {
+  const handleDeleteCourse = async (courseId) => {
     if (!currentUserId) {
       alert('강사 권한이 필요합니다.');
       return;
@@ -142,8 +142,8 @@ const CourseListContent = () => {
 
     if (window.confirm('정말로 이 강의를 삭제하시겠습니까?')) {
       try {
-        await LectureAPI.deleteLecture(lectureId, currentUserId);
-        setCourses(prevCourses => prevCourses.filter(course => course.id !== lectureId));
+        await CourseAPI.deleteCourse(courseId, currentUserId);
+        setCourses(prevCourses => prevCourses.filter(course => course.id !== courseId));
         alert('강의가 성공적으로 삭제되었습니다.');
       } catch (error) {
         console.error('강의 삭제 실패:', error);
@@ -160,8 +160,8 @@ const CourseListContent = () => {
 
     try {
       let data;
-      if (selectedLecture) {
-        data = await LectureAPI.updateLecture(selectedLecture.id, currentUserId, formData);
+      if (selectedCourse) {
+        data = await CourseAPI.updateCourse(selectedCourse.id, currentUserId, formData);
         const updatedCourse = {
           id: data.id,
           title: data.name,
@@ -173,11 +173,11 @@ const CourseListContent = () => {
         };
         setCourses(prevCourses =>
             prevCourses.map(course =>
-                course.id === selectedLecture.id ? updatedCourse : course
+                course.id === selectedCourse.id ? updatedCourse : course
             )
         );
       } else {
-        data = await LectureAPI.createLecture(currentUserId, formData);
+        data = await CourseAPI.createCourse(currentUserId, formData);
         const newCourse = {
           id: data.id,
           title: data.name,
@@ -218,7 +218,7 @@ const CourseListContent = () => {
           <h1 className="text-2xl font-bold">내 강의 목록</h1>
           {isInstructor && (
               <button
-                  onClick={handleCreateLecture}
+                  onClick={handleCreateCourse}
                   className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
               >
                 <Plus size={20}/>
@@ -237,13 +237,13 @@ const CourseListContent = () => {
                         onClick={(e) => e.stopPropagation()} // 이벤트 버블링 방지
                     >
                       <button
-                          onClick={() => handleEditLecture(course)}
+                          onClick={() => handleEditCourse(course)}
                           className="p-2 bg-white rounded-full shadow hover:bg-gray-50"
                       >
                         <Pencil size={16} className="text-gray-600"/>
                       </button>
                       <button
-                          onClick={() => handleDeleteLecture(course.id)}
+                          onClick={() => handleDeleteCourse(course.id)}
                           className="p-2 bg-white rounded-full shadow hover:bg-gray-50"
                       >
                         <Trash2 size={16} className="text-red-500"/>
@@ -260,10 +260,10 @@ const CourseListContent = () => {
           <NoticeTable notices={tabData[activeTab]}/>
         </div>
 
-        <LectureManagementModal
+        <CourseManagementModal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
-            lecture={selectedLecture}
+            course={selectedCourse}
             onSubmit={handleModalSubmit}
         />
       </main>

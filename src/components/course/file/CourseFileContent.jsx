@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ChevronDown, ChevronUp, FileText, Pencil, Trash2 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { CourseFileAPI } from '../../../api/lecture/CourseFileApi.js';
+import { CourseFileAPI } from '../../../api/course/CourseFileAPI.js';
 import FileDownloadList from './FileDownloadList.jsx';
 import ReactQuill from 'react-quill';
 import FileUpload from "../../common/FileUpload.jsx";

@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { RoleBasedComponent } from '../../auth/RoleBasedComponent';
 import { ROLES } from '../../constants/auth';
-import LectureAPI from "../../api/lecture/lectureApi.js";
+import CourseAPI from "../../api/course/courseAPI.js";
 
 
 /**
@@ -34,7 +34,7 @@ const Sidebar = () => {
 
       try {
         setLoading(true);
-        const response = await LectureAPI.getLectureDetail(courseId);
+        const response = await CourseAPI.getCourseDetail(courseId);
         setCourseName(response.name);
       } catch (err) {
         console.error('Error fetching course details:', err);
@@ -102,7 +102,7 @@ const Sidebar = () => {
       text: '수강생 관리',
       path: `/courses/${courseId}/students`
     }
-  ] : [];
+  ]: [];
 
   // 학생 전용 메뉴
   const studentMenuItems = courseId ? [

@@ -72,53 +72,53 @@ const AssignmentDetail = () => {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-gray-50 border-b border-gray-200">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 w-16">No.</th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 w-28">제목</th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 w-24">작성자</th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 w-48">제출기한</th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 w-28">상태</th>
-                  </tr>
+                <tr>
+                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 w-16">No.</th>
+                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 w-28">제목</th>
+                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 w-24">작성자</th>
+                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 w-48">제출기한</th>
+                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 w-28">상태</th>
+                </tr>
                 </thead>
                 <tbody>
-                  {assignments.length > 0 ? (
-                      assignments.map((assignment, index) => {
-                        const dday = calculateDday(assignment.deadline);
-                        const status = getAssignmentStatus(assignment.deadline);
-                        return (
-                            <tr
-                                key={assignment.id}
-                                className="hover:bg-gray-50 border-b border-gray-200 last:border-0 cursor-pointer"
-                                onClick={() => navigate(`/courses/${courseId}/assignments/${assignment.id}`)}
-                            >
-                              <td className="px-6 py-3 text-sm text-gray-600">{index + 1}</td>
-                              <td className="px-6 py-3 text-sm text-gray-600 w-28">{assignment.title}</td>
-                              <td className="px-6 py-3 text-sm text-gray-600 w-24">{assignment.instructor.name}</td>
-                              <td className="px-6 py-3 w-28">
-                                <div className="text-sm text-gray-600">
-                                  {formatDate(assignment.deadline)}
-                                </div>
-                                <div className="mt-1">
+                {assignments.length > 0 ? (
+                    assignments.map((assignment, index) => {
+                      const dday = calculateDday(assignment.deadline);
+                      const status = getAssignmentStatus(assignment.deadline);
+                      return (
+                          <tr
+                              key={assignment.id}
+                              className="hover:bg-gray-50 border-b border-gray-200 last:border-0 cursor-pointer"
+                              onClick={() => navigate(`/courses/${courseId}/assignments/${assignment.id}`)}
+                          >
+                            <td className="px-6 py-3 text-sm text-gray-600">{index + 1}</td>
+                            <td className="px-6 py-3 text-sm text-gray-600 w-28">{assignment.title}</td>
+                            <td className="px-6 py-3 text-sm text-gray-600 w-24">{assignment.instructor.name}</td>
+                            <td className="px-6 py-3 w-28">
+                              <div className="text-sm text-gray-600">
+                                {formatDate(assignment.deadline)}
+                              </div>
+                              <div className="mt-1">
                                   <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${dday.class}`}>
                               {dday.text}
                             </span>
-                                </div>
-                              </td>
-                              <td className="px-6 py-3">
+                              </div>
+                            </td>
+                            <td className="px-6 py-3">
                           <span className={`px-3 py-1 rounded-full text-xs font-medium ${status.class}`}>
                             {status.text}
                           </span>
-                              </td>
-                            </tr>
-                        );
-                      })
-                  ) : (
-                      <tr>
-                        <td colSpan="5" className="px-6 py-8 text-center text-gray-500">
-                          등록된 과제가 없습니다.
-                        </td>
-                      </tr>
-                  )}
+                            </td>
+                          </tr>
+                      );
+                    })
+                ) : (
+                    <tr>
+                      <td colSpan="5" className="px-6 py-8 text-center text-gray-500">
+                        등록된 과제가 없습니다.
+                      </td>
+                    </tr>
+                )}
                 </tbody>
               </table>
             </div>

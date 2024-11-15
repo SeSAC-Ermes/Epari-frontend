@@ -11,6 +11,9 @@
   },
   "dependencies": {
     "@aws-amplify/auth": "^6.6.0",
+    "@fullcalendar/core": "^6.1.15",
+    "@fullcalendar/daygrid": "^6.1.15",
+    "@fullcalendar/react": "^6.1.15",
     "aws-amplify": "^6.8.0",
     "axios": "^1.7.7",
     "lucide-react": "^0.454.0",

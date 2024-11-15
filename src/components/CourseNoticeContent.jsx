@@ -1,7 +1,7 @@
 import React from 'react';
 import { Search } from 'lucide-react';
 
-const LectureNoticeContent = () => {
+const CourseNoticeContent = () => {
   const notices = [
     {
       id: 1,
@@ -72,4 +72,4 @@ const LectureNoticeContent = () => {
   );
 };
 
-export default LectureNoticeContent;
+export default CourseNoticeContent;

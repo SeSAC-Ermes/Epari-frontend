@@ -1,5 +1,5 @@
 import React from 'react';
-import CurriculumContent from '../../components/lecture/dashboard/CurriculumContent.jsx';
+import CurriculumContent from '../../components/course/dashboard/CurriculumContent.jsx';
 
 const CurriculumPage = () => {
   return (
