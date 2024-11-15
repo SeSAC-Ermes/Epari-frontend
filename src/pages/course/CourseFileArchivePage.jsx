@@ -1,5 +1,5 @@
 import React from 'react';
-import CourseFileArchiveContent from '../../components/lecture/archive/CourseFileArchiveContent';
+import CourseFileArchiveContent from '../../components/course/archive/CourseFileArchiveContent';
 
 const CourseFileArchivePage = () => {
   return (
