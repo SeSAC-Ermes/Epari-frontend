@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { RoleBasedComponent } from '../../auth/RoleBasedComponent';
 import { ROLES } from '../../constants/auth';
-import CourseAPI from "../../api/course/courseApi.js";
+import CourseAPI from "../../api/course/courseAPI.js";
 
 
 /**

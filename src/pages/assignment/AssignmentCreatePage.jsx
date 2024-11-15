@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import FileUpload from "../../components/common/FileUpload.jsx";
 import { AssignmentAPI } from "../../api/assignment/AssignmentApi.js";
 import 'react-quill/dist/quill.snow.css';
-import CourseAPI from "../../api/course/courseApi.js";
+import CourseAPI from "../../api/course/courseAPI.js";
 
 const AssignmentCreatePage = () => {
   const navigate = useNavigate();
@@ -45,16 +45,16 @@ const AssignmentCreatePage = () => {
   const formats = ['font', 'size', 'bold', 'italic', 'underline', 'strike', 'color', 'background', 'list', 'bullet', 'align', 'link', 'image'];
 
   useEffect(() => {
-    const fetchLectureInfo = async () => {
+    const fetchCourseInfo = async () => {
       try {
-        const courseResponse = await CourseAPI.getCourseDetail(courseId);  // getLectureDetail 사용
+        const courseResponse = await CourseAPI.getCourseDetail(courseId);  // getCourseDetail 사용
         if (courseResponse.instructor) {
           setInstructorId(courseResponse.instructor.id);
         } else {
           setError('강의 담당 강사 정보를 찾을 수 없습니다.');
         }
       } catch (err) {
-        console.error('Error fetching lecture:', err);
+        console.error('Error fetching course:', err);
         setError('강의 정보를 불러오는데 실패했습니다.');
       }
     };

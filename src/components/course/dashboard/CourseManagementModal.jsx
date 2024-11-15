@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
  * 강사 권한을 가진 사용자만 접근 가능
  */
 
-const CourseManagementModal = ({ isOpen, onClose, lecture = null, onSubmit }) => {
+const CourseManagementModal = ({ isOpen, onClose, course = null, onSubmit }) => {
   const formatDateForInput = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
@@ -22,14 +22,14 @@ const CourseManagementModal = ({ isOpen, onClose, lecture = null, onSubmit }) =>
 
   // 모달이 열릴 때마다 데이터 초기화
   useEffect(() => {
-    if (isOpen && lecture) {
+    if (isOpen && course) {
       setFormData({
-        name: lecture.name || lecture.title || '',
-        startDate: lecture.startDate ? formatDateForInput(lecture.startDate) : '',
-        endDate: lecture.endDate ? formatDateForInput(lecture.endDate) : '',
-        classroom: lecture.classroom || ''
+        name: course.name || course.title || '',
+        startDate: course.startDate ? formatDateForInput(course.startDate) : '',
+        endDate: course.endDate ? formatDateForInput(course.endDate) : '',
+        classroom: course.classroom || ''
       });
-    } else if (isOpen && !lecture) {
+    } else if (isOpen && !course) {
       // 새로운 강의 생성 시 폼 초기화
       setFormData({
         name: '',
@@ -38,7 +38,7 @@ const CourseManagementModal = ({ isOpen, onClose, lecture = null, onSubmit }) =>
         classroom: ''
       });
     }
-  }, [isOpen, lecture]);
+  }, [isOpen, course]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -60,7 +60,7 @@ const CourseManagementModal = ({ isOpen, onClose, lecture = null, onSubmit }) =>
         <div className="bg-white rounded-lg max-w-md w-full p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold">
-              {lecture ? '강의 수정' : '새 강의 생성'}
+              {course ? '강의 수정' : '새 강의 생성'}
             </h2>
             <button
                 onClick={onClose}
@@ -139,7 +139,7 @@ const CourseManagementModal = ({ isOpen, onClose, lecture = null, onSubmit }) =>
                   type="submit"
                   className="px-4 py-2 text-sm bg-green-500 text-white rounded-md hover:bg-green-600"
               >
-                {lecture ? '수정' : '생성'}
+                {course ? '수정' : '생성'}
               </button>
             </div>
           </form>

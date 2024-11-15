@@ -6,8 +6,8 @@ import apiClient from '../axios.js';
  * API 요청 함수들을 제공하는 모듈
  */
 
-export const CourseApi = {
-  getUserLectures: async () => {
+export const CourseAPI = {
+  getUserCourse: async () => {
     try {
       const response = await apiClient.get('/api/courses/usercourses');
       return response.data;
@@ -17,9 +17,9 @@ export const CourseApi = {
     }
   },
 
-  getLectureDetail: async (lectureId) => {
+  getCourseDetail: async (courseId) => {
     try {
-      const response = await apiClient.get(`/api/courses/${lectureId}`);
+      const response = await apiClient.get(`/api/courses/${courseId}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching course detail:', error);
@@ -28,34 +28,34 @@ export const CourseApi = {
   },
 
   // 새로 추가되는 메서드들
-  createLecture: async (instructorId, lectureData) => {
+  createCourse: async (instructorId, courseData) => {
     try {
-      const response = await apiClient.post(`/api/courses?instructorId=${instructorId}`, lectureData);
+      const response = await apiClient.post(`/api/courses?instructorId=${instructorId}`, courseData);
       return response.data;
     } catch (error) {
-      console.error('Error creating lecture:', error);
+      console.error('Error creating course:', error);
       throw error;
     }
   },
 
-  updateLecture: async (lectureId, instructorId, lectureData) => {
+  updateCourse: async (courseId, instructorId, courseData) => {
     try {
-      const response = await apiClient.put(`/api/courses/${lectureId}?instructorId=${instructorId}`, lectureData);
+      const response = await apiClient.put(`/api/courses/${courseId}?instructorId=${instructorId}`, courseData);
       return response.data;
     } catch (error) {
-      console.error('Error updating lecture:', error);
+      console.error('Error updating course:', error);
       throw error;
     }
   },
 
-  deleteLecture: async (lectureId, instructorId) => {
+  deleteCourse: async (courseId, instructorId) => {
     try {
-      await apiClient.delete(`/api/courses/${lectureId}?instructorId=${instructorId}`);
+      await apiClient.delete(`/api/courses/${courseId}?instructorId=${instructorId}`);
     } catch (error) {
-      console.error('Error deleting lecture:', error);
+      console.error('Error deleting course:', error);
       throw error;
     }
   }
 };
 
-export default CourseApi;
+export default CourseAPI;
