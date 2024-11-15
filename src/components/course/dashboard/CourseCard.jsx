@@ -1,39 +1,66 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-/**
- * 강의 목록에서 각 강의를 카드 형태로 표시하는 컴포넌트
- * 강의명, 기간, 강사 정보, 강의실 정보를 보여주고 클릭 시 상세 페이지로 이동
- */
+import { Clock, MapPin, UserCircle2 } from 'lucide-react';
 
 const CourseCard = ({ course }) => {
   const navigate = useNavigate();
+  const [imageError, setImageError] = useState(false);
 
   const handleClick = () => {
     navigate(`/courses/${course.id}`);
   };
+
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
+  const imageUrl = course.courseImage || course.imageUrl;
 
   return (
       <div
           className="bg-white rounded-lg shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
           onClick={handleClick}
       >
-        <div className="h-32 bg-blue-100 relative"/>
-        <div className="p-3">
-          <h3 className="font-medium text-sm mb-2 line-clamp-2">{course.title || course.name}</h3>
-          <p className="text-xs text-gray-500 mb-2">
-            {course.startDate} ~ {course.endDate}
-          </p>
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-gray-200"/>
-            <div>
-              <p className="font-medium text-sm">
-                {typeof course.instructor === 'object'
-                    ? course.instructor.name
-                    : course.instructor || '강사 미정'}
-              </p>
+        <div className="h-32 bg-blue-50 relative">
+          {imageUrl && !imageError ? (
+              <img
+                  src={imageUrl}
+                  alt={course.name}
+                  className="w-full h-full object-cover"
+                  onError={handleImageError}
+              />
+          ) : (
+              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100">
+                <div className="text-blue-200">
+                  <UserCircle2 size={48} />
+                </div>
+              </div>
+          )}
+        </div>
+
+        <div className="p-4">
+          <h3 className="font-medium text-gray-900 mb-2 line-clamp-2">
+            {course.name}
+          </h3>
+
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-sm text-gray-500">
+              <Clock size={16} />
+              <span>{course.startDate} ~ {course.endDate}</span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-1">
+                <UserCircle2 size={16} className="text-gray-400" />
+                <span className="text-sm font-medium text-gray-700">
+                {course.instructor?.name || '강사 미정'}
+              </span>
+              </div>
               {course.classroom && (
-                  <p className="text-xs text-gray-500">강의실: {course.classroom}</p>
+                  <div className="flex items-center gap-1 text-gray-500">
+                    <MapPin size={16} />
+                    <span className="text-sm">{course.classroom}</span>
+                  </div>
               )}
             </div>
           </div>

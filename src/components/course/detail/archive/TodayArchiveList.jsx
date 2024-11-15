@@ -2,6 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { CheckCircle, Download, FileText } from 'lucide-react';
 import { CourseFileAPI } from '../../../../api/course/CourseFileAPI.js';
 
+/**
+ * 강의 상세페이지 당일 다운로드 관리
+ */
+
 const TodayArchiveList = ({ courseId }) => {
   const [files, setFiles] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -39,33 +43,19 @@ const TodayArchiveList = ({ courseId }) => {
     fetchTodayFiles();
   }, [courseId]);
 
-  const downloadFile = async (blob, fileName) => {
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', fileName);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    // 약간의 지연 후 URL 해제
-    setTimeout(() => window.URL.revokeObjectURL(url), 100);
-  };
 
-  const handleDownload = async (contentId, fileId, fileName) => {
+  const handleDownload = async (contentId, fileId, originalFileName) => {
     const key = `${contentId}-${fileId}`;
     if (downloadProgress.has(key)) return;
 
     try {
       setDownloadProgress(prev => new Set([...prev, key]));
-      const blob = await CourseFileAPI.downloadFile(courseId, contentId, fileId);
-
-      if (blob.type === 'application/json') {
-        // API 에러 응답 처리
-        const text = await blob.text();
-        throw new Error(text);
-      }
-
-      await downloadFile(blob, fileName);
+      await CourseFileAPI.downloadFile(
+          courseId,
+          contentId,
+          fileId,
+          originalFileName  // 원본 파일명 전달
+      );
     } catch (error) {
       console.error('Download error:', error);
       alert('파일 다운로드에 실패했습니다.');
@@ -87,6 +77,7 @@ const TodayArchiveList = ({ courseId }) => {
     );
   };
 
+
   const handleBulkDownload = async () => {
     try {
       const selectedItems = selectedFiles.map(fileKey => {
@@ -97,13 +88,17 @@ const TodayArchiveList = ({ courseId }) => {
         return {
           contentId,
           fileId,
-          fileName: file?.originalFileName
+          originalFileName: file?.originalFileName  // 원본 파일명
         };
       });
 
       for (const item of selectedItems) {
-        if (item.fileName) {
-          await handleDownload(item.contentId, item.fileId, item.fileName);
+        if (item.originalFileName) {
+          await handleDownload(
+              item.contentId,
+              item.fileId,
+              item.originalFileName  // 원본 파일명 전달
+          );
           // 각 다운로드 사이에 약간의 지연을 줌
           await new Promise(resolve => setTimeout(resolve, 500));
         }
@@ -194,7 +189,8 @@ const TodayArchiveList = ({ courseId }) => {
                               disabled={isDownloading}
                           >
                             {isDownloading ? (
-                                <div className="animate-spin rounded-full h-4 w-4 border-2 border-gray-300 border-t-gray-600"/>
+                                <div
+                                    className="animate-spin rounded-full h-4 w-4 border-2 border-gray-300 border-t-gray-600"/>
                             ) : (
                                 <Download size={14} className="text-gray-600"/>
                             )}

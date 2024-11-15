@@ -5,6 +5,7 @@ import { CourseFileAPI } from '../../../api/course/CourseFileAPI.js';
 
 /**
  * 강의 자료실 컨텐츠를 관리하는 컴포넌트
+ * 자료실 다운로드 관리
  */
 
 const CourseFileArchiveContent = () => {
@@ -44,19 +45,23 @@ const CourseFileArchiveContent = () => {
 
   const handleDownloadFiles = async (items) => {
     try {
-      const processedFiles = new Set(); // 중복 다운로드 방지를 위한 Set
+      const processedFiles = new Set();
 
       for (const item of items) {
         if (item.type === 'file') {
-          const key = `${item.contentId}-${item.fileId}`;
-          if (!processedFiles.has(key)) {
-            processedFiles.add(key);
-            const blob = await CourseFileAPI.downloadFile(courseId, item.contentId, item.fileId);
-            const content = files.find(f => f.id.toString() === item.contentId.toString());
-            const file = content?.files.find(f => f.id.toString() === item.fileId.toString());
+          const content = files.find(f => f.id.toString() === item.contentId.toString());
+          const file = content?.files.find(f => f.id.toString() === item.fileId.toString());
 
-            if (file && blob) {
-              downloadFile(blob, file.originalFileName || file.name);
+          if (file) {
+            const key = `${item.contentId}-${item.fileId}`;
+            if (!processedFiles.has(key)) {
+              processedFiles.add(key);
+              await CourseFileAPI.downloadFile(
+                  courseId,
+                  item.contentId,
+                  item.fileId,
+                  file.originalFileName
+              );
             }
           }
         } else if (item.type === 'content') {
@@ -66,10 +71,12 @@ const CourseFileArchiveContent = () => {
               const key = `${content.id}-${file.id}`;
               if (!processedFiles.has(key)) {
                 processedFiles.add(key);
-                const blob = await CourseFileAPI.downloadFile(courseId, content.id, file.id);
-                if (blob) {
-                  downloadFile(blob, file.originalFileName || file.name);
-                }
+                await CourseFileAPI.downloadFile(
+                    courseId,
+                    content.id,
+                    file.id,
+                    file.originalFileName
+                );
               }
             }
           }
@@ -80,19 +87,6 @@ const CourseFileArchiveContent = () => {
       alert('파일 다운로드 중 오류가 발생했습니다.');
     }
   };
-
-  // 파일 다운로드 헬퍼 함수
-  const downloadFile = (blob, fileName) => {
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(a);
-  };
-
   // 파일 크기 포맷팅 함수
   const formatFileSize = (bytes) => {
     if (bytes === 0) return '0 B';
