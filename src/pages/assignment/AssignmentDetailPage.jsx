@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import ReactQuill from 'react-quill';
-import Sidebar from '../../components/layout/Sidebar';
-import TopBar from '../../components/layout/TopBar';
 import { AssignmentHeader } from '../../components/assignment/AssignmentHeader';
 import { AssignmentAPI } from '../../api/assignment/AssignmentApi';
 import FileUpload from '../../components/common/FileUpload';
@@ -93,84 +91,72 @@ const AssignmentDetailPage = () => {
 
   if (isLoading) {
     return (
-        <div className="flex h-screen bg-gray-50">
-          <Sidebar />
-          <div className="flex-1 flex flex-col overflow-hidden">
-            <TopBar />
-            <div className="flex-1 flex items-center justify-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
-            </div>
-          </div>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
         </div>
     );
   }
 
   return (
-      <div className="flex h-screen bg-gray-50">
-        <Sidebar />
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <TopBar />
-          <div className="flex-1 overflow-y-auto p-8">
-            <div className="max-w-4xl mx-auto">
-              {error && (
-                  <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6">
-                    {error}
-                  </div>
-              )}
+      <div className="flex-1 overflow-y-auto p-8">
+        <div className="max-w-4xl mx-auto">
+          {error && (
+              <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6">
+                {error}
+              </div>
+          )}
 
-              {assignment && (
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <AssignmentHeader
-                        date={formatDate(assignment.createdAt)}
-                        title={assignment.title}
-                        deadline={assignment.deadline}
+          {assignment && (
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <AssignmentHeader
+                    date={formatDate(assignment.createdAt)}
+                    title={assignment.title}
+                    deadline={assignment.deadline}
+                />
+
+                <div>
+                  <h2 className="text-lg mb-4">과제안내</h2>
+                  <div className="bg-white rounded-lg p-6">
+                    <div className="prose max-w-none"
+                         dangerouslySetInnerHTML={{ __html: assignment.description || '' }}
                     />
+                  </div>
+                </div>
 
-                    <div>
-                      <h2 className="text-lg mb-4">과제안내</h2>
-                      <div className="bg-white rounded-lg p-6">
-                        <div className="prose max-w-none"
-                             dangerouslySetInnerHTML={{ __html: assignment.description || '' }}
-                        />
-                      </div>
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <h2 className="text-lg font-medium">과제 제출</h2>
+                    <div className="border border-gray-300 rounded-lg" style={{ height: '400px' }}>
+                      <ReactQuill
+                          theme="snow"
+                          value={submissionContent}
+                          onChange={setSubmissionContent}
+                          modules={modules}
+                          formats={formats}
+                          className="h-[350px]"
+                          placeholder="과제 내용을 입력하세요"
+                      />
                     </div>
+                  </div>
 
-                    <div className="space-y-6">
-                      <div className="space-y-2">
-                        <h2 className="text-lg font-medium">과제 제출</h2>
-                        <div className="border border-gray-300 rounded-lg" style={{ height: '400px' }}>
-                          <ReactQuill
-                              theme="snow"
-                              value={submissionContent}
-                              onChange={setSubmissionContent}
-                              modules={modules}
-                              formats={formats}
-                              className="h-[350px]"
-                              placeholder="과제 내용을 입력하세요"
-                          />
-                        </div>
-                      </div>
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">파일 첨부</label>
+                    <FileUpload onFilesChange={handleFilesChange}/>
+                  </div>
 
-                      <div className="space-y-2">
-                        <label className="block text-sm font-medium text-gray-700">파일 첨부</label>
-                        <FileUpload onFilesChange={handleFilesChange} />
-                      </div>
-
-                      <div className="flex justify-end pb-8">
-                        <button
-                            type="submit"
-                            className={`px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 
+                  <div className="flex justify-end pb-8">
+                    <button
+                        type="submit"
+                        className={`px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 
                         ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
-                            disabled={isSubmitting}
-                        >
-                          {isSubmitting ? '제출 중...' : '과제 제출하기'}
-                        </button>
-                      </div>
-                    </div>
-                  </form>
-              )}
-            </div>
-          </div>
+                        disabled={isSubmitting}
+                    >
+                      {isSubmitting ? '제출 중...' : '과제 제출하기'}
+                    </button>
+                  </div>
+                </div>
+              </form>
+          )}
         </div>
       </div>
   );

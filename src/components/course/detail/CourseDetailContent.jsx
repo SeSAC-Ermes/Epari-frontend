@@ -127,8 +127,7 @@ const CourseDetailContent = () => {
   }, [courseId]);
 
   const handleNavigate = (path) => {
-    // URL 구조에 맞게 네비게이션 로직 수정
-    if (path.includes('/lecturenoticelist')) {
+    if (path.includes('/notices')) {
       navigate(`/courses/${courseId}/notices`);
     } else if (path.includes('/exams')) {
       navigate(`/courses/${courseId}/exams`);

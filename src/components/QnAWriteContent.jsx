@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { User } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const QnAWriteContent = ({
                            onTitleChange,
                            onContentChange
                          }) => {
+  const { courseId } = useParams();
   const navigate = useNavigate();
   const imageFileInputRef = useRef();
   const attachmentFileInputRef = useRef();
@@ -16,7 +17,7 @@ const QnAWriteContent = ({
   const [uploadedImageNames, setUploadedImageNames] = useState(new Set()); // 이미지 파일명 추적
 
   const handleComplete = () => {
-    navigate('/qnalist');
+    navigate(`/courses/${courseId}/qna`);
   };
 
   const adjustTextareaHeight = (textarea) => {
