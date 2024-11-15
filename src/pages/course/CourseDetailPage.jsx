@@ -1,5 +1,5 @@
 import React from 'react';
-import CourseDetailContent from '../../components/lecture/detail/CourseDetailContent.jsx';
+import CourseDetailContent from '../../components/course/detail/CourseDetailContent.jsx';
 
 const CourseDetailPage = () => {
   return (
