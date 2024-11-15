@@ -101,7 +101,8 @@ const CourseListContent = () => {
           startDate: course.startDate,
           endDate: course.endDate,
           instructor: course.instructor,
-          classroom: course.classroom
+          classroom: course.classroom,
+          imageUrl: course.imageUrl
         }));
         setCourses(formattedCourses);
       } catch (err) {
