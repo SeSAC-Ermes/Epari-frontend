@@ -1,5 +1,5 @@
 import React from 'react';
-import CourseListContent from '../../components/lecture/dashboard/CourseListContent.jsx';
+import CourseListContent from '../../components/course/dashboard/CourseListContent.jsx';
 
 const CourseListPage = () => {
   return (
