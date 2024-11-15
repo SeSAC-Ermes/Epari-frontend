@@ -102,7 +102,7 @@ const Sidebar = () => {
       text: '수강생 관리',
       path: `/courses/${courseId}/students`
     }
-  ];
+  ]: [];
 
   // 학생 전용 메뉴
   const studentMenuItems = courseId ? [

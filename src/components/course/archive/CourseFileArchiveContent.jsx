@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import FileArchiveList from './FileArchiveList';
-import { CourseFileAPI } from '../../../api/course/CourseFileApi';
+import FileArchiveList from './FileArchiveList.jsx';
+import { CourseFileAPI } from '../../../api/course/CourseFileApi.js';
 
 /**
  * 강의 자료실 컨텐츠를 관리하는 컴포넌트
