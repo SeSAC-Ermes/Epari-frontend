@@ -14,6 +14,7 @@ export const NoticeApi = {
     return response.data;
   },
 
+
   // 공지사항 수정
   updateNotice: async (id, noticeData) => {
     const response = await apiClient.put(`/api/notices/${id}`, noticeData);
@@ -36,5 +37,29 @@ export const NoticeApi = {
   getCourseNotices: async (courseId) => {
     const response = await apiClient.get(`/api/notices/course/${courseId}`);
     return response.data;
+  },
+
+  // 이미지
+  // getFilePresignedUrl: async (noticeId, fileId) => {
+  //   try {
+  //     const response = await apiClient.get(`/api/notices/${noticeId}/files/${fileId}/presigned-url`);
+  //     return response.data.presignedUrl;
+  //   } catch (error) {
+  //     console.error('Error getting presigned URL:', error);
+  //     throw error;
+  //   }
+  // },
+
+
+
+  increaseViewCount: async (id) => {
+    await apiClient.post(`/api/notices/${id}/view-count`);
+  },
+
+  getFilePresignedUrl: async (id, files) => {
+    const response = await apiClient.get(`/api/notices/${id}/files/${files}/presigned-url`);
+    return response.data.presignedUrl;
   }
+
+
 };

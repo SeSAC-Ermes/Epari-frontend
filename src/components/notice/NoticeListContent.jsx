@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { NoticeApi } from '../../api/notice/NoticeApi.js';
+import { NoticeApi } from '../../api/notice/NoticeApi';  // API 경로 수정
 import { Search } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 
@@ -63,36 +63,6 @@ const NoticeListContent = () => {
 
   return (
       <div className="w-full">
-        {/* 탭 버튼 */}
-        <div className="flex gap-4 mb-4 px-4">
-          <button
-              className={`px-4 py-2 rounded ${
-                  activeTab === 'global'
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-gray-200'
-              }`}
-              onClick={() => {
-                setActiveTab('global');
-                setCurrentPage(1);
-              }}
-          >
-            전체 공지사항
-          </button>
-          <button
-              className={`px-4 py-2 rounded ${
-                  activeTab === 'course'
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-gray-200'
-              }`}
-              onClick={() => {
-                setActiveTab('course');
-                setCurrentPage(1);
-              }}
-          >
-            강의 공지사항
-          </button>
-        </div>
-
         <main className="max-w-7xl mx-auto px-4 py-8">
           <div className="bg-white rounded-lg p-6">
             <div className="flex justify-between items-center mb-6">
@@ -101,7 +71,7 @@ const NoticeListContent = () => {
               </h1>
               <div className="flex items-center gap-4">
                 <div className="flex items-center bg-gray-100 rounded-lg px-4 py-2">
-                  <Search className="text-gray-400" size={20} />
+                  <Search className="text-gray-400" size={20}/>
                   <input
                       type="text"
                       placeholder="검색"
@@ -140,17 +110,7 @@ const NoticeListContent = () => {
                   </tr>
               ))}
               </tbody>
-              {/*<tbody>*/}
-              {/*{currentNotices.map((notice) => (*/}
-              {/*    <tr key={notice.id} className="border-b hover:bg-gray-50 cursor-pointer">*/}
-              {/*      <td className="py-4 text-center">{notice.displayNumber}</td>*/}
-              {/*      <td className="py-4 text-center truncate">{notice.title}</td>*/}
-              {/*      <td className="py-4 text-center">{notice.instructorName || '-'}</td>*/}
-              {/*      <td className="py-4 text-center">{new Date(notice.createdAt).toLocaleDateString()}</td>*/}
-              {/*      <td className="py-4 text-center">{notice.viewCount}</td>*/}
-              {/*    </tr>*/}
-              {/*))}*/}
-              {/*</tbody>*/}
+
             </table>
 
             {/* 페이지네이션 */}

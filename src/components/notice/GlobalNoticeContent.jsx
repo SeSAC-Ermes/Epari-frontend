@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import { NoticeApi } from '../../api/notice/NoticeApi.js';
 
-const LectureNoticeContent = ({ courseId }) => {
+const GlobalNoticeContent = () => {
   const [notices, setNotices] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
@@ -10,11 +10,11 @@ const LectureNoticeContent = ({ courseId }) => {
 
   useEffect(() => {
     loadNotices();
-  }, [courseId]);
+  }, []);
 
   const loadNotices = async () => {
     try {
-      const response = await NoticeApi.getCourseNotices(courseId);
+      const response = await NoticeApi.getGlobalNotices();
       // 최신 글이 맨 위에 오도록 정렬
       const sortedNotices = response.sort((a, b) =>
           new Date(b.date) - new Date(a.date)
@@ -55,7 +55,7 @@ const LectureNoticeContent = ({ courseId }) => {
       <main className="max-w-7xl mx-auto px-4 py-8">
         <div className="bg-white rounded-lg p-6">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold">강의 공지사항</h1>
+            <h1 className="text-2xl font-bold">전체 공지사항</h1>
             <div className="flex items-center gap-4">
               <div className="flex items-center bg-gray-100 rounded-lg px-4 py-2">
                 <Search className="text-gray-400" size={20} />
@@ -84,7 +84,7 @@ const LectureNoticeContent = ({ courseId }) => {
             {currentNotices.map((notice) => (
                 <tr key={notice.id} className="border-b hover:bg-gray-50 cursor-pointer">
                   <td className="py-4 text-center">{notice.id}</td>
-                  <td className="py-4 text-center">{notice.title}</td>
+                  <td className="py-4 text-center truncate">{notice.title}</td>
                   <td className="py-4 text-center">{notice.writer}</td>
                   <td className="py-4 text-center">{notice.date}</td>
                   <td className="py-4 text-center">{notice.views}</td>
@@ -128,4 +128,4 @@ const LectureNoticeContent = ({ courseId }) => {
   );
 };
 
-export default LectureNoticeContent;
+export default GlobalNoticeContent;

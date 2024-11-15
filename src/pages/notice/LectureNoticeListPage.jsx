@@ -1,7 +1,7 @@
 import React from 'react';
 import TopBar from '../../components/layout/TopBar.jsx';
 import Sidebar from '../../components/layout/Sidebar.jsx';
-import LectureNoticeContent from '../../components/notice/LectureNoticeContent.jsx';
+import LectureNoticeListContent from '../../components/notice/LectureNoticeListContent.jsx';
 
 const LectureNoticeListPage = () => {
   return (
@@ -9,7 +9,7 @@ const LectureNoticeListPage = () => {
         <Sidebar />
         <div className="flex-1">
           <TopBar />
-          <LectureNoticeContent />
+          <LectureNoticeListContent />
         </div>
       </div>
   );

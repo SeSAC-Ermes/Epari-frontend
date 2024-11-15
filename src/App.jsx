@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import React from 'react';
 import SignInPage from './pages/SignInPage.jsx';
 import SignUpPage from './pages/SignUpPage.jsx';
-import NoticeListContent from "./components/notice/NoticeListContent.jsx";
 import CourseListPage from "./pages/lecture/CourseListPage.jsx";
 import CourseDetailPage from "./pages/lecture/CourseDetailPage.jsx";
 import LectureNoticeListPage from "./pages/notice/LectureNoticeListPage.jsx";
@@ -23,6 +22,7 @@ import RootRedirect from "./components/auth/RootRedirect.jsx";
 import AssignmentDetailPage from "./pages/assignment/AssignmentDetailPage.jsx";
 import CourseFileArchivePage from "./pages/lecture/CourseFileArchivePage.jsx";
 import NoticeDetailPage from "./pages/notice/NoticeDetailPage.jsx";
+import NoticeListPage from "./pages/notice/NoticeListPage.jsx";
 
 function App() {
   return (
@@ -46,7 +46,12 @@ function App() {
                 <Route path="/courses/:courseId/files/create" element={<CourseFileCreatePage/>}/>
                 <Route path="/courses/:courseId/files/:fileId" element={<CourseFileContent/>}/>
                 <Route path="/courses/:courseId/file-archive" element={<CourseFileArchivePage/>}/>
-                <Route path="/noticelist" element={<NoticeListContent/>}/>
+
+
+                {/*<Route path="/notices" element={<NoticeListPage />} />*/}
+                <Route path="/notices/:noticeId" element={<NoticeDetailPage />} />
+
+                <Route path="/noticelist" element={<NoticeListPage/>}/>
                 <Route path="/notice/:id" element={<NoticeDetailPage />} />
                 <Route path="/courses/:courseId/notices" element={<LectureNoticeListPage />} />
 
