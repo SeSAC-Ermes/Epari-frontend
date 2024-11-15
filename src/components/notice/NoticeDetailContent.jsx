@@ -80,15 +80,42 @@ const NoticeDetailContent = () => {
   }, [noticeId]);
 
   // 파일 다운로드 핸들러
-  const handleFileDownload = async (fileId) => {
+  const handleFileDownload = async (fileId, fileName) => {
     try {
-      const presignedUrl = await NoticeApi.getFilePresignedUrl(noticeId, fileId);
-      window.open(presignedUrl, '_blank');
+      const response = await fetch(`/api/files/notices/${fileId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`, // 토큰이 필요한 경우
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('파일 다운로드 실패');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;  // 원본 파일명으로 다운로드
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
     } catch (error) {
       console.error('파일 다운로드 중 오류 발생:', error);
       alert('파일 다운로드에 실패했습니다.');
     }
   };
+  // const handleFileDownload = async (fileId) => {
+  //   try {
+  //     const presignedUrl = await NoticeApi.getFilePresignedUrl(noticeId, fileId);
+  //     window.open(presignedUrl, '_blank');
+  //   } catch (error) {
+  //     console.error('파일 다운로드 중 오류 발생:', error);
+  //     alert('파일 다운로드에 실패했습니다.');
+  //   }
+  // };
 
   if (loading) {
     return (
@@ -164,7 +191,7 @@ const NoticeDetailContent = () => {
                           className="flex items-center justify-between p-2 bg-gray-50 rounded hover:bg-gray-100"
                       >
                         <div className="flex items-center gap-2">
-                          <FileText size={20} className="text-gray-400" />
+                          <FileText size={20} className="text-gray-400"/>
                           <span className="text-sm">
                       {file.originalFileName}
                             {file.fileSize && (
@@ -174,13 +201,23 @@ const NoticeDetailContent = () => {
                             )}
                     </span>
                         </div>
+                        {/*<button*/}
+                        {/*    onClick={() => handleFileDownload(file.id)}*/}
+                        {/*    className="flex items-center gap-1 text-blue-500 hover:text-blue-600 text-sm px-3 py-1 rounded-md hover:bg-blue-50"*/}
+                        {/*>*/}
+                        {/*  <Download size={16}/>*/}
+                        {/*  <span>다운로드</span>*/}
+                        {/*</button>*/}
+
                         <button
-                            onClick={() => handleFileDownload(file.id)}
+                            onClick={() => handleFileDownload(file.id, file.originalFileName)}
                             className="flex items-center gap-1 text-blue-500 hover:text-blue-600 text-sm px-3 py-1 rounded-md hover:bg-blue-50"
                         >
-                          <Download size={16} />
+                          <Download size={16}/>
                           <span>다운로드</span>
                         </button>
+
+
                       </li>
                   ))}
                 </ul>
@@ -192,8 +229,6 @@ const NoticeDetailContent = () => {
 };
 
 export default NoticeDetailContent;
-
-
 
 
 // import React, { useState, useEffect } from 'react';
