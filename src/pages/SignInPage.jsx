@@ -12,8 +12,8 @@ const SignInPage = () => {
   const onLoginSuccess = () => {
 
     // location.state?.from에 원래 가려고 했던 페이지 경로가 있으면 그곳으로,
-    // 없으면 기본적으로 courselist로 이동
-    const destination = location.state?.from || '/courselist';
+    // 없으면 기본적으로 courses 이동
+    const destination = location.state?.from || '/courses';
     navigate(destination, { replace: true });
   };
 
