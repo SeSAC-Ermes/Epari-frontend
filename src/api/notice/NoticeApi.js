@@ -74,7 +74,7 @@ export const NoticeApi = {
   increaseViewCount: async (id) => {
     try {
       // PUT 메서드로 변경
-      const response = await apiClient.put(`/api/notices/${id}/view-count`);
+      const response = await apiClient.put(`/api/notices/${id}/viewCount`);
       return response.data;
     } catch (error) {
       // 404 에러의 경우 조용히 처리
