@@ -1,7 +1,7 @@
 import React from 'react';
-import TopBar from '../components/layout/TopBar';
-import Sidebar from '../components/layout/Sidebar.jsx';
-import QnAWriteContent from '../components/QnAWriteContent.jsx';
+import TopBar from '../../components/layout/TopBar.jsx';
+import Sidebar from '../../components/layout/Sidebar.jsx';
+import QnAWriteContent from '../../components/qna/QnAWriteContent.jsx';
 
 const QnAWritePage = () => {
   return (

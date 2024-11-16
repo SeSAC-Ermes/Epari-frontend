@@ -1,7 +1,7 @@
 import React from 'react';
-import TopBar from '../components/layout/TopBar';
-import Sidebar from '../components/layout/Sidebar.jsx';
-import QnADetailContent from '../components/QnADetailContent.jsx';
+import TopBar from '../../components/layout/TopBar.jsx';
+import Sidebar from '../../components/layout/Sidebar.jsx';
+import QnADetailContent from '../../components/qna/QnADetailContent.jsx';
 
 const QnADetailPage = () => {
   return (

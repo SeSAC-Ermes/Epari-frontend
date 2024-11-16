@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import CourseCard from './CourseCard';
 import LectureManagementModal from './LectureManagementModal';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import NoticeTabs from './NoticeTabs';
 import NoticeTable from './NoticeTable';
 import { LectureAPI } from "../../../api/lecture/lectureApi.js";
+import { NoticeApi } from "../../../api/notice/NoticeApi.js";
 
 /**
  * 강의 목록 페이지의 메인 컴포넌트
@@ -32,7 +34,9 @@ const getIsInstructorFromToken = () => {
     return false;
   }
 };
+
 const CourseListContent = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('notice');
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -42,40 +46,65 @@ const CourseListContent = () => {
   const [selectedLecture, setSelectedLecture] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
 
-  const [tabData] = useState({
-    notice: [
-      {
-        id: 1,
-        title: '2024년도 1학기 수강신청 안내',
-        writer: '세바 관리자',
-        date: '2024/10/03',
-        views: 245
-      },
-      {
-        id: 2,
-        title: '온라인 강의 시스템 업데이트 안내',
-        writer: '세바 관리자',
-        date: '2024/10/14',
-        views: 189
+  // 공지사항 상태 추가
+  const [globalNotices, setGlobalNotices] = useState([]);
+  const [courseNotices, setCourseNotices] = useState([]);
+  const [noticeLoading, setNoticeLoading] = useState(false);
+
+  // 공지사항 데이터 로드
+  useEffect(() => {
+    const loadNotices = async () => {
+      setNoticeLoading(true);
+      try {
+        if (activeTab === 'notice') {
+          const response = await NoticeApi.getGlobalNotices();
+          const formattedNotices = response.slice(0, 5).map(notice => ({
+            id: notice.id,
+            displayNumber: notice.displayNumber,
+            title: notice.title,
+            writer: notice.instructorName,
+            date: new Date(notice.createdAt).toLocaleDateString(),
+            views: notice.viewCount
+          }));
+          setGlobalNotices(formattedNotices);
+        } else {
+          if (courses.length > 0) {
+            const response = await NoticeApi.getCourseNotices(courses[0].id);
+            const formattedNotices = response.slice(0, 5).map(notice => ({
+              id: notice.id,
+              displayNumber: notice.displayNumber,
+              title: notice.title,
+              writer: notice.instructorName,
+              date: new Date(notice.createdAt).toLocaleDateString(),
+              views: notice.viewCount
+            }));
+            setCourseNotices(formattedNotices);
+          }
+        }
+      } catch (error) {
+        console.error('공지사항 로드 실패:', error);
+        setError('공지사항을 불러오는데 실패했습니다.');
+      } finally {
+        setNoticeLoading(false);
       }
-    ],
-    courseNotice: [
-      {
-        id: 1,
-        title: 'AWS 실습 환경 설정 안내',
-        writer: '윤지수',
-        date: '2024/10/12',
-        views: 78
-      },
-      {
-        id: 2,
-        title: '알고리즘 스터디 그룹 모집',
-        writer: '김명우',
-        date: '2024/10/13',
-        views: 92
-      }
-    ]
-  });
+    };
+
+    loadNotices();
+  }, [activeTab, courses]);
+
+  // 공지사항 데이터 가져오기
+  const getCurrentNotices = () => {
+    if (noticeLoading) {
+      return [{ id: 'loading', title: '로딩 중...', writer: '', date: '', views: '' }];
+    }
+
+    return activeTab === 'notice' ? globalNotices : courseNotices;
+  };
+
+  // 공지사항 클릭 핸들러
+  const handleNoticeClick = (noticeId) => {
+    navigate(`/notices/${noticeId}`);
+  };
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -256,7 +285,10 @@ const CourseListContent = () => {
         {/* 공지사항 섹션 */}
         <div className="bg-white rounded-lg p-6 mt-8">
           <NoticeTabs activeTab={activeTab} setActiveTab={setActiveTab}/>
-          <NoticeTable notices={tabData[activeTab]}/>
+          <NoticeTable
+              notices={getCurrentNotices()}
+              onNoticeClick={handleNoticeClick}
+          />
         </div>
 
         <LectureManagementModal

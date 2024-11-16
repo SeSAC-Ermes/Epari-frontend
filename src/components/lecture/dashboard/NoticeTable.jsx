@@ -5,28 +5,30 @@ import React from 'react';
  * 번호, 제목, 작성자, 날짜, 조회수 정보를 컬럼으로 표시
  */
 
-const NoticeTable = ({ notices }) => {
-  const headers = ['No.', '제목', '작성자', '날짜', '조회수'];
-
+const NoticeTable = ({ notices, onNoticeClick }) => {
   return (
       <table className="w-full">
         <thead>
-        <tr className="border-t border-b">
-          {headers.map((header, index) => (
-              <th key={index} className="py-3 text-left">
-                {header}
-              </th>
-          ))}
+        <tr className="border-y">
+          <th className="py-4 text-center w-20">No.</th>
+          <th className="py-4 text-center w-96">제목</th>
+          <th className="py-4 text-center w-32">작성자</th>
+          <th className="py-4 text-center w-32">날짜</th>
+          <th className="py-4 text-center w-32">조회수</th>
         </tr>
         </thead>
         <tbody>
-        {notices.map((item) => (
-            <tr key={item.id} className="border-b hover:bg-gray-50">
-              <td className="py-3">{item.id}</td>
-              <td className="py-3">{item.title}</td>
-              <td className="py-3">{item.writer}</td>
-              <td className="py-3">{item.date}</td>
-              <td className="py-3">{item.views}</td>
+        {notices.map((notice) => (
+            <tr
+                key={notice.id}
+                className="border-b hover:bg-gray-50 cursor-pointer"
+                onClick={() => onNoticeClick(notice.id)}
+            >
+              <td className="py-4 text-center">{notice.displayNumber}</td>
+              <td className="py-4 text-center truncate">{notice.title}</td>
+              <td className="py-4 text-center">{notice.writer}</td>
+              <td className="py-4 text-center">{notice.date}</td>
+              <td className="py-4 text-center">{notice.views}</td>
             </tr>
         ))}
         </tbody>

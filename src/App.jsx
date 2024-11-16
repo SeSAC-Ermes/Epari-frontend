@@ -5,9 +5,9 @@ import SignUpPage from './pages/SignUpPage.jsx';
 import CourseListPage from "./pages/lecture/CourseListPage.jsx";
 import CourseDetailPage from "./pages/lecture/CourseDetailPage.jsx";
 import LectureNoticeListPage from "./pages/notice/LectureNoticeListPage.jsx";
-import QnAListPage from "./pages/QnAListPage.jsx";
-import QnADetailPage from "./pages/QnADetailPage.jsx";
-import QnAWritePage from "./pages/QnAWritePage.jsx";
+import QnAListPage from "./pages/qna/QnAListPage.jsx";
+import QnADetailPage from "./pages/qna/QnADetailPage.jsx";
+import QnAWritePage from "./pages/qna/QnAWritePage.jsx";
 import CurriculumPage from "./pages/lecture/CurriculumPage.jsx";
 import AccountPage from "./pages/AccountPage.jsx";
 import AssignmentPage from "./pages/assignment/AssignmentPage.jsx";
@@ -47,15 +47,12 @@ function App() {
                 <Route path="/courses/:courseId/files/:fileId" element={<CourseFileContent/>}/>
                 <Route path="/courses/:courseId/file-archive" element={<CourseFileArchivePage/>}/>
 
-
-                {/*<Route path="/notices" element={<NoticeListPage />} />*/}
-                <Route path="/notices/:noticeId" element={<NoticeDetailPage />} />
+                <Route path="/notices/:noticeId" element={<NoticeDetailPage/>}/>
 
                 <Route path="/noticelist" element={<NoticeListPage/>}/>
-                <Route path="/notice/:id" element={<NoticeDetailPage />} />
-                <Route path="/courses/:courseId/notices" element={<LectureNoticeListPage />} />
-
-
+                <Route path="/notice/:id" element={<NoticeDetailPage/>}/>
+                <Route path="/courses/:courseId/notices" element={<LectureNoticeListPage/>}/>
+                
                 <Route path="/qnalist" element={<QnAListPage/>}/>
                 <Route path="/qna/write" element={<QnAWritePage/>}/>
                 <Route path="/qnalist/:num" element={<QnADetailPage/>}/>
