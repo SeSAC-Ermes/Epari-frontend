@@ -4,6 +4,7 @@ import AttendanceTable from "../../components/attendance/AttendanceTable.jsx";
 import { useParams } from "react-router-dom";
 import apiClient from "../../api/axios.js";
 import { withPageAuth } from '../../auth/WithAuth.jsx';
+import { usePrompt } from "../../hooks/usePrompt.js";
 
 /**
  * 출석부 관리를 위한 메인 페이지 컴포넌트
@@ -162,17 +163,10 @@ const AttendanceManagementPage = () => {
   }, [showToast]);
 
   // 페이지 이탈 방지
-  useEffect(() => {
-    const handleBeforeUnload = (e) => {
-      if (modifiedStudents.size > 0) {
-        e.preventDefault();
-        e.returnValue = '';
-      }
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [modifiedStudents]);
+  usePrompt(
+      "저장되지 않은 변경사항이 있습니다. 정말 나가시겠습니까?",
+      modifiedStudents.size > 0
+  );
 
   // 초기 데이터 로드
   useEffect(() => {
