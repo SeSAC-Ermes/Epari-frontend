@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ChevronDown, ChevronUp, Download, FileText, Pencil, Trash2 } from 'lucide-react';
 import QuillEditor from '../../components/common/QuillEditor';
 import FileUpload from "../../components/common/FileUpload";
-import LectureAPI from "../../api/lecture/lectureApi.js";
+import courseAPI from "../../api/course/courseAPI.js";
 import { calculateDday, formatDate, getAssignmentStatus } from "../../utils/DateUtils.js";
 import { useAssignmentActions, useAssignmentState, useAuth, useFileHandling } from './hooks/useAssignment';
 
@@ -40,22 +40,22 @@ const AssignmentDetail = () => {
       state.setIsInstructor(instructorStatus);
     };
 
-    const fetchLectureInfo = async () => {
+    const fetchCourseInfo = async () => {
       try {
-        const lectureResponse = await LectureAPI.getLectureDetail(courseId);
-        if (lectureResponse.instructor) {
-          state.setInstructorId(lectureResponse.instructor.id);
+        const courseResponse = await courseAPI.getCourseDetail(courseId);
+        if (courseResponse.instructor) {
+          state.setInstructorId(courseResponse.instructor.id);
         } else {
           state.setError('강의 담당 강사 정보를 찾을 수 없습니다.');
         }
       } catch (err) {
-        console.error('Error fetching lecture:', err);
+        console.error('Error fetching course:', err);
         state.setError('강의 정보를 불러오는데 실패했습니다.');
       }
     };
 
     checkInstructorStatus();
-    fetchLectureInfo();
+    fetchCourseInfo();
   }, [courseId]);
 
   if (state.isLoading) {
