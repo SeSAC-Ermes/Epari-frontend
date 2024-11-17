@@ -90,6 +90,7 @@ const CurriculumCalendar = ({ events }) => {
             }}
             locale="ko"
             height="auto"
+            fixedWeekCount={false}
             validRange={{
               start: dateRange.start,
               end: dateRange.end
