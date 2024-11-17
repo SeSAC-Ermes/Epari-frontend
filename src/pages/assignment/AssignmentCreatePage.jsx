@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
-import ReactQuill from 'react-quill';
 import { useNavigate, useParams } from 'react-router-dom';
+import 'react-quill/dist/quill.snow.css';
 import Sidebar from '../../components/layout/Sidebar';
+import QuillEditor from '../../components/common/QuillEditor';
 import FileUpload from "../../components/common/FileUpload.jsx";
 import { AssignmentAPI } from "../../api/assignment/AssignmentApi.js";
-import 'react-quill/dist/quill.snow.css';
 import TopBar from "../../components/layout/TopBar.jsx";
 import LectureAPI from "../../api/lecture/lectureApi.js";
 
@@ -26,25 +26,6 @@ const AssignmentCreatePage = () => {
   /**
    * 과제 출제하는 페이지입니다.
    */
-
-
-      // React-Quill 모듈 포맷
-  const modules = {
-        toolbar: {
-          container: [
-            [{ 'size': ['small', false, 'large', 'huge'] }],
-            [{ 'font': [] }],
-            ['bold', 'italic', 'underline', 'strike'],
-            [{ 'color': [] }, { 'background': [] }],
-            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-            [{ 'align': [] }],
-            ['link', 'image'],
-            ['clean']
-          ],
-        }
-      };
-
-  const formats = ['font', 'size', 'bold', 'italic', 'underline', 'strike', 'color', 'background', 'list', 'bullet', 'align', 'link', 'image'];
 
   useEffect(() => {
     const fetchLectureInfo = async () => {
@@ -81,16 +62,12 @@ const AssignmentCreatePage = () => {
     try {
       setIsSubmitting(true);
 
-      // 과제 생성 요청 - 강의의 담당 강사 ID 사용
-      const assignmentResponse = await AssignmentAPI.createAssignment(courseId, {
+      await AssignmentAPI.createAssignment(courseId, {
         title,
         description,
-        dueDate
+        dueDate,
+        files
       }, instructorId);
-
-      if (files.length > 0 && assignmentResponse.id) {
-        await AssignmentAPI.uploadFiles(courseId, files, assignmentResponse.id);
-      }
 
       alert('과제가 성공적으로 생성되었습니다.');
       navigate(`/courses/${courseId}/assignments`);
@@ -104,6 +81,27 @@ const AssignmentCreatePage = () => {
 
   const handleFilesChange = (newFiles) => {
     setFiles(newFiles);
+  };
+
+  const handleImageUpload = async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const response = await fetch(`/api/courses/${courseId}/upload-image`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('이미지 업로드에 실패했습니다.');
+      }
+
+      const data = await response.json();
+      return data.url; // API 응답에서 이미지 URL을 반환한다고 가정
+    } catch (error) {
+      throw new Error('이미지 업로드에 실패했습니다.');
+    }
   };
 
   return (
@@ -136,15 +134,11 @@ const AssignmentCreatePage = () => {
 
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700">설명</label>
-                  <div className="border border-gray-300 rounded-lg" style={{ height: '400px' }}>
-                    <ReactQuill
-                        theme="snow"
+                  <div className="">
+                    <QuillEditor
                         value={description}
                         onChange={setDescription}
-                        modules={modules}
-                        formats={formats}
-                        className="h-[350px]"
-                        placeholder="과제 설명을 입력하세요"
+                        readOnly={false}
                     />
                   </div>
                 </div>
