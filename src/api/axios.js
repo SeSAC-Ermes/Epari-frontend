@@ -1,3 +1,4 @@
+import { fetchAuthSession } from 'aws-amplify/auth';
 import axios from 'axios';
 
 /**
@@ -12,9 +13,16 @@ const apiClient = axios.create({
   },
 });
 
+// S3 전용 클라이언트
+const s3Client = axios.create({
+  withCredentials: false,
+  headers: {},
+  responseType: 'blob'  // 파일 다운로드용 기본 설정
+});
+
 // 요청 인터셉터
 apiClient.interceptors.request.use(
-    (config) => {
+    async (config) => {
       const token = localStorage.getItem('token');
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -28,25 +36,29 @@ apiClient.interceptors.request.use(
 
 // 응답 인터셉터
 apiClient.interceptors.response.use(
-    (response) => response,
-    (error) => {
-      if (error.response) {
-        switch (error.response.status) {
-          case 401:
-            // 인증 에러 처리
-            localStorage.removeItem('token');
-            // 필요한 경우 로그인 페이지로 리다이렉트
-            break;
-          case 403:
-            // 권한 에러 처리
-            break;
-          default:
-            // 기타 에러 처리
-            break;
+    (response) => {
+      return response;
+    },
+    async (error) => {
+      if (error.response?.status === 401) {
+        try {
+          const session = await fetchAuthSession();
+          const newToken = session.tokens?.accessToken?.toString();
+
+          if (newToken) {
+            localStorage.setItem('token', newToken);
+            const originalRequest = error.config;
+            originalRequest.headers.Authorization = `Bearer ${newToken}`;
+            return apiClient(originalRequest);
+          }
+        } catch (refreshError) {
+          localStorage.clear();
+          window.location.href = '/signin';
+          return Promise.reject(refreshError);
         }
       }
       return Promise.reject(error);
     }
 );
 
-export default apiClient;
+export { apiClient as default, s3Client };

@@ -8,6 +8,8 @@ import FileUpload from "../../components/common/FileUpload.jsx";
 import { AssignmentAPI } from "../../api/assignment/AssignmentApi.js";
 import TopBar from "../../components/layout/TopBar.jsx";
 import LectureAPI from "../../api/lecture/lectureApi.js";
+import 'react-quill/dist/quill.snow.css';
+import CourseAPI from "../../api/course/courseAPI.js";
 
 const AssignmentCreatePage = () => {
   const navigate = useNavigate();

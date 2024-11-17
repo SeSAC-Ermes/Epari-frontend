@@ -80,13 +80,6 @@ const AssignmentDetail = () => {
                 </button>
             )}
           </div>
-
-          {state.error && (
-              <div className="mb-4 bg-red-50 text-red-600 p-4 rounded-lg">
-                {state.error}
-              </div>
-          )}
-
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
             <table className="w-full">
               {state.isInstructor ? (
