@@ -23,7 +23,8 @@ const SignUpForm = () => {
     isVerifyButtonDisabled: false,
     showVerificationField: false,
     verificationCode: '',
-    isEmailVerified: false
+    isEmailVerified: false,
+    isVerificationCodeValid: false
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -70,6 +71,21 @@ const SignUpForm = () => {
     }
   };
 
+  // 인증 코드 유효성 검사 함수 추가
+  const validateVerificationCode = (code) => {
+    return code.length === 6 && /^\d+$/.test(code);  // 6자리 숫자인지 확인
+  };
+
+// 인증 코드 입력 핸들러 수정
+  const handleVerificationCodeChange = (e) => {
+    const code = e.target.value.replace(/[^0-9]/g, '').slice(0, 6);  // 숫자만 입력 가능, 최대 6자리
+    setEmailVerification(prev => ({
+      ...prev,
+      verificationCode: code,
+      isVerificationCodeValid: validateVerificationCode(code)
+    }));
+  };
+
   const handleEmailVerification = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -86,19 +102,37 @@ const SignUpForm = () => {
         })
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('이메일 인증 요청 중 오류가 발생했습니다.');
+        if (response.status === 400 && data.message === "이미 가입된 이메일입니다.") {
+          setError("이미 가입된 이메일입니다. 로그인을 진행해주세요.");
+          // 인증 필드 초기화
+          setEmailVerification(prev => ({
+            ...prev,
+            isVerifyButtonDisabled: false,
+            showVerificationField: false
+          }));
+          return;
+        }
+        throw new Error(data.message || '이메일 인증 요청 중 오류가 발생했습니다.');
       }
 
       setEmailVerification(prev => ({
         ...prev,
         isVerifyButtonDisabled: true,
-        showVerificationField: true
+        showVerificationField: true,
+        verificationCode: ''  // 인증 코드 입력 필드 초기화
       }));
-      alert('인증 코드가 이메일로 전송되었습니다.');
+      alert(data.message || '인증 코드가 이메일로 전송되었습니다.');
     } catch (err) {
       console.error('Email verification error:', err);
       setError(err.message);
+      // 에러 발생 시 버튼 다시 활성화
+      setEmailVerification(prev => ({
+        ...prev,
+        isVerifyButtonDisabled: false
+      }));
     } finally {
       setIsLoading(false);
     }
@@ -121,17 +155,25 @@ const SignUpForm = () => {
         })
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('잘못된 인증 코드입니다.');
+        throw new Error(data.message || '잘못된 인증 코드입니다.');
       }
 
       setEmailVerification(prev => ({
         ...prev,
-        isEmailVerified: true
+        isEmailVerified: true,
+        showVerificationField: false  // 인증 성공 시 인증 코드 입력 필드 숨기기
       }));
-      alert('이메일 인증이 완료되었습니다.');
+      alert(data.message || '이메일 인증이 완료되었습니다.');
     } catch (err) {
       setError(err.message);
+      // 에러 발생 시 인증 코드 입력 필드 초기화
+      setEmailVerification(prev => ({
+        ...prev,
+        verificationCode: ''
+      }));
     } finally {
       setIsLoading(false);
     }
@@ -142,7 +184,7 @@ const SignUpForm = () => {
     setError('');
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/send-verification`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/resend-verification`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -152,14 +194,21 @@ const SignUpForm = () => {
         })
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('인증 코드 재발송 중 오류가 발생했습니다.');
+        throw new Error(data.message || '인증 코드 재발송 중 오류가 발생했습니다.');
       }
 
-      alert('인증 코드가 재발송되었습니다.');
+      // 재발송 성공 시 인증 코드 입력 필드 초기화
+      setEmailVerification(prev => ({
+        ...prev,
+        verificationCode: ''
+      }));
+      alert(data.message || '인증 코드가 재발송되었습니다.');
     } catch (err) {
-      setError(err.message);
       console.error('Resend code error:', err);
+      setError(err.message);
     } finally {
       setIsLoading(false);
     }
@@ -251,7 +300,7 @@ const SignUpForm = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    placeholder="user@email.com"
+                    placeholder="이메일을 입력하세요."
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent"
                     disabled={emailVerification.isEmailVerified}
                 />
@@ -272,27 +321,28 @@ const SignUpForm = () => {
             {/* Verification Code Field */}
             {emailVerification.showVerificationField && !emailVerification.isEmailVerified && (
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Verification Code</label>
+                  <label className="text-sm font-medium text-gray-700">인증 코드</label>
                   <div className="flex gap-2">
                     <input
                         type="text"
                         value={emailVerification.verificationCode}
-                        onChange={(e) => setEmailVerification(prev => ({
-                          ...prev,
-                          verificationCode: e.target.value
-                        }))}
-                        placeholder="Enter verification code"
+                        onChange={handleVerificationCodeChange}
+                        maxLength={6}
+                        placeholder="6자리 인증 코드를 입력하세요."
                         className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent"
                     />
                     <button
                         type="button"
                         onClick={handleVerificationCodeSubmit}
-                        disabled={!emailVerification.verificationCode || isLoading}
+                        disabled={!emailVerification.isVerificationCodeValid || isLoading}  // 수정
                         className="px-4 py-2 bg-green-400 text-white rounded-md hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 disabled:bg-gray-300"
                     >
                       확인
                     </button>
                   </div>
+                  {emailVerification.verificationCode && !emailVerification.isVerificationCodeValid && (
+                      <p className="text-sm text-red-500">6자리 숫자를 입력해주세요.</p>
+                  )}
                   <button
                       type="button"
                       onClick={handleResendCode}
@@ -312,7 +362,7 @@ const SignUpForm = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="Enter password"
+                  placeholder="비밀번호를 입력하세요."
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent"
               />
               {!validation.isPasswordValid && formData.password && (
@@ -330,7 +380,7 @@ const SignUpForm = () => {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  placeholder="Confirm your password"
+                  placeholder="비밀번호를 입력하세요."
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent"
               />
               {formData.confirmPassword && !validation.isPasswordMatch && (
@@ -346,7 +396,7 @@ const SignUpForm = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  placeholder="Enter your name"
+                  placeholder="이름을 입력하세요."
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent"
               />
             </div>
@@ -364,7 +414,7 @@ const SignUpForm = () => {
                   disabled={!validation.isEmailValid || !validation.isPasswordValid || !validation.isNameValid || !emailVerification.isEmailVerified || isLoading}
                   className="w-60 py-2 px-4 bg-green-400 hover:bg-green-500 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 disabled:bg-gray-300"
               >
-                {isLoading ? 'Processing...' : '회원가입'}
+                {isLoading ? '처리중...' : '회원가입'}
               </button>
 
               {/* Sign In Button */}
