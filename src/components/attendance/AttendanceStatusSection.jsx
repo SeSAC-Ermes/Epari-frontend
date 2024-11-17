@@ -14,7 +14,7 @@ const AttendanceStatusSection = ({ stats, currentDate, onDateChange, onMarkAllPr
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <ClipboardList className="w-6 h-6 text-gray-500"/>
-            <h1 className="text-xl font-semibold text-gray-900">출석 관리</h1>
+            <h1 className="text-xl font-semibold text-gray-900">출결 관리</h1>
           </div>
 
           <div className="relative">
