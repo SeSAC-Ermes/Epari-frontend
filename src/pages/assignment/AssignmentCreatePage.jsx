@@ -7,9 +7,7 @@ import QuillEditor from '../../components/common/QuillEditor';
 import FileUpload from "../../components/common/FileUpload.jsx";
 import { AssignmentAPI } from "../../api/assignment/AssignmentApi.js";
 import TopBar from "../../components/layout/TopBar.jsx";
-import LectureAPI from "../../api/lecture/lectureApi.js";
-import 'react-quill/dist/quill.snow.css';
-import CourseAPI from "../../api/course/courseAPI.js";
+import courseAPI from "../../api/course/courseAPI.js";
 
 const AssignmentCreatePage = () => {
   const navigate = useNavigate();
@@ -30,11 +28,11 @@ const AssignmentCreatePage = () => {
    */
 
   useEffect(() => {
-    const fetchLectureInfo = async () => {
+    const fetchCourseInfo = async () => {
       try {
-        const lectureResponse = await LectureAPI.getLectureDetail(courseId);  // getLectureDetail 사용
-        if (lectureResponse.instructor) {
-          setInstructorId(lectureResponse.instructor.id);
+        const courseResponse = await courseAPI.getCourseDetail(courseId);  // getCourseDetail 사용
+        if (courseResponse.instructor) {
+          setInstructorId(courseResponse.instructor.id);
         } else {
           setError('강의 담당 강사 정보를 찾을 수 없습니다.');
         }
@@ -44,7 +42,7 @@ const AssignmentCreatePage = () => {
       }
     };
 
-    fetchLectureInfo();
+    fetchCourseInfo();
   }, [courseId]);
 
   const handleSubmit = async (e) => {
@@ -85,27 +83,6 @@ const AssignmentCreatePage = () => {
     setFiles(newFiles);
   };
 
-  const handleImageUpload = async (file) => {
-    try {
-      const formData = new FormData();
-      formData.append('image', file);
-
-      const response = await fetch(`/api/courses/${courseId}/upload-image`, {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error('이미지 업로드에 실패했습니다.');
-      }
-
-      const data = await response.json();
-      return data.url; // API 응답에서 이미지 URL을 반환한다고 가정
-    } catch (error) {
-      throw new Error('이미지 업로드에 실패했습니다.');
-    }
-  };
-
   return (
       <div className="flex h-screen bg-gray-50">
         <Sidebar/>
@@ -136,7 +113,7 @@ const AssignmentCreatePage = () => {
 
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700">설명</label>
-                  <div className="">
+                  <div className="rounded-lg">
                     <QuillEditor
                         value={description}
                         onChange={setDescription}
