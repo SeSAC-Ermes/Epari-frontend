@@ -96,6 +96,7 @@ const SignUpForm = () => {
       const response = await axios.post('/api/auth/send-verification', {
         email: formData.email
       });
+      console.log('email: ' + formData.email);
 
       if (response.data) {
         setEmailVerification(prev => ({
@@ -213,7 +214,7 @@ const SignUpForm = () => {
 
     try {
       await axios.post('/api/auth/signup', {
-        username: formData.email.split('@')[0],
+        username: formData.email,
         email: formData.email,
         password: formData.password,
         name: formData.name,
