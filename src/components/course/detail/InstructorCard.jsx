@@ -16,7 +16,7 @@ const InstructorCard = ({ instructor }) => {
   }
 
   return (
-      <div className="bg-white rounded-lg p-6 mb-6">
+      <div className="p-6 mb-6">
         <div className="flex items-start gap-6">
           <div className="w-16 h-16 rounded-full bg-gray-200 overflow-hidden flex-shrink-0">
             <img
