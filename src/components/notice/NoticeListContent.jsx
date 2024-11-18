@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NoticeApi } from '../../api/notice/NoticeApi';  // API 경로 수정
 import { Search } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
+const { courseId } = useParams();
 
 const NoticeListContent = () => {
   const [notices, setNotices] = useState([]);
@@ -17,7 +18,7 @@ const NoticeListContent = () => {
 
 
   const handleNoticeClick = (noticeId) => {
-    navigate(`/notices/${noticeId}`);
+    navigate(`/courses/${courseId}/notices/${noticeId}`);
   };
 
   const loadNotices = async () => {

@@ -4,7 +4,7 @@ import SignInPage from './pages/SignInPage.jsx';
 import SignUpPage from './pages/SignUpPage.jsx';
 import CourseListPage from "./pages/course/CourseListPage.jsx";
 import CourseDetailPage from "./pages/course/CourseDetailPage.jsx";
-import CourseNoticeListPage from "./pages/CourseNoticeListPage.jsx";
+// import CourseNoticeListPage from "./pages/notice/CourseNoticeListPage.jsx";
 import QnAListPage from "./pages/qna/QnAListPage.jsx";
 import QnADetailPage from "./pages/qna/QnADetailPage.jsx";
 import QnAWritePage from "./pages/qna/QnAWritePage.jsx";
@@ -25,6 +25,8 @@ import MainLayout from "./components/layout/MainLayout.jsx";
 import AttendanceManagementPage from "./pages/attendance/AttendanceManagementPage.jsx";
 import ExamPage from "./pages/exam/ExamPage.jsx";
 import ExamCreatePage from "./pages/exam/ExamCreatePage.jsx";
+import NoticeDetailPage from "./pages/notice/NoticeDetailPage.jsx";
+import NoticeListPage from "./pages/notice/NoticeListPage.jsx";
 
 function App() {
   return (
@@ -48,7 +50,13 @@ function App() {
               <Route index element={<CourseDetailPage/>}/>
 
               {/* 공지사항 */}
-              <Route path="notices" element={<CourseNoticeListPage/>}/>
+              <Route path="notices">
+                <Route index element={<NoticeListPage/>}/>
+                <Route path=":noticeId" element={<NoticeDetailPage/>}/>
+                {/*<Route path="write" element={<QnAWritePage/>}/>*/}
+              </Route>
+              {/*<Route path="/courses/:courseId/notices" element={<CourseNoticeListPage/>}/>*/}
+
 
               {/* Q&A */}
               <Route path="qna">

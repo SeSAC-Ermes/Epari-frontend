@@ -49,6 +49,11 @@ const Sidebar = () => {
 
   // 공통 메뉴 - 핵심 학습
   const mainMenuItems = courseId ? [
+    // {
+    //   icon: <Bell size={20}/>,
+    //   text: '전체 공지사항',
+    //   path: `/courses/${courseId}/notices_global`
+    // },
     {
       icon: <Bell size={20}/>,
       text: '강의 공지사항',

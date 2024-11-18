@@ -1,5 +1,6 @@
 import React from 'react';
-import CourseNoticeListContent from "../components/notice/CourseNoticeListContent.jsx";
+import CourseNoticeListContent from "../../components/notice/CourseNoticeListContent.jsx";
+
 
 
 const CourseNoticeListPage = () => {

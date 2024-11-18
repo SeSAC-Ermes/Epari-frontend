@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import { NoticeApi } from '../../api/notice/NoticeApi.js';
+import { useNavigate, useParams } from 'react-router-dom';
 
-const CourseNoticeListContent = ({ courseId }) => {
+const CourseNoticeListContent = () => {
   const [notices, setNotices] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
+  const { courseId } = useParams();
+  const navigate = useNavigate();
   const noticesPerPage = 10;
 
   useEffect(() => {
@@ -15,9 +18,9 @@ const CourseNoticeListContent = ({ courseId }) => {
   const loadNotices = async () => {
     try {
       const response = await NoticeApi.getCourseNotices(courseId);
-      // 최신 글이 맨 위에 오도록 정렬
       const sortedNotices = response.sort((a, b) =>
-          new Date(b.date) - new Date(a.date)
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime() ||
+          b.id - a.id
       );
       setNotices(sortedNotices);
     } catch (error) {
@@ -25,19 +28,20 @@ const CourseNoticeListContent = ({ courseId }) => {
     }
   };
 
-  // 검색 기능
+  const handleNoticeClick = (noticeId) => {
+    navigate(`/courses/${courseId}/notices/${noticeId}`);
+  };
+
   const filteredNotices = notices.filter(notice =>
       notice.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      notice.writer.toLowerCase().includes(searchTerm.toLowerCase())
+      (notice.instructorName || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // 페이지네이션 계산
   const indexOfLastNotice = currentPage * noticesPerPage;
   const indexOfFirstNotice = indexOfLastNotice - noticesPerPage;
   const currentNotices = filteredNotices.slice(indexOfFirstNotice, indexOfLastNotice);
   const totalPages = Math.ceil(filteredNotices.length / noticesPerPage);
 
-  // 페이지 번호 생성
   const pageNumbers = [];
   const maxPageNumbers = 5;
   let startPage = Math.max(1, currentPage - Math.floor(maxPageNumbers / 2));
@@ -82,18 +86,26 @@ const CourseNoticeListContent = ({ courseId }) => {
             </thead>
             <tbody>
             {currentNotices.map((notice) => (
-                <tr key={notice.id} className="border-b hover:bg-gray-50 cursor-pointer">
-                  <td className="py-4 text-center">{notice.id}</td>
+                <tr
+                    key={notice.id}
+                    className="border-b hover:bg-gray-50 cursor-pointer"
+                    onClick={() => handleNoticeClick(notice.id)}
+                >
+                  <td className="py-4 text-center">{notice.displayNumber || notice.id}</td>
                   <td className="py-4 text-center">{notice.title}</td>
-                  <td className="py-4 text-center">{notice.writer}</td>
-                  <td className="py-4 text-center">{notice.date}</td>
-                  <td className="py-4 text-center">{notice.views}</td>
+                  <td className="py-4 text-center">{notice.instructorName || '-'}</td>
+                  <td className="py-4 text-center">
+                    {notice.createdAt
+                        ? new Date(notice.createdAt).toLocaleDateString('ko-KR')
+                        : '-'
+                    }
+                  </td>
+                  <td className="py-4 text-center">{notice.viewCount || 0}</td>
                 </tr>
             ))}
             </tbody>
           </table>
 
-          {/* 페이지네이션 */}
           <div className="flex justify-center items-center mt-6 gap-2">
             <button
                 onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
