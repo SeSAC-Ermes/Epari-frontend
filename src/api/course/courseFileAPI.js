@@ -1,5 +1,9 @@
 import apiClient, { s3Client } from '../axios';
 
+/**
+ * 강의 자료 관련 API 호출 모음
+ */
+
 export const CourseFileAPI = {
 
   // 강의 자료 업로드
