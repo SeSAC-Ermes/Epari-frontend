@@ -1,9 +1,10 @@
 import React from 'react';
-import CourseNoticeContent from '../components/CourseNoticeContent.jsx';
+import CourseNoticeListContent from "../components/notice/CourseNoticeListContent.jsx";
+
 
 const CourseNoticeListPage = () => {
   return (
-      <CourseNoticeContent/>
+      <CourseNoticeListContent/>
   );
 };
 

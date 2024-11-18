@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import { NoticeApi } from '../../api/notice/NoticeApi.js';
 
-const LectureNoticeListContent = ({ courseId }) => {
+const CourseNoticeListContent = ({ courseId }) => {
   const [notices, setNotices] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
@@ -128,4 +128,4 @@ const LectureNoticeListContent = ({ courseId }) => {
   );
 };
 
-export default LectureNoticeListContent;
+export default CourseNoticeListContent;
