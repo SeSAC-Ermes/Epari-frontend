@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { CheckCircle, Download, Search } from 'lucide-react';
+import { ArrowUp, CheckCircle, Download, Search } from 'lucide-react';
 
 /**
  * 강의 자료실의 파일 목록을 표시하고 관리하는 컴포넌트
@@ -147,42 +147,49 @@ const FileArchiveList = ({ files, onDownload }) => {
     return Array.from(downloadItems);
   };
 
+  // 스크롤 이벤트 핸들러 추가
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
+
   return (
       <main className="max-w-7xl mx-auto px-4 py-8">
         <div className="bg-white rounded-lg p-6">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-semibold">자료실</h2>
-            <div className="relative w-64">
-              <input
-                  type="text"
-                  placeholder="자료 검색..."
-                  onChange={(e) => handleSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20}/>
+            <div className="flex items-center gap-4">
+              <div className="relative w-64">
+                <input
+                    type="text"
+                    placeholder="자료 검색..."
+                    onChange={(e) => handleSearch(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20}/>
+              </div>
+              <button
+                  onClick={handleSelectAll}
+                  className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+              >
+                <CheckCircle
+                    size={16}
+                    className={isAllSelected ? "text-green-500" : "text-gray-400"}
+                />
+                <span>전체 선택</span>
+              </button>
+              <button
+                  onClick={() => onDownload(getDownloadItems())}
+                  className={`flex items-center gap-2 px-4 py-2 text-white rounded-lg transition-colors
+                    ${totalSelectedCount > 0 ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-300 cursor-not-allowed'}`}
+                  disabled={totalSelectedCount === 0}
+              >
+                <Download size={16}/>
+                <span>다운로드 {totalSelectedCount > 0 && `(${totalSelectedCount})`}</span>
+              </button>
             </div>
-          </div>
-
-          <div className="flex justify-end items-center gap-4 mb-6">
-            <button
-                onClick={handleSelectAll}
-                className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
-            >
-              <CheckCircle
-                  size={16}
-                  className={isAllSelected ? "text-green-500" : "text-gray-400"}
-              />
-              <span>전체 선택</span>
-            </button>
-            {totalSelectedCount > 0 && (
-                <button
-                    onClick={() => onDownload(getDownloadItems())}
-                    className="flex items-center gap-2 px-4 py-2 text-white bg-green-500 rounded-lg hover:bg-green-600"
-                >
-                  <Download size={16}/>
-                  <span>선택 항목 다운로드 ({totalSelectedCount})</span>
-                </button>
-            )}
           </div>
 
           <div className="border rounded-lg mb-4">
@@ -191,6 +198,7 @@ const FileArchiveList = ({ files, onDownload }) => {
               <div className="col-span-3 font-bold">제목</div>
             </div>
           </div>
+
 
           <div className="space-y-4">
             {filteredFiles.map((file) => (
@@ -270,6 +278,16 @@ const FileArchiveList = ({ files, onDownload }) => {
               </div>
           )}
         </div>
+
+        {/* ScrollToTop 버튼 추가 */}
+        <button
+            onClick={scrollToTop}
+            className="fixed bottom-8 right-8 p-3 bg-green-500 text-white rounded-full shadow-lg hover:bg-green-600 transition-all duration-300 z-[9999]"
+            aria-label="페이지 최상단으로 이동"
+        >
+          <ArrowUp size={24} />
+        </button>
+
       </main>
   );
 };

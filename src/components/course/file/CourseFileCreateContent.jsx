@@ -1,11 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import ReactQuill from 'react-quill';
-import { useNavigate, useParams } from 'react-router-dom'; // useParams로 변경
+import { useNavigate, useParams } from 'react-router-dom';
 import FileUpload from "../../common/FileUpload.jsx";
 import { CourseFileAPI } from '../../../api/course/CourseFileAPI.js';
 import { quillFormats, quillModules } from '../../common/QuillConfig.js';
 import 'react-quill/dist/quill.snow.css';
+
+/**
+ * 강의 자료 업로드 페이지 컴포넌트
+ *
+ * 강의 자료를 생성하고 업로드하는 폼을 제공합니다.
+ * - 제목, 설명(에디터), 파일 첨부 기능
+ * - 미리보기 모달
+ * - 파일 업로드 상태 관리
+ * - 유효성 검사 및 에러 처리
+ */
 
 const CourseFileCreateContent = () => {
   const navigate = useNavigate();
