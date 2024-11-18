@@ -21,7 +21,7 @@ const CourseCard = ({ course }) => {
           className="bg-white rounded-lg shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
           onClick={handleClick}
       >
-        <div className="h-32 bg-blue-50 relative">
+        <div className="h-24 bg-blue-50 relative">
           {imageUrl && !imageError ? (
               <img
                   src={imageUrl}
