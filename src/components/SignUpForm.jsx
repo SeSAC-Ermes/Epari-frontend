@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../assets/epariLogo.jpg';
+import axios from '../api/axios.js';
 
 const SignUpForm = () => {
   const navigate = useNavigate();
@@ -92,43 +93,41 @@ const SignUpForm = () => {
     setError('');
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/send-verification`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: formData.email
-        })
+      const response = await axios.post('/api/auth/send-verification', {
+        email: formData.email
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        if (response.status === 400 && data.message === "이미 가입된 이메일입니다.") {
-          setError("이미 가입된 이메일입니다. 로그인을 진행해주세요.");
-          // 인증 필드 초기화
-          setEmailVerification(prev => ({
-            ...prev,
-            isVerifyButtonDisabled: false,
-            showVerificationField: false
-          }));
-          return;
-        }
-        throw new Error(data.message || '이메일 인증 요청 중 오류가 발생했습니다.');
+      if (response.data) {
+        setEmailVerification(prev => ({
+          ...prev,
+          isVerifyButtonDisabled: true,
+          showVerificationField: true,
+          verificationCode: ''
+        }));
+        alert(response.data.message || '인증 코드가 이메일로 전송되었습니다.');
       }
-
-      setEmailVerification(prev => ({
-        ...prev,
-        isVerifyButtonDisabled: true,
-        showVerificationField: true,
-        verificationCode: ''  // 인증 코드 입력 필드 초기화
-      }));
-      alert(data.message || '인증 코드가 이메일로 전송되었습니다.');
     } catch (err) {
       console.error('Email verification error:', err);
-      setError(err.message);
-      // 에러 발생 시 버튼 다시 활성화
+      const errorMessage = err.response?.data?.message;
+
+      if (err.response?.status === 400) {
+        if (errorMessage === "이미 가입된 이메일입니다.") {
+          setError("이미 가입된 이메일입니다. 로그인을 진행해주세요.");
+        } else if (errorMessage === "가입 승인 대기중입니다.") {
+          setError("가입 승인 대기중입니다. 관리자의 승인을 기다려주세요.");
+        } else {
+          setError(errorMessage || '이메일 인증 요청 중 오류가 발생했습니다.');
+        }
+
+        setEmailVerification(prev => ({
+          ...prev,
+          isVerifyButtonDisabled: false,
+          showVerificationField: false
+        }));
+        return;
+      }
+
+      setError(errorMessage || '이메일 인증 요청 중 오류가 발생했습니다.');
       setEmailVerification(prev => ({
         ...prev,
         isVerifyButtonDisabled: false
@@ -144,32 +143,21 @@ const SignUpForm = () => {
     setError('');
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/verify-code`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          code: emailVerification.verificationCode
-        })
+      const response = await axios.post('/api/auth/verify-code', {
+        email: formData.email,
+        code: emailVerification.verificationCode
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || '잘못된 인증 코드입니다.');
-      }
 
       setEmailVerification(prev => ({
         ...prev,
         isEmailVerified: true,
-        showVerificationField: false  // 인증 성공 시 인증 코드 입력 필드 숨기기
+        showVerificationField: false
       }));
-      alert(data.message || '이메일 인증이 완료되었습니다.');
+      alert(response.data.message || '이메일 인증이 완료되었습니다.');
     } catch (err) {
-      setError(err.message);
-      // 에러 발생 시 인증 코드 입력 필드 초기화
+      const errorMessage = err.response?.data?.message;
+      setError(errorMessage || '잘못된 인증 코드입니다.');
+
       setEmailVerification(prev => ({
         ...prev,
         verificationCode: ''
@@ -184,31 +172,19 @@ const SignUpForm = () => {
     setError('');
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/resend-verification`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: formData.email
-        })
+      const response = await axios.post('/api/auth/resend-verification', {
+        email: formData.email
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || '인증 코드 재발송 중 오류가 발생했습니다.');
-      }
-
-      // 재발송 성공 시 인증 코드 입력 필드 초기화
       setEmailVerification(prev => ({
         ...prev,
         verificationCode: ''
       }));
-      alert(data.message || '인증 코드가 재발송되었습니다.');
+      alert(response.data.message || '인증 코드가 재발송되었습니다.');
     } catch (err) {
       console.error('Resend code error:', err);
-      setError(err.message);
+      const errorMessage = err.response?.data?.message;
+      setError(errorMessage || '인증 코드 재발송 중 오류가 발생했습니다.');
     } finally {
       setIsLoading(false);
     }
@@ -236,29 +212,20 @@ const SignUpForm = () => {
     setError('');
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/signup`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username: formData.email.split('@')[0],
-          email: formData.email,
-          password: formData.password,
-          name: formData.name,
-          verificationCode: emailVerification.verificationCode
-        })
+      await axios.post('/api/auth/signup', {
+        username: formData.email.split('@')[0],
+        email: formData.email,
+        password: formData.password,
+        name: formData.name,
+        verificationCode: emailVerification.verificationCode
       });
-
-      if (!response.ok) {
-        throw new Error('회원가입 처리 중 오류가 발생했습니다.');
-      }
 
       alert('회원가입이 완료되었습니다. 관리자 승인 후 이용하실 수 있습니다.');
       navigate('/signin');
     } catch (err) {
       console.error('SignUp error:', err);
-      setError(err.message);
+      const errorMessage = err.response?.data?.message;
+      setError(errorMessage || '회원가입 처리 중 오류가 발생했습니다.');
     } finally {
       setIsLoading(false);
     }
