@@ -20,6 +20,8 @@ const CourseManagementModal = ({ isOpen, onClose, course = null, onSubmit }) => 
     classroom: ''
   });
 
+  const [error, setError] = useState('');
+
   // 모달이 열릴 때마다 데이터 초기화
   useEffect(() => {
     if (isOpen && course) {
@@ -38,18 +40,46 @@ const CourseManagementModal = ({ isOpen, onClose, course = null, onSubmit }) => 
         classroom: ''
       });
     }
+    setError(''); // 에러 메시지 초기화
   }, [isOpen, course]);
+
+  const validateDates = (startDate, endDate) => {
+    if (!startDate || !endDate) return true;
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    return start <= end;
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => {
+      const newFormData = {
+        ...prev,
+        [name]: value
+      };
+
+      // 날짜 필드가 변경될 때 유효성 검사
+      if (name === 'startDate' || name === 'endDate') {
+        if (!validateDates(newFormData.startDate, newFormData.endDate)) {
+          setError('종료일은 시작일보다 빠를 수 없습니다.');
+        } else {
+          setError('');
+        }
+      }
+
+      return newFormData;
+    });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // 최종 제출 시 날짜 유효성 검사
+    if (!validateDates(formData.startDate, formData.endDate)) {
+      setError('종료일은 시작일보다 빠를 수 없습니다.');
+      return;
+    }
+
     onSubmit(formData);
   };
 
@@ -69,6 +99,12 @@ const CourseManagementModal = ({ isOpen, onClose, course = null, onSubmit }) => 
               <span className="text-xl">×</span>
             </button>
           </div>
+
+          {error && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-md text-sm">
+                {error}
+              </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -107,6 +143,7 @@ const CourseManagementModal = ({ isOpen, onClose, course = null, onSubmit }) => 
                   type="date"
                   name="endDate"
                   value={formData.endDate}
+                  min={formData.startDate} // 시작일 이전 날짜 선택 방지
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                   required
@@ -137,7 +174,12 @@ const CourseManagementModal = ({ isOpen, onClose, course = null, onSubmit }) => 
               </button>
               <button
                   type="submit"
-                  className="px-4 py-2 text-sm bg-green-500 text-white rounded-md hover:bg-green-600"
+                  disabled={!!error}
+                  className={`px-4 py-2 text-sm text-white rounded-md ${
+                      error
+                          ? 'bg-gray-400 cursor-not-allowed'
+                          : 'bg-green-500 hover:bg-green-600'
+                  }`}
               >
                 {course ? '수정' : '생성'}
               </button>
