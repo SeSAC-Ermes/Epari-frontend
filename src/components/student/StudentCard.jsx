@@ -1,15 +1,26 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import AttendanceSection from './AttendanceSection';
 import ExamSection from './ExamSection';
 import AssignmentSection from './AssignmentSection';
-
-/**
- * 개별 학생의 정보를 카드 형태로 표시하는 컴포넌트
- * 학생의 기본 정보와 확장 시 상세 정보를 표시
- */
+import { ExamAPI } from '../../api/exam/examAPI';
 
 const StudentCard = ({ student, isExpanded, onToggle }) => {
+  const [examAverage, setExamAverage] = useState(0);
+
+  useEffect(() => {
+    const fetchExamAverage = async () => {
+      try {
+        const data = await ExamAPI.getStudentExamResults(student.id);
+        setExamAverage(data.averageScore || 0);
+      } catch (err) {
+        console.error('시험 평균 조회 실패:', err);
+      }
+    };
+
+    fetchExamAverage();
+  }, [student.id]);
+
   return (
       <div className="bg-white rounded-lg shadow">
         <div
@@ -31,8 +42,8 @@ const StudentCard = ({ student, isExpanded, onToggle }) => {
               <p className="font-medium">{student.attendance.rate}</p>
             </div>
             <div className="text-center">
-              <p className="text-sm text-gray-500">시험 점수</p>
-              <p className="font-medium">{student.grades.exams}점</p>
+              <p className="text-sm text-gray-500">평균 점수</p>
+              <p className="font-medium">{examAverage.toFixed(1)}점</p>
             </div>
             {isExpanded ? (
                 <ChevronUp size={20} className="text-gray-400"/>
@@ -46,7 +57,7 @@ const StudentCard = ({ student, isExpanded, onToggle }) => {
             <div className="p-4 border-t">
               <div className="grid grid-cols-2 gap-6">
                 <AttendanceSection attendance={student.attendance}/>
-                <ExamSection exams={student.submissions.exams}/>
+                <ExamSection studentId={student.id}/>
                 <AssignmentSection
                     assignments={student.submissions.assignments}
                     className="col-span-2"
