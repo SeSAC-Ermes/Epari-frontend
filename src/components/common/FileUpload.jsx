@@ -1,5 +1,5 @@
-import React, {useState, useRef} from 'react';
-import {UploadCloud, X, File, CheckCircle} from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import { CheckCircle, File, UploadCloud, X } from 'lucide-react';
 
 /**
  * 파일 업로드 컴포넌트 입니다.
@@ -56,10 +56,36 @@ const FileUpload = ({onFilesChange}) => {
 
   return (
       <div className="space-y-2">
+        {files.length > 0 && (
+            <div className="mb-4 border-2 border-dashed border-gray-300 rounded-lg p-4">
+              <div className="divide-y divide-gray-200">
+                {files.map((file) => (
+                    <div
+                        key={file.name}
+                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <File className="w-5 h-5 text-gray-400"/>
+                        <span className="text-sm text-gray-600">{file.name}</span>
+                        <CheckCircle className="w-4 h-4 text-green-500"/>
+                      </div>
+                      <button
+                          type="button"
+                          onClick={() => removeFile(file.name)}
+                          className="p-1 hover:bg-gray-200 rounded-full"
+                      >
+                        <X className="w-4 h-4 text-gray-500"/>
+                      </button>
+                    </div>
+                ))}
+              </div>
+            </div>
+        )}
+
         <div
             className={`relative p-8 border-2 border-dashed rounded-lg 
-        ${dragActive ? 'border-blue-400 bg-blue-50' : 'border-gray-300'} 
-        transition-all duration-200 ease-in-out`}
+          ${dragActive ? 'border-blue-400 bg-blue-50' : 'border-gray-300'} 
+          transition-all duration-200 ease-in-out`}
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
             onDragOver={handleDrag}
@@ -90,33 +116,6 @@ const FileUpload = ({onFilesChange}) => {
             </p>
           </div>
         </div>
-
-        {files.length > 0 && (
-            <div className="mt-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">업로드된 파일</h3>
-              <div className="space-y-2">
-                {files.map((file) => (
-                    <div
-                        key={file.name}
-                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-                    >
-                      <div className="flex items-center space-x-3">
-                        <File className="w-5 h-5 text-gray-400"/>
-                        <span className="text-sm text-gray-600">{file.name}</span>
-                        <CheckCircle className="w-4 h-4 text-green-500"/>
-                      </div>
-                      <button
-                          type="button"
-                          onClick={() => removeFile(file.name)}
-                          className="p-1 hover:bg-gray-200 rounded-full"
-                      >
-                        <X className="w-4 h-4 text-gray-500"/>
-                      </button>
-                    </div>
-                ))}
-              </div>
-            </div>
-        )}
       </div>
   );
 };
