@@ -9,40 +9,8 @@ import 'react-quill/dist/quill.snow.css';
 const QuillEditor = ({ value, onChange, readOnly = false }) => {
   const quillRef = useRef(null);
 
-  // 이미지 업로드 핸들러
-  const imageHandler = () => {
-    const input = document.createElement('input');
-    input.setAttribute('type', 'file');
-    input.setAttribute('accept', 'image/*');
-    input.click();
-
-    input.onchange = async () => {
-      const file = input.files[0];
-      if (file) {
-        const formData = new FormData();
-        formData.append('image', file);
-
-        try {
-          const response = await fetch('/api/upload', {
-            method: 'POST',
-            body: formData,
-          });
-          const data = await response.json();
-          const imageUrl = data.url;
-
-          const editor = quillRef.current.getEditor();
-          const range = editor.getSelection();
-          editor.insertEmbed(range.index, 'image', imageUrl);
-        } catch (error) {
-          console.error('이미지 업로드 실패:', error);
-        }
-      }
-    };
-  };
-
-  // 툴바 설정
   const modules = {
-    toolbar: readOnly ? false : {
+    toolbar: {
       container: [
         [{ 'header': [1, 2, 3, false] }],
         ['bold', 'italic', 'underline', 'strike'],
@@ -50,10 +18,7 @@ const QuillEditor = ({ value, onChange, readOnly = false }) => {
         [{ 'align': [] }],
         ['link', 'image'],
         ['clean']
-      ],
-      handlers: {
-        image: imageHandler
-      }
+      ]
     }
   };
 
@@ -66,15 +31,16 @@ const QuillEditor = ({ value, onChange, readOnly = false }) => {
   ];
 
   return (
-      <div className="quill-editor">
+      <div style={{ height: '400px' }}>
         <ReactQuill
             ref={quillRef}
+            theme="snow"
             value={value}
             onChange={onChange}
             modules={modules}
             formats={formats}
             readOnly={readOnly}
-            theme="snow"
+            style={{ height: '350px' }}
         />
       </div>
   );
