@@ -1,45 +1,56 @@
 import React, { useState, useEffect } from 'react';
-import { NoticeApi } from '../../api/notice/NoticeApi';  // API 경로 수정
+import { useNavigate, useParams } from 'react-router-dom';
+import { NoticeApi } from '../../api/notice/NoticeApi';
 import { Search } from 'lucide-react';
-import { useNavigate } from "react-router-dom";
-const { courseId } = useParams();
 
-const NoticeListContent = () => {
+const NoticeListContent = ({ type }) => {  // type prop 추가
   const [notices, setNotices] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeTab, setActiveTab] = useState('global'); // 'global' or 'course'
-  const noticesPerPage = 10;
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const navigate = useNavigate();
+  const { courseId } = useParams();
+  const noticesPerPage = 10;
 
   useEffect(() => {
     loadNotices();
-  }, [activeTab]);
-
-
-  const handleNoticeClick = (noticeId) => {
-    navigate(`/courses/${courseId}/notices/${noticeId}`);
-  };
+  }, [courseId, type]);  // type dependency 추가
 
   const loadNotices = async () => {
     try {
+      setLoading(true);
+      setError(null);
       let response;
-      if (activeTab === 'global') {
+
+      if (type === 'GLOBAL') {
         response = await NoticeApi.getGlobalNotices();
       } else {
-        // 임시로 courseId를 1로 설정하거나, 실제 courseId를 가져와서 사용
-        response = await NoticeApi.getCourseNotices(1);
+        response = await NoticeApi.getCourseNotices(courseId);
       }
+
       setNotices(response);
     } catch (error) {
       console.error('공지사항을 불러오는데 실패했습니다:', error);
+      setError('공지사항을 불러오는데 실패했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleNoticeClick = (noticeId) => {
+    if (type === 'GLOBAL') {
+      navigate(`/notices/${noticeId}`);
+    } else {
+      navigate(`/courses/${courseId}/notices/${noticeId}`);
     }
   };
 
   // 검색 기능
   const filteredNotices = notices.filter(notice =>
       notice.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      notice.writer?.toLowerCase().includes(searchTerm.toLowerCase())
+      notice.instructorName?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // 페이지네이션 계산
@@ -62,13 +73,29 @@ const NoticeListContent = () => {
     pageNumbers.push(i);
   }
 
+  if (loading) {
+    return (
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
+        </div>
+    );
+  }
+
+  if (error) {
+    return (
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-red-500">{error}</div>
+        </div>
+    );
+  }
+
   return (
       <div className="w-full">
         <main className="max-w-7xl mx-auto px-4 py-8">
           <div className="bg-white rounded-lg p-6">
             <div className="flex justify-between items-center mb-6">
               <h1 className="text-2xl font-bold">
-                {activeTab === 'global' ? '전체 공지사항' : '강의 공지사항'}
+                {type === 'GLOBAL' ? '전체 공지사항' : '강의 공지사항'}
               </h1>
               <div className="flex items-center gap-4">
                 <div className="flex items-center bg-gray-100 rounded-lg px-4 py-2">
@@ -111,7 +138,6 @@ const NoticeListContent = () => {
                   </tr>
               ))}
               </tbody>
-
             </table>
 
             {/* 페이지네이션 */}

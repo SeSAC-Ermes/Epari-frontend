@@ -4,7 +4,6 @@ import SignInPage from './pages/SignInPage.jsx';
 import SignUpPage from './pages/SignUpPage.jsx';
 import CourseListPage from "./pages/course/CourseListPage.jsx";
 import CourseDetailPage from "./pages/course/CourseDetailPage.jsx";
-// import CourseNoticeListPage from "./pages/notice/CourseNoticeListPage.jsx";
 import QnAListPage from "./pages/qna/QnAListPage.jsx";
 import QnADetailPage from "./pages/qna/QnADetailPage.jsx";
 import QnAWritePage from "./pages/qna/QnAWritePage.jsx";
@@ -39,24 +38,26 @@ function App() {
 
           {/* Protected Routes */}
           <Route element={<AuthProvider><Outlet/></AuthProvider>}>
-            {/* Simple Layout - 코스 목록 */}
+            {/* Simple Layout - 전체 공지사항과 코스 목록 */}
             <Route element={<SimpleLayout/>}>
               <Route path="/" element={<RootRedirect/>}/>
               <Route path="/courses" element={<CourseListPage/>}/>
+              {/* 전체 공지사항 */}
+              <Route path="/notices">
+                <Route index element={<NoticeListPage type="GLOBAL" />}/>
+                <Route path=":noticeId" element={<NoticeDetailPage />}/>
+              </Route>
             </Route>
 
             {/* Main Layout - 코스 관련 */}
             <Route path="/courses/:courseId" element={<MainLayout/>}>
               <Route index element={<CourseDetailPage/>}/>
 
-              {/* 공지사항 */}
+              {/* 강의 공지사항 */}
               <Route path="notices">
-                <Route index element={<NoticeListPage/>}/>
-                <Route path=":noticeId" element={<NoticeDetailPage/>}/>
-                {/*<Route path="write" element={<QnAWritePage/>}/>*/}
+                <Route index element={<NoticeListPage type="COURSE" />}/>
+                <Route path=":noticeId" element={<NoticeDetailPage />}/>
               </Route>
-              {/*<Route path="/courses/:courseId/notices" element={<CourseNoticeListPage/>}/>*/}
-
 
               {/* Q&A */}
               <Route path="qna">
@@ -76,7 +77,6 @@ function App() {
               <Route path="exams">
                 <Route index element={<ExamPage/>}/>
                 <Route path="create" element={<ExamCreatePage/>}/>
-                {/*<Route path="/courses/:courseId/exams/:examId" element={<ExamDetailPage/>}/>*/}
               </Route>
 
               {/* 파일/자료 */}
