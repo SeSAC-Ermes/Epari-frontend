@@ -255,7 +255,7 @@ const SignInForm = () => {
               </button>
 
               {/* Password Reset Button - 추가 */}
-              <button type="button" onClick={() => navigate('/forgot-password')} className="text-sm text-gray-500 hover:text-gray-700">
+              <button type="button" onClick={() => navigate('/reset-password')} className="text-sm text-gray-500 hover:text-gray-700">
                 비밀번호를 잊으셨나요?
               </button>
             </div>
