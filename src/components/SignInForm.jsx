@@ -198,7 +198,7 @@ const SignInForm = () => {
         <div className="w-full max-w-md space-y-8">
           <div className="space-y-4">
             <h1 className="text-2xl font-semibold text-center text-gray-900">
-              Sign In
+              로그인
             </h1>
             {/* Gradient Divider */}
             <div className="relative">
@@ -214,7 +214,7 @@ const SignInForm = () => {
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">
-                Email
+                이메일
               </label>
               <input
                   type="email"
@@ -226,7 +226,7 @@ const SignInForm = () => {
 
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">
-                Password
+                비밀번호
               </label>
               <input
                   type="password"
@@ -249,7 +249,7 @@ const SignInForm = () => {
                   type="submit"
                   className="w-60 py-2 px-4 bg-green-400 hover:bg-green-500 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2"
               >
-                Sign In
+                로그인
               </button>
 
               {/* Sign Up Button */}
@@ -258,7 +258,7 @@ const SignInForm = () => {
                   onClick={() => navigate('/signup')}
                   className="w-60 py-2 px-4 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
               >
-                Sign Up
+                회원가입
               </button>
             </div>
           </form>
