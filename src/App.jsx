@@ -38,10 +38,11 @@ function App() {
 
           {/* Protected Routes */}
           <Route element={<AuthProvider><Outlet/></AuthProvider>}>
-            {/* Simple Layout - 전체 공지사항과 코스 목록 */}
+
             <Route element={<SimpleLayout/>}>
               <Route path="/" element={<RootRedirect/>}/>
               <Route path="/courses" element={<CourseListPage/>}/>
+
               {/* 전체 공지사항 */}
               <Route path="/notices">
                 <Route index element={<NoticeListPage type="GLOBAL" />}/>
@@ -49,7 +50,7 @@ function App() {
               </Route>
             </Route>
 
-            {/* Main Layout - 코스 관련 */}
+            {/* 강의 공지사항 */}
             <Route path="/courses/:courseId" element={<MainLayout/>}>
               <Route index element={<CourseDetailPage/>}/>
 
