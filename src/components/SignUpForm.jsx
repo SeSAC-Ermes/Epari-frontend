@@ -2,25 +2,31 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../assets/epariLogo.jpg';
 import axios from '../api/axios.js';
+import PasswordValidation from '../components/auth/PasswordValidation';
 
 /**
  * 회원가입 폼
  */
 const SignUpForm = () => {
   const navigate = useNavigate();
-
   const [formData, setFormData] = useState({
     email: '',
-    password: '',
-    confirmPassword: '',
     name: ''
+  });
+
+  const [passwords, setPasswords] = useState({
+    password: '',
+    confirmPassword: ''
   });
 
   const [validation, setValidation] = useState({
     isEmailValid: false,
-    isPasswordValid: false,
-    isPasswordMatch: false,
-    isNameValid: false
+    isNameValid: false,
+    hasMinLength: false,
+    hasMaxLength: true,
+    hasNumber: false,
+    hasLowerCase: false,
+    isPasswordMatch: false
   });
 
   const [emailVerification, setEmailVerification] = useState({
@@ -32,16 +38,23 @@ const SignUpForm = () => {
   });
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const isAllValid =
+      validation.isEmailValid &&
+      validation.isNameValid &&
+      validation.hasMinLength &&
+      validation.hasMaxLength &&
+      validation.hasNumber &&
+      validation.hasLowerCase &&
+      validation.isPasswordMatch &&
+      emailVerification.isEmailVerified &&
+      !isLoading;
+
   const [error, setError] = useState('');
 
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
-  };
-
-  const validatePassword = (password) => {
-    const passwordRegex = /^(?=.*[a-z])(?=.*\d)[A-Za-z\d]{8,}$/;
-    return passwordRegex.test(password);
   };
 
   const handleChange = (e) => {
@@ -55,17 +68,6 @@ const SignUpForm = () => {
       setValidation(prev => ({
         ...prev,
         isEmailValid: validateEmail(value)
-      }));
-    } else if (name === 'password') {
-      setValidation(prev => ({
-        ...prev,
-        isPasswordValid: validatePassword(value),
-        isPasswordMatch: value === formData.confirmPassword
-      }));
-    } else if (name === 'confirmPassword') {
-      setValidation(prev => ({
-        ...prev,
-        isPasswordMatch: formData.password === value
       }));
     } else if (name === 'name') {
       setValidation(prev => ({
@@ -202,7 +204,14 @@ const SignUpForm = () => {
       return;
     }
 
-    if (!validation.isPasswordValid || !validation.isPasswordMatch) {
+    const isPasswordValid =
+        validation.hasMinLength &&
+        validation.hasMaxLength &&
+        validation.hasNumber &&
+        validation.hasLowerCase &&
+        validation.isPasswordMatch;
+
+    if (!isPasswordValid) {
       alert('비밀번호를 확인해주세요.');
       return;
     }
@@ -219,7 +228,7 @@ const SignUpForm = () => {
       await axios.post('/api/auth/signup', {
         username: formData.email.split('@')[0],
         email: formData.email,
-        password: formData.password,
+        password: passwords.password,
         name: formData.name,
         verificationCode: emailVerification.verificationCode
       });
@@ -325,40 +334,6 @@ const SignUpForm = () => {
                 </div>
             )}
 
-            {/* Password Field */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">비밀번호</label>
-              <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="비밀번호를 입력하세요."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent"
-              />
-              {!validation.isPasswordValid && formData.password && (
-                  <p className="text-sm text-red-500">
-                    비밀번호는 최소 8자 이상이며, 숫자와 소문자를 포함해야 합니다.
-                  </p>
-              )}
-            </div>
-
-            {/* Confirm Password Field */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">비밀번호 확인</label>
-              <input
-                  type="password"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  placeholder="비밀번호를 입력하세요."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent"
-              />
-              {formData.confirmPassword && !validation.isPasswordMatch && (
-                  <p className="text-sm text-red-500">비밀번호가 일치하지 않습니다.</p>
-              )}
-            </div>
-
             {/* Name Field */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">이름</label>
@@ -372,6 +347,14 @@ const SignUpForm = () => {
               />
             </div>
 
+            {/* Password Field */}
+            <PasswordValidation
+                passwords={passwords}
+                setPasswords={setPasswords}
+                validation={validation}
+                setValidation={setValidation}
+            />
+
             {/* Error Message */}
             {error && (
                 <p className="text-sm text-red-500">{error}</p>
@@ -382,7 +365,7 @@ const SignUpForm = () => {
               {/* Sign Up Button */}
               <button
                   type="submit"
-                  disabled={!validation.isEmailValid || !validation.isPasswordValid || !validation.isNameValid || !emailVerification.isEmailVerified || isLoading}
+                  disabled={!isAllValid}
                   className="w-60 py-2 px-4 bg-green-400 hover:bg-green-500 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 disabled:bg-gray-300"
               >
                 {isLoading ? '처리중...' : '회원가입'}
