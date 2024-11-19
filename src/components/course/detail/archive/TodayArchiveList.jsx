@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { CheckCircle, Download, FileText } from 'lucide-react';
-import { CourseFileAPI } from '../../../../api/course/CourseFileAPI.js';
+import { CourseFileAPI } from '../../../../api/course/courseFileAPI.js';
 
 /**
  * 강의 상세페이지 당일 학습 활동 다운로드 관리
