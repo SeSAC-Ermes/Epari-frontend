@@ -8,7 +8,7 @@ import apiClient from "../axios.js";
 
 export const AssignmentAPI = {
   // 과제 생성
-  createAssignment: async (courseId, assignmentData, instructorId) => {
+  createAssignment: async (courseId, assignmentData) => {
     try {
       const formData = new FormData();
 
@@ -28,7 +28,7 @@ export const AssignmentAPI = {
       }
 
       const response = await apiClient.post(
-          `/api/courses/${courseId}/assignments?instructorId=${instructorId}`,
+          `/api/courses/${courseId}/assignments`,
           formData,
           {
             headers: {
@@ -67,7 +67,7 @@ export const AssignmentAPI = {
   },
 
   // 과제 수정
-  updateAssignment: async (courseId, assignmentId, assignmentData, instructorId) => {
+  updateAssignment: async (courseId, assignmentId, assignmentData) => {
     try {
       const formData = new FormData();
 
@@ -97,7 +97,7 @@ export const AssignmentAPI = {
       }
 
       const response = await apiClient.put(
-          `/api/courses/${courseId}/assignments/${assignmentId}?instructorId=${instructorId}`,
+          `/api/courses/${courseId}/assignments/${assignmentId}`,
           formData,
           {
             headers: {
@@ -114,10 +114,10 @@ export const AssignmentAPI = {
   },
 
   // 과제 삭제
-  deleteAssignment: async (courseId, assignmentId, instructorId) => {
+  deleteAssignment: async (courseId, assignmentId) => {
     try {
       await apiClient.delete(
-          `/api/courses/${courseId}/assignments/${assignmentId}?instructorId=${instructorId}`
+          `/api/courses/${courseId}/assignments/${assignmentId}`
       );
     } catch (error) {
       console.error('Error deleting assignment:', error);
