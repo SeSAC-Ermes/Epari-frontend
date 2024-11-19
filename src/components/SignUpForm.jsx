@@ -214,7 +214,7 @@ const SignUpForm = () => {
 
     try {
       await axios.post('/api/auth/signup', {
-        username: formData.email,
+        username: formData.email.split('@')[0],
         email: formData.email,
         password: formData.password,
         name: formData.name,

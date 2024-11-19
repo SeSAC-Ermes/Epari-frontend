@@ -242,7 +242,7 @@ const SignInForm = () => {
                 </div>
             )}
 
-            {/* Buttons Container 수정 */}
+            {/* Buttons Container */}
             <div className="flex flex-col items-center space-y-4">
               {/* Sign In Button */}
               <button type="submit" className="w-60 py-2 px-4 bg-green-400 hover:bg-green-500 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2">
