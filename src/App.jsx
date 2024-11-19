@@ -25,7 +25,9 @@ import MainLayout from "./components/layout/MainLayout.jsx";
 import AttendanceManagementPage from "./pages/attendance/AttendanceManagementPage.jsx";
 import ExamPage from "./pages/exam/ExamPage.jsx";
 import ExamCreatePage from "./pages/exam/ExamCreatePage.jsx";
-import ForgotPasswordForm from "./components/auth/ForgotPasswordForm.jsx";
+import ResetPasswordForm from "./components/auth/ResetPasswordForm.jsx";
+import MyPage from "./pages/mypage/MyPage.jsx";
+import ChangePasswordForm from "./components/auth/ChangePasswordForm.jsx";
 
 function App() {
   return (
@@ -35,7 +37,7 @@ function App() {
           <Route path="/signin" element={<SignInPage/>}/>
           <Route path="/signup" element={<SignUpPage/>}/>
           <Route path="/unauthorized" element={<UnauthorizedPage/>}/>
-          <Route path="/reset-password" element={<ForgotPasswordForm/>}/>
+          <Route path="/reset-password" element={<ResetPasswordForm/>}/>
 
 
           {/* Protected Routes */}
@@ -44,6 +46,8 @@ function App() {
             <Route element={<SimpleLayout/>}>
               <Route path="/" element={<RootRedirect/>}/>
               <Route path="/courses" element={<CourseListPage/>}/>
+              <Route path="/mypage" element={<MyPage/>}/>
+              <Route path="/mypage/change-password" element={<ChangePasswordForm/>}/>
             </Route>
 
             {/* Main Layout - 코스 관련 */}
