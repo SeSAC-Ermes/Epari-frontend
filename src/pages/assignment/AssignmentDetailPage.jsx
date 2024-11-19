@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import ReactQuill from 'react-quill';
+import QuillEditor from "../../components/common/QuillEditor.jsx";
 import { AssignmentHeader } from '../../components/assignment/AssignmentHeader';
 import { AssignmentAPI } from '../../api/assignment/AssignmentApi';
 import { formatDate } from "../../utils/DateUtils.js";
@@ -12,27 +12,11 @@ const AssignmentDetailPage = () => {
   const { courseId, assignmentId } = useParams();
   const [assignment, setAssignment] = useState(null);
   const [submissionContent, setSubmissionContent] = useState('');
+  const [description, setDescription] = useState('');
   const [files, setFiles] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-
-  const modules = {
-    toolbar: {
-      container: [
-        [{ 'size': ['small', false, 'large', 'huge'] }],
-        [{ 'font': [] }],
-        ['bold', 'italic', 'underline', 'strike'],
-        [{ 'color': [] }, { 'background': [] }],
-        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-        [{ 'align': [] }],
-        ['link', 'image'],
-        ['clean']
-      ],
-    }
-  };
-
-  const formats = ['font', 'size', 'bold', 'italic', 'underline', 'strike', 'color', 'background', 'list', 'bullet', 'align', 'link', 'image'];
 
   useEffect(() => {
     fetchAssignmentDetails();
@@ -115,15 +99,11 @@ const AssignmentDetailPage = () => {
                 <div className="space-y-6">
                   <div className="space-y-2">
                     <h2 className="text-lg font-medium">과제 제출</h2>
-                    <div className="border border-gray-300 rounded-lg" style={{ height: '400px' }}>
-                      <ReactQuill
-                          theme="snow"
-                          value={submissionContent}
-                          onChange={setSubmissionContent}
-                          modules={modules}
-                          formats={formats}
-                          className="h-[350px]"
-                          placeholder="과제 내용을 입력하세요"
+                    <div className="rounded-lg">
+                      <QuillEditor
+                          value={description}
+                          onChange={setDescription}
+                          readOnly={false}
                       />
                     </div>
                   </div>
