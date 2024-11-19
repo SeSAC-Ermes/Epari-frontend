@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import Logo from '../assets/epariLogo.jpg';
 import axios from '../api/axios.js';
 
+/**
+ * 회원가입 폼
+ */
 const SignUpForm = () => {
   const navigate = useNavigate();
 
