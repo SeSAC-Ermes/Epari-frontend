@@ -1,6 +1,10 @@
 import React from 'react';
 import { Check, X } from 'lucide-react';
 
+/**
+ * 학생이 제출한 과제 현황을 표시하는 컴포넌트  
+ */
+
 const AssignmentSection = ({ assignments, className }) => {
   const getStatusColor = (status) => {
     switch (status) {
@@ -42,33 +46,33 @@ const AssignmentSection = ({ assignments, className }) => {
   };
 
   return (
-      <div className={className}>
-        <h4 className="font-medium mb-4">과제 제출 현황</h4>
-        <div className="space-y-3">
-          {assignments.map(assignment => (
-              <div key={assignment.id} className="bg-gray-50 rounded-lg p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <div className="space-y-1">
-                    <h5 className="font-medium">{assignment.title}</h5>
-                    <p className="text-sm text-gray-500">제출일: {assignment.submittedAt}</p>
-                  </div>
-                  <div className={`px-3 py-1 rounded-full flex items-center gap-2 ${getStatusColor(assignment.status)}`}>
-                    {getStatusIcon(assignment.status)}
-                    <span className="text-sm font-medium">
+    <div className={className}>
+      <h4 className="font-medium mb-4">과제 제출 현황</h4>
+      <div className="space-y-3">
+        {assignments.map(assignment => (
+          <div key={assignment.id} className="bg-gray-50 rounded-lg p-4">
+            <div className="flex justify-between items-start mb-2">
+              <div className="space-y-1">
+                <h5 className="font-medium">{assignment.title}</h5>
+                <p className="text-sm text-gray-500">제출일: {assignment.submittedAt}</p>
+              </div>
+              <div className={`px-3 py-1 rounded-full flex items-center gap-2 ${getStatusColor(assignment.status)}`}>
+                {getStatusIcon(assignment.status)}
+                <span className="text-sm font-medium">
                   {getStatusText(assignment.status)}
                 </span>
-                  </div>
-                </div>
-                {assignment.feedback && (
-                    <div className="mt-2 text-sm text-gray-600 bg-white p-3 rounded">
-                      <p className="font-medium mb-1">피드백</p>
-                      {assignment.feedback}
-                    </div>
-                )}
               </div>
-          ))}
-        </div>
+            </div>
+            {assignment.feedback && (
+              <div className="mt-2 text-sm text-gray-600 bg-white p-3 rounded">
+                <p className="font-medium mb-1">피드백</p>
+                {assignment.feedback}
+              </div>
+            )}
+          </div>
+        ))}
       </div>
+    </div>
   );
 };
 
