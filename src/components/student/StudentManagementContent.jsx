@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import StudentSearchBar from "./StudentSearchBar.jsx";
 import StudentCard from "./StudentCard.jsx";
 import { AttendanceAPI } from "../../api/attendance/attendanceAPI.js";
+import { ExamAPI } from '../../api/exam/examAPI';
 
 /**
  * 수강생 관리 페이지의 메인 컨텐츠 컴포넌트
@@ -16,6 +17,25 @@ const StudentManagementContent = () => {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [examResults, setExamResults] = useState([]);
+
+  useEffect(() => {
+    const fetchExamResults = async () => {
+      try {
+        const results = await ExamAPI.getCourseExamResults(courseId);
+        // 학생 ID를 키로 하는 객체로 변환
+        const resultsMap = results.reduce((acc, result) => {
+          acc[result.student.id] = result;
+          return acc;
+        }, {});
+        setExamResults(resultsMap);
+      } catch (err) {
+        console.error('시험 결과 조회 실패:', err);
+      }
+    };
+
+    fetchExamResults();
+  }, [courseId]);
 
   useEffect(() => {
     const fetchStudentData = async () => {
@@ -37,9 +57,6 @@ const StudentManagementContent = () => {
             rate: `${Math.round(stat.counts.attendanceRate)}%`
           },
           // 더미 데이터로 유지할 부분
-          grades: {
-            exams: 88
-          },
           submissions: {
             assignments: [
               {
@@ -57,9 +74,6 @@ const StudentManagementContent = () => {
                 feedback: "보안 그룹 설정이 미흡합니다. 수정 후 재제출해주세요."
               }
             ],
-            exams: [
-              { id: 1, title: "중간고사", score: 88, date: "2024-03-20" }
-            ]
           }
         }));
 
@@ -116,6 +130,7 @@ const StudentManagementContent = () => {
                 <StudentCard
                     key={student.id}
                     student={student}
+                    examResult={examResults[student.id]}
                     isExpanded={expandedStudent === student.id}
                     onToggle={() => setExpandedStudent(
                         expandedStudent === student.id ? null : student.id

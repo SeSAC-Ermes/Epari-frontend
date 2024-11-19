@@ -1,26 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react'; // useEffect, useState 제거
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import AttendanceSection from './AttendanceSection';
 import ExamSection from './ExamSection';
 import AssignmentSection from './AssignmentSection';
-import { ExamAPI } from '../../api/exam/examAPI';
 
-const StudentCard = ({ student, isExpanded, onToggle }) => {
-  const [examAverage, setExamAverage] = useState(0);
-
-  useEffect(() => {
-    const fetchExamAverage = async () => {
-      try {
-        const data = await ExamAPI.getStudentExamResults(student.id);
-        setExamAverage(data.averageScore || 0);
-      } catch (err) {
-        console.error('시험 평균 조회 실패:', err);
-      }
-    };
-
-    fetchExamAverage();
-  }, [student.id]);
-
+/**
+ * 개별 학생의 정보를 카드 형태로 표시하는 컴포넌트
+ * 학생의 기본 정보와 확장 시 상세 정보를 표시
+ */
+const StudentCard = ({ student, examResult, isExpanded, onToggle }) => {
   return (
       <div className="bg-white rounded-lg shadow">
         <div
@@ -43,7 +31,9 @@ const StudentCard = ({ student, isExpanded, onToggle }) => {
             </div>
             <div className="text-center">
               <p className="text-sm text-gray-500">평균 점수</p>
-              <p className="font-medium">{examAverage.toFixed(1)}점</p>
+              <p className="font-medium">
+                {examResult ? `${examResult.averageScore}점` : '없음'}
+              </p>
             </div>
             {isExpanded ? (
                 <ChevronUp size={20} className="text-gray-400"/>
@@ -57,7 +47,11 @@ const StudentCard = ({ student, isExpanded, onToggle }) => {
             <div className="p-4 border-t">
               <div className="grid grid-cols-2 gap-6">
                 <AttendanceSection attendance={student.attendance}/>
-                <ExamSection studentId={student.id}/>
+                <ExamSection
+                    exams={examResult?.examResults || []}
+                    loading={false}  // 부모로부터 받은 데이터를 사용하므로 항상 false
+                    error={null}     // 부모로부터 받은 데이터를 사용하므로 항상 null
+                />
                 <AssignmentSection
                     assignments={student.submissions.assignments}
                     className="col-span-2"

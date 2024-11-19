@@ -1,36 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { ExamAPI } from '../../api/exam/examAPI';
+import React from 'react';
 
-const ExamSection = ({ studentId }) => {
-  const [examData, setExamData] = useState({
-    examResults: [],
-    averageScore: 0
-  });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+/**
+ * 학생의 시험 성적을 표시하는 컴포넌트
+ */
 
-  useEffect(() => {
-    const fetchExamResults = async () => {
-      try {
-        setLoading(true);
-        const data = await ExamAPI.getStudentExamResults(studentId);
-        setExamData({
-          examResults: data.examResults || [],
-          averageScore: data.averageScore || 0
-        });
-      } catch (err) {
-        setError('시험 결과를 불러오는데 실패했습니다.');
-        console.error('시험 결과 조회 실패:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (studentId) {
-      fetchExamResults();
-    }
-  }, [studentId]);
-
+const ExamSection = ({ exams = [], loading = false, error = null }) => {
   if (loading) {
     return <div className="p-4 text-center">로딩 중...</div>;
   }
@@ -39,14 +13,22 @@ const ExamSection = ({ studentId }) => {
     return <div className="p-4 text-center text-red-500">{error}</div>;
   }
 
+  // 평균 점수 계산
+  const averageScore = exams.length > 0
+      ? exams.reduce((sum, exam) => sum + exam.earnedScore, 0) / exams.length
+      : 0;
+
   return (
       <div className="space-y-4">
         <h4 className="font-medium">시험 성적</h4>
         <div className="space-y-2">
-          {examData.examResults.length > 0 ? (
+          {exams.length > 0 ? (
               <>
-                {examData.examResults.map(exam => (
-                    <div key={exam.examId} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                {exams.map(exam => (
+                    <div
+                        key={exam.examId}
+                        className="flex justify-between items-center p-3 bg-gray-50 rounded-lg"
+                    >
                       <span className="text-sm font-medium">{exam.examTitle}</span>
                       <span className="text-sm font-medium">{exam.earnedScore}점</span>
                     </div>
@@ -54,7 +36,7 @@ const ExamSection = ({ studentId }) => {
                 <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
                   <span className="text-sm font-medium">평균 점수</span>
                   <span className="text-sm font-semibold text-blue-600">
-                {examData.averageScore.toFixed(1)}점
+                {averageScore.toFixed(1)}점
               </span>
                 </div>
               </>

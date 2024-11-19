@@ -6,15 +6,15 @@ import apiClient from '../axios';
 
 export const ExamAPI = {
   // 학생의 시험 결과 조회
-  getStudentExamResults: async (studentId) => {
+  getCourseExamResults: async (courseId) => {
     try {
-      const response = await apiClient.get(`/api/scores/students/${studentId}`);
+      const response = await apiClient.get(`/api/courses/${courseId}/scores`);
       return response.data;
     } catch (error) {
-      console.error('시험 결과 조회 실패:', error);
+      console.error('Error fetching exam results:', error);
       throw error;
     }
-  }
+  },
 };
 
 export default ExamAPI;
