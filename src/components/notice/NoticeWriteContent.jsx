@@ -7,7 +7,7 @@ import { quillFormats, quillModules } from "../common/QuillConfig.js";
 import CourseFileAPI from "../../api/course/CourseFileAPI.js";
 import FileUpload from "../common/FileUpload.jsx";
 
-const CourseFileCreateContent = () => {
+const NoticeWriteContent = () => {
   const navigate = useNavigate();
   const { courseId } = useParams(); // URL 파라미터로 변경
 
@@ -74,7 +74,7 @@ const CourseFileCreateContent = () => {
   return (
       <div className="flex-1 overflow-y-auto p-8">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-2xl font-bold text-gray-900 mb-8">강의 자료 업로드</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-8">작성 완료</h1>
 
           {error && (
               <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6">
@@ -172,4 +172,4 @@ const CourseFileCreateContent = () => {
   );
 };
 
-export default CourseFileCreateContent;
+export default NoticeWriteContent;

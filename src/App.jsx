@@ -26,6 +26,8 @@ import ExamPage from "./pages/exam/ExamPage.jsx";
 import ExamCreatePage from "./pages/exam/ExamCreatePage.jsx";
 import NoticeDetailPage from "./pages/notice/NoticeDetailPage.jsx";
 import NoticeListPage from "./pages/notice/NoticeListPage.jsx";
+import { ProtectedRoute } from "./auth/ProtectedRoute.jsx";
+import NoticeWritePage from "./pages/notice/NoticeWritePage.jsx";
 
 function App() {
   return (
@@ -46,6 +48,11 @@ function App() {
               {/* 전체 공지사항 */}
               <Route path="/notices">
                 <Route index element={<NoticeListPage type="GLOBAL" />}/>
+                <Route path="create" element={
+                  <ProtectedRoute requiredRoles={['INSTRUCTOR']}>
+                    <NoticeWritePage type="GLOBAL" />
+                  </ProtectedRoute>
+                }/>
                 <Route path=":noticeId" element={<NoticeDetailPage />}/>
               </Route>
             </Route>
@@ -57,6 +64,11 @@ function App() {
               {/* 강의 공지사항 */}
               <Route path="notices">
                 <Route index element={<NoticeListPage type="COURSE" />}/>
+                <Route path="create" element={
+                  <ProtectedRoute requiredRoles={['INSTRUCTOR']}>
+                    <NoticeWritePage type="COURSE" />
+                  </ProtectedRoute>
+                }/>
                 <Route path=":noticeId" element={<NoticeDetailPage />}/>
               </Route>
 
