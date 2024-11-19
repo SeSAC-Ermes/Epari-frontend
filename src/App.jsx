@@ -49,7 +49,7 @@ function App() {
               <Route path="/notices">
                 <Route index element={<NoticeListPage type="GLOBAL" />}/>
                 <Route path="create" element={
-                  <ProtectedRoute requiredRoles={['INSTRUCTOR']}>
+                  <ProtectedRoute requiredRoles={['ADMIN']}>
                     <NoticeWritePage type="GLOBAL" />
                   </ProtectedRoute>
                 }/>

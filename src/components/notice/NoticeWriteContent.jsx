@@ -57,7 +57,7 @@ const NoticeWriteContent = () => {
       });
 
       await CourseFileAPI.uploadCourseFile(courseId, formData);
-      alert('강의 자료가 성공적으로 업로드되었습니다.');
+      alert('공지사항이 성공적으로 업로드되었습니다.');
       navigate(`/courses/${courseId}/activities`); // URL 경로 수정
     } catch (err) {
       console.error('Upload Error:', err);
@@ -74,7 +74,7 @@ const NoticeWriteContent = () => {
   return (
       <div className="flex-1 overflow-y-auto p-8">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-2xl font-bold text-gray-900 mb-8">작성 완료</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-8">공지사항 작성</h1>
 
           {error && (
               <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6">
@@ -130,7 +130,7 @@ const NoticeWriteContent = () => {
                 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                   disabled={isSubmitting}
               >
-                {isSubmitting ? '업로드 중...' : '자료 업로드'}
+                {isSubmitting ? '업로드 중...' : '작성 완료'}
               </button>
             </div>
           </form>
