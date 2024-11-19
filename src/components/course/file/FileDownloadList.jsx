@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowDownToLine, Download, Trash2 } from 'lucide-react';
-import { CourseFileAPI } from '../../../api/course/CourseFileAPI.js';
+import { CourseFileAPI } from '../../../api/course/courseFileAPI.js';
 
 
 /**
