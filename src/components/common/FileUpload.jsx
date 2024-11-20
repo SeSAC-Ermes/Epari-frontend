@@ -5,7 +5,7 @@ import { CheckCircle, File, UploadCloud, X } from 'lucide-react';
  * 파일 업로드 컴포넌트 입니다.
  */
 
-const FileUpload = ({onFilesChange}) => {
+const FileUpload = ({ onFilesChange }) => {
   const [dragActive, setDragActive] = useState(false);
   const [files, setFiles] = useState([]);
   const inputRef = useRef(null);
@@ -112,7 +112,7 @@ const FileUpload = ({onFilesChange}) => {
               파일 선택하기
             </button>
             <p className="text-sm text-gray-500">
-              최대 10MB까지 업로드 가능합니다
+              최대 50MB까지 업로드 가능합니다
             </p>
           </div>
         </div>

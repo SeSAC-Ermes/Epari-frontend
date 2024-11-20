@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { AssignmentAPI } from "../../../api/assignment/AssignmentApi.js";
-import { FileAPI } from "../../../api/assignment/FileApi.js";
+import { AssignmentFileApi } from "../../../api/assignment/AssignmentFileApi.js";
 
 export const useAssignmentState = () => {
   const [assignments, setAssignments] = useState([]);
@@ -65,7 +65,7 @@ export const useAssignmentActions = (courseId, state, setState) => {
       setState.setIsSubmitting(true);
 
       for (const fileId of state.filesToRemove) {
-        await FileAPI.deleteFile(courseId, assignmentId, fileId);
+        await AssignmentFileApi.deleteFile(courseId, assignmentId, fileId);
       }
 
       await AssignmentAPI.updateAssignment(
@@ -157,7 +157,7 @@ export const useAuth = () => {
 export const useFileHandling = (courseId) => {
   const handleDownloadFile = async (assignmentId, fileId, fileName) => {
     try {
-      const downloadUrl = await FileAPI.getFileDownloadUrl(courseId, assignmentId, fileId);
+      const downloadUrl = await AssignmentFileApi.getFileDownloadUrl(courseId, assignmentId, fileId);
 
       // fetch로 파일을 가져옵니다
       const response = await fetch(downloadUrl);

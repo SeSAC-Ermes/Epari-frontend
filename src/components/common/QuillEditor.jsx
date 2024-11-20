@@ -10,7 +10,7 @@ const QuillEditor = ({ value, onChange, readOnly = false }) => {
   const quillRef = useRef(null);
 
   const modules = {
-    toolbar: {
+    toolbar: readOnly ? false : {
       container: [
         [{ 'header': [1, 2, 3, false] }],
         ['bold', 'italic', 'underline', 'strike'],
