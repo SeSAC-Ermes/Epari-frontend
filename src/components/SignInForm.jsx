@@ -245,20 +245,18 @@ const SignInForm = () => {
             {/* Buttons Container */}
             <div className="flex flex-col items-center space-y-4">
               {/* Sign In Button */}
-              <button
-                  type="submit"
-                  className="w-60 py-2 px-4 bg-green-400 hover:bg-green-500 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2"
-              >
+              <button type="submit" className="w-60 py-2 px-4 bg-green-400 hover:bg-green-500 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2">
                 로그인
               </button>
 
               {/* Sign Up Button */}
-              <button
-                  type="button"
-                  onClick={() => navigate('/signup')}
-                  className="w-60 py-2 px-4 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
-              >
+              <button type="button" onClick={() => navigate('/signup')} className="w-60 py-2 px-4 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2">
                 회원가입
+              </button>
+
+              {/* Password Reset Button - 추가 */}
+              <button type="button" onClick={() => navigate('/reset-password')} className="text-sm text-gray-500 hover:text-gray-700">
+                비밀번호를 잊으셨나요?
               </button>
             </div>
           </form>
