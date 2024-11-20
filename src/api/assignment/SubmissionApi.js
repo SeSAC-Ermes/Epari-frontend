@@ -1,62 +1,42 @@
-import apiClient from "../axios.js";
+import apiClient from '../axios';
+import { downloadFileFromUrl } from "../../utils/FileDownloadUtils.js";
 
 /**
  * 과제 제출 관련 API 호출 모음
- * 과제 제출, 조회, 수정, 삭제 및 파일 다운로드 등의
  * API 요청 함수들을 제공하는 모듈
  */
 
 export const SubmissionApi = {
   // 과제 제출
-  createSubmission: async (courseId, assignmentId, submissionData) => {
+  createSubmission: async (courseId, assignmentId, formData) => {
     try {
-      const formData = new FormData();
-
-      // 파일 추가
-      if (submissionData.files && submissionData.files.length > 0) {
-        submissionData.files.forEach((file) => {
-          formData.append('files', file);
-        });
-      }
-
       const response = await apiClient.post(
           `/api/courses/${courseId}/assignments/${assignmentId}/submissions`,
-          formData,
+          formData,  // 이미 생성된 FormData를 직접 사용
           {
             headers: {
               'Content-Type': 'multipart/form-data',
             },
           }
       );
-
       return response.data;
     } catch (error) {
-      console.error('Error creating submission:', error);
+      console.error('Submit error:', error);
       throw error;
     }
   },
 
-  // 과제 제출 상세 조회
-  getSubmissionById: async (courseId, assignmentId, submissionId) => {
-    try {
-      const response = await apiClient.get(
-          `/api/courses/${courseId}/assignments/${assignmentId}/submissions/${submissionId}`
-      );
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching submission:', error);
-      throw error;
-    }
-  },
 
-  // 과제 제출 수정
+  // 제출 수정
   updateSubmission: async (courseId, assignmentId, submissionId, submissionData) => {
     try {
+      // FormData 생성
       const formData = new FormData();
+      formData.append('description', submissionData.description || '');
 
-      // 파일 추가
+      // 파일들 추가
       if (submissionData.files && submissionData.files.length > 0) {
-        submissionData.files.forEach((file) => {
+        submissionData.files.forEach(file => {
           formData.append('files', file);
         });
       }
@@ -70,58 +50,42 @@ export const SubmissionApi = {
             },
           }
       );
-
       return response.data;
     } catch (error) {
-      console.error('Error updating submission:', error);
+      console.error('Update error:', error);
       throw error;
     }
   },
 
-  // 과제 채점
-  gradeSubmission: async (courseId, assignmentId, submissionId, gradeData) => {
-    try {
-      const response = await apiClient.put(
-          `/api/courses/${courseId}/assignments/${assignmentId}/submissions/${submissionId}/grade`,
-          {
-            grade: gradeData.grade,
-            feedback: gradeData.feedback
-          }
-      );
-
-      return response.data;
-    } catch (error) {
-      console.error('Error grading submission:', error);
-      throw error;
-    }
-  },
-
-  // 과제 제출 삭제
-  deleteSubmission: async (courseId, assignmentId, submissionId) => {
-    try {
-      await apiClient.delete(
-          `/api/courses/${courseId}/assignments/${assignmentId}/submissions/${submissionId}`
-      );
-    } catch (error) {
-      console.error('Error deleting submission:', error);
-      throw error;
-    }
-  },
-
-  // 제출 파일 다운로드
-  downloadSubmissionFile: async (courseId, assignmentId, submissionId, fileId) => {
+  getSubmissionById: async (courseId, assignmentId) => {
     try {
       const response = await apiClient.get(
-          `/api/courses/${courseId}/assignments/${assignmentId}/submissions/${submissionId}/files/${fileId}/download`
+          `/api/courses/${courseId}/assignments/${assignmentId}/submissions`
       );
-      return response.data; // presigned URL 반환
+      return response.data;
     } catch (error) {
-      console.error('Error downloading submission file:', error);
+      if (error.response?.status === 404) {
+        return null;
+      }
       throw error;
     }
   },
 
-  // 제출 파일 삭제
+  downloadSubmissionFile: async (courseId, assignmentId, submissionId, fileId, fileName) => {
+    try {
+      // presigned URL을 받아옵니다
+      const { data: presignedUrl } = await apiClient.get(
+          `/api/courses/${courseId}/assignments/${assignmentId}/submissions/${submissionId}/files/${fileId}/download`
+      );
+
+      // downloadFileFromUrl 유틸리티를 사용하여 다운로드
+      await downloadFileFromUrl(presignedUrl, fileName);
+    } catch (error) {
+      console.error('Download error:', error);
+      throw error;
+    }
+  },
+
   deleteSubmissionFile: async (courseId, assignmentId, submissionId, fileId) => {
     try {
       const response = await apiClient.delete(
@@ -129,7 +93,7 @@ export const SubmissionApi = {
       );
       return response.data;
     } catch (error) {
-      console.error('Error deleting submission file:', error);
+      console.error('Delete file error:', error);
       throw error;
     }
   }
