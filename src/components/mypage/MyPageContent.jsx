@@ -1,17 +1,38 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, MessageCircle, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { getCurrentUser, fetchUserAttributes } from 'aws-amplify/auth';
 
 /**
  * 마이페이지
  */
 const MyPageContent = () => {
+  const navigate = useNavigate();
+  const [userInfo, setUserInfo] = useState({
+    name: "",
+    email: ""
+  });
+  const [loading, setLoading] = useState(true);
 
-  const navigate = useNavigate()
+  useEffect(() => {
+    fetchUserInfo();
+  }, []);
 
-  const userInfo = {
-    name: "홍길동",
-    email: "hong@example.com"
+  const fetchUserInfo = async () => {
+    try {
+      // 현재 인증된 사용자 정보와 속성 가져오기
+      const currentUser = await getCurrentUser();
+      const userAttributes = await fetchUserAttributes();
+
+      setUserInfo({
+        name: userAttributes.name || currentUser.username,
+        email: userAttributes.email
+      });
+      setLoading(false);
+    } catch (err) {
+      console.error('Error fetching user info:', err);
+      setLoading(false);
+    }
   };
 
   const courses = [
@@ -55,29 +76,34 @@ const MyPageContent = () => {
     }
   ];
 
+  if (loading) {
+    return (
+        <div className="flex justify-center items-center min-h-screen">
+          <div className="text-gray-500">Loading...</div>
+        </div>
+    );
+  }
+
   return (
       <div className="bg-white">
         {/* Profile Header */}
         <div className="max-w-7xl mx-auto px-4 py-6 border-b">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-6">
-              <div className="relative">
-                <div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center text-gray-400">
-                  <span className="text-2xl">{userInfo.name[0]}</span>
-                </div>
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold">{userInfo.name}</h2>
-                <p className="text-gray-500">{userInfo.email}</p>
+          <div className="flex items-center gap-6">
+            <div className="relative">
+              <div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center text-gray-400">
+                <span className="text-2xl">{userInfo.name[0]}</span>
               </div>
             </div>
-            <button
-                className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-                onClick={() => navigate('/mypage/change-password')}
-            >
-              <Lock size={16}/>
-              비밀번호 변경
-            </button>
+            <div>
+              <h2 className="text-xl font-semibold">{userInfo.name}</h2>
+              <p className="text-gray-500 mt-1 mb-1">{userInfo.email}</p>
+              <button
+                  onClick={() => navigate('/mypage/change-password')}
+                  className="text-sm text-blue-600 hover:underline mt-1"
+              >
+                비밀번호 변경
+              </button>
+            </div>
           </div>
         </div>
 
