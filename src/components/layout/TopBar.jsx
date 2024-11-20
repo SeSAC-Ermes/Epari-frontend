@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { signOut } from 'aws-amplify/auth';
+import { signOut, fetchUserAttributes } from 'aws-amplify/auth';
 import Logo from '../../assets/epariLogo.jpg';
 
 /**
@@ -10,6 +10,22 @@ import Logo from '../../assets/epariLogo.jpg';
 const TopBar = () => {
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [userName, setUserName] = useState('');
+  const [profileImage, setProfileImage] = useState(null);
+
+  useEffect(() => {
+    const getUserInfo = async () => {
+      try {
+        const userAttributes = await fetchUserAttributes();
+        setUserName(userAttributes.name);
+        setProfileImage(userAttributes['custom:profile_image']);
+      } catch (err) {
+        console.error('Error fetching user info:', err);
+      }
+    };
+
+    getUserInfo();
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -42,11 +58,19 @@ const TopBar = () => {
                 className="w-10 h-10 rounded-full overflow-hidden"
                 onMouseEnter={() => setIsDropdownOpen(true)}
             >
-              <img
-                  src="/api/placeholder/40/40"
-                  alt="프로필"
-                  className="w-full h-full object-cover"
-              />
+              {profileImage ? (
+                  <img
+                      src={profileImage}
+                      alt="프로필"
+                      className="w-full h-full object-cover"
+                  />
+              ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+                <span className="text-lg font-semibold">
+                  {userName ? userName[0] : ''}
+                </span>
+                  </div>
+              )}
             </button>
 
             {/* Dropdown Menu */}
