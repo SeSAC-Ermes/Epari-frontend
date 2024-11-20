@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Calendar, MessageCircle, Lock } from 'lucide-react';
+import React, { useState, useEffect } from 'react';  // useState, useEffect 추가
+import { Calendar, MessageCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { getCurrentUser, fetchUserAttributes } from 'aws-amplify/auth';
+import { getCurrentUser, fetchUserAttributes } from 'aws-amplify/auth';  // getCurrentUser, fetchUserAttributes 도 추가
+import UserProfile from "./UserProfile.jsx";
 
 /**
  * 마이페이지
@@ -10,23 +11,21 @@ const MyPageContent = () => {
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState({
     name: "",
-    email: ""
+    email: "",
+    profileImage: null
   });
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchUserInfo();
-  }, []);
+  const [loading, setLoading] = useState(true);
 
   const fetchUserInfo = async () => {
     try {
-      // 현재 인증된 사용자 정보와 속성 가져오기
       const currentUser = await getCurrentUser();
       const userAttributes = await fetchUserAttributes();
 
       setUserInfo({
         name: userAttributes.name || currentUser.username,
-        email: userAttributes.email
+        email: userAttributes.email,
+        profileImage: userAttributes['custom:profile_image']  // 이 부분은 수정된 채로 두어야 합니다
       });
       setLoading(false);
     } catch (err) {
@@ -35,6 +34,17 @@ const MyPageContent = () => {
     }
   };
 
+  useEffect(() => {
+    fetchUserInfo();
+  }, []);
+
+  if (loading) {
+    return (
+        <div className="flex justify-center items-center min-h-screen">
+          <div className="text-gray-500">Loading...</div>
+        </div>
+    );
+  }
   const courses = [
     {
       id: 1,
@@ -76,77 +86,56 @@ const MyPageContent = () => {
     }
   ];
 
-  if (loading) {
-    return (
-        <div className="flex justify-center items-center min-h-screen">
-          <div className="text-gray-500">Loading...</div>
-        </div>
-    );
-  }
-
   return (
       <div className="bg-white">
-        {/* Profile Header */}
-        <div className="max-w-7xl mx-auto px-4 py-6 border-b">
-          <div className="flex items-center gap-6">
-            <div className="relative">
-              <div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center text-gray-400">
-                <span className="text-2xl">{userInfo.name[0]}</span>
+        <div className="bg-white min-h-screen">
+          <UserProfile
+              userInfo={userInfo}
+              setUserInfo={setUserInfo}
+              onProfileUpdate={fetchUserInfo}
+          />
+
+          {/* Main Content */}
+          <div className="max-w-7xl mx-auto px-4 py-8">
+            {/* 내 강의 목록 */}
+            <div className="mb-8">
+              <h3 className="text-lg font-bold mb-4">수강 이력</h3>
+              <div className="flex gap-4 overflow-x-auto">
+                {courses.map(course => (
+                    <div key={course.id} className="w-1/3 flex-shrink-0 bg-white rounded-lg shadow-sm border p-4">
+                      <h4 className="font-medium mb-2 line-clamp-2">{course.title}</h4>
+                      <div className="flex flex-col text-sm text-gray-500 gap-2">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="w-4 h-4"/>
+                          <span>{course.period}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <MessageCircle className="w-4 h-4"/>
+                          <span>수강생 {course.students}명</span>
+                        </div>
+                      </div>
+                    </div>
+                ))}
               </div>
             </div>
+
+            {/* Q&A 섹션 */}
             <div>
-              <h2 className="text-xl font-semibold">{userInfo.name}</h2>
-              <p className="text-gray-500 mt-1 mb-1">{userInfo.email}</p>
-              <button
-                  onClick={() => navigate('/mypage/change-password')}
-                  className="text-sm text-blue-600 hover:underline mt-1"
-              >
-                비밀번호 변경
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          {/* 내 강의 목록 */}
-          <div className="mb-8">
-            <h3 className="text-lg font-bold mb-4">수강 이력</h3>
-            <div className="flex gap-4 overflow-x-auto">
-              {courses.map(course => (
-                  <div key={course.id} className="w-1/3 flex-shrink-0 bg-white rounded-lg shadow-sm border p-4">
-                    <h4 className="font-medium mb-2 line-clamp-2">{course.title}</h4>
-                    <div className="flex flex-col text-sm text-gray-500 gap-2">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="w-4 h-4"/>
-                        <span>{course.period}</span>
+              <h3 className="text-lg font-bold mb-4">나의 Q&A</h3>
+              <div className="space-y-2">
+                {qna.map(item => (
+                    <div key={item.id} className="flex items-center justify-between py-2 border-b">
+                      <div className="flex items-center gap-4">
+                        <span className="text-sm text-gray-500">{item.date}</span>
+                        <span className="px-2 py-1 text-xs bg-blue-100 text-blue-600 rounded">
+                      {item.category}
+                    </span>
+                        <span>{item.title}</span>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <MessageCircle className="w-4 h-4"/>
-                        <span>수강생 {course.students}명</span>
-                      </div>
+                      <button className="text-sm text-purple-600">답변보기</button>
                     </div>
-                  </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Q&A 섹션 */}
-          <div>
-            <h3 className="text-lg font-bold mb-4">나의 Q&A</h3>
-            <div className="space-y-2">
-              {qna.map(item => (
-                  <div key={item.id} className="flex items-center justify-between py-2 border-b">
-                    <div className="flex items-center gap-4">
-                      <span className="text-sm text-gray-500">{item.date}</span>
-                      <span className="px-2 py-1 text-xs bg-blue-100 text-blue-600 rounded">
-                    {item.category}
-                  </span>
-                      <span>{item.title}</span>
-                    </div>
-                    <button className="text-sm text-purple-600">답변보기</button>
-                  </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </div>
