@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { NoticeApi } from '../../api/notice/NoticeApi';
-import { Download, FileText } from 'lucide-react';
+import { Download, FileText, PenSquare, Trash2 } from 'lucide-react';
 
 const NoticeDetailContent = () => {
   const { noticeId } = useParams();
@@ -119,7 +119,7 @@ const NoticeDetailContent = () => {
           </div>
 
           <div className="prose max-w-none mb-6">
-            <div dangerouslySetInnerHTML={{ __html: notice.content }} />
+            <div dangerouslySetInnerHTML={{ __html: notice.content }}/>
           </div>
 
           {/* 이미지 파일 미리보기 섹션 */}
@@ -176,6 +176,19 @@ const NoticeDetailContent = () => {
                 </ul>
               </div>
           )}
+        </div>
+
+        <div className="flex justify-end gap-2 mt-4">
+          <button
+              className="flex items-center gap-1 px-4 py-2 rounded-md bg-sky-50 text-sky-700 hover:bg-sky-100 transition-colors">
+            <PenSquare size={18}/>
+            <span>수정</span>
+          </button>
+          <button
+              className="flex items-center gap-1 px-4 py-2 rounded-md bg-rose-50 text-rose-700 hover:bg-rose-100 transition-colors">
+            <Trash2 size={18}/>
+            <span>삭제</span>
+          </button>
         </div>
       </main>
   );
