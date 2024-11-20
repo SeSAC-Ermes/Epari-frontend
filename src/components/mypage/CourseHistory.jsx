@@ -19,7 +19,6 @@ const CourseHistory = () => {
         const response = await axios.get('/api/courses/usercourses');
         setCourses(response.data);
 
-        // 토큰에서 역할 확인
         const token = localStorage.getItem('token');
         const payload = token.split('.')[1];
         const decodedPayload = JSON.parse(atob(payload));
@@ -53,7 +52,7 @@ const CourseHistory = () => {
   }
 
   return (
-      <div className="space-y-6">
+      <div className="bg-white rounded-lg px-12 py-8 space-y-6">
         <h2 className="text-2xl font-bold">
           {isInstructor ? '강의 이력' : '수강 이력'}
         </h2>
@@ -115,8 +114,8 @@ const CourseHistory = () => {
                           <div className="flex items-center gap-2 flex-1">
                             <UserCircle2 size={16} className="text-gray-400"/>
                             <span className="text-sm font-medium text-gray-700">
-                        {course.instructor?.name || '강사 미정'}
-                      </span>
+                              {course.instructor?.name || '강사 미정'}
+                            </span>
                           </div>
                           {course.classroom && (
                               <div className="flex items-center gap-1 text-gray-500">

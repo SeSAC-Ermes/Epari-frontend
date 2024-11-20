@@ -29,9 +29,6 @@ const MyPageContent = () => {
       });
       setLoading(false);
 
-      if (onProfileUpdate) {
-        await onProfileUpdate();
-      }
     } catch (err) {
       console.error('Error fetching user info:', err);
       setLoading(false);
