@@ -60,17 +60,26 @@ function App() {
             {/* 강의 공지사항 */}
             <Route path="/courses/:courseId" element={<MainLayout/>}>
               <Route index element={<CourseDetailPage/>}/>
-
-              {/* 강의 공지사항 */}
               <Route path="notices">
                 <Route index element={<NoticeListPage type="COURSE" />}/>
-                <Route path="create" element={
-                  <ProtectedRoute requiredRoles={['INSTRUCTOR']}>
-                    <NoticeWritePage type="COURSE" />
-                  </ProtectedRoute>
-                }/>
+                <Route path="create" element={<NoticeWritePage />}/>
                 <Route path=":noticeId" element={<NoticeDetailPage />}/>
               </Route>
+
+            {/*/!* 강의 공지사항 *!/*/}
+            {/*<Route path="/courses/:courseId" element={<MainLayout/>}>*/}
+            {/*  <Route index element={<CourseDetailPage/>}/>*/}
+
+            {/*  /!* 강의 공지사항 *!/*/}
+            {/*  <Route path="notices">*/}
+            {/*    <Route index element={<NoticeListPage type="COURSE" />}/>*/}
+            {/*    <Route path="create" element={*/}
+            {/*      <ProtectedRoute requiredRoles={['INSTRUCTOR']}>*/}
+            {/*        <NoticeWritePage type="COURSE" />*/}
+            {/*      </ProtectedRoute>*/}
+            {/*    }/>*/}
+            {/*    <Route path=":noticeId" element={<NoticeDetailPage />}/>*/}
+            {/*  </Route>*/}
 
               {/* Q&A */}
               <Route path="qna">
