@@ -1,4 +1,4 @@
-import {BrowserRouter as Router, Outlet, Route, Routes} from 'react-router-dom';
+import { BrowserRouter as Router, Outlet, Route, Routes } from 'react-router-dom';
 import React from 'react';
 import SignInPage from './pages/SignInPage.jsx';
 import SignUpPage from './pages/SignUpPage.jsx';
@@ -24,7 +24,10 @@ import SimpleLayout from "./components/layout/SimpleLayout.jsx";
 import MainLayout from "./components/layout/MainLayout.jsx";
 import AttendanceManagementPage from "./pages/attendance/AttendanceManagementPage.jsx";
 import ExamPage from "./pages/exam/ExamPage.jsx";
-import ExamCreatePage from "./pages/exam/ExamCreatePage.jsx";
+import ExamBasicSettingsPage from "./pages/exam/ExamBasicSettingsPage.jsx";
+import ExamQuestionPage from "./pages/exam/ExamQuestionPage.jsx";
+import ExamDetailPage from "./pages/exam/ExamDetailPage.jsx";
+import ExamEditPage from "./pages/exam/ExamEditPage.jsx";
 
 function App() {
   return (
@@ -67,8 +70,11 @@ function App() {
               {/* 시험 */}
               <Route path="exams">
                 <Route index element={<ExamPage/>}/>
-                <Route path="create" element={<ExamCreatePage/>}/>
-                {/*<Route path="/courses/:courseId/exams/:examId" element={<ExamDetailPage/>}/>*/}
+                <Route path="settings" element={<ExamBasicSettingsPage/>}/>
+                <Route path=":examId" element={<ExamDetailPage/>}/>
+                <Route path=":examId/questions" element={<ExamQuestionPage/>}/>
+                <Route path=":examId/edit" element={<ExamEditPage/>}/>
+
               </Route>
 
               {/* 파일/자료 */}
