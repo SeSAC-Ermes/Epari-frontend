@@ -228,32 +228,7 @@ const AssignmentDetail = () => {
                                                   showFileList={false}
                                               />
 
-                                              {state.files.length > 0 && (
-                                                  <div className="mt-4 space-y-2">
-                                                    {state.files.map((file, index) => (
-                                                        <div key={index}
-                                                             className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                                                          <div className="flex items-center gap-3">
-                                                            <FileText size={20} className="text-gray-500"/>
-                                                            <span className="text-sm text-gray-600">
-                                                {file.name}
-                                              </span>
-                                                          </div>
-                                                          <button
-                                                              type="button"
-                                                              onClick={() => {
-                                                                const newFiles = [...state.files];
-                                                                newFiles.splice(index, 1);
-                                                                state.setFiles(newFiles);
-                                                              }}
-                                                              className="p-2 hover:bg-gray-200 rounded-full transition-colors"
-                                                          >
-                                                            <Trash2 size={16} className="text-red-500"/>
-                                                          </button>
-                                                        </div>
-                                                    ))}
-                                                  </div>
-                                              )}
+
                                             </div>
                                           </div>
 

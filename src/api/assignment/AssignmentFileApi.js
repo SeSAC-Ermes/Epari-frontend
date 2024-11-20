@@ -1,13 +1,13 @@
 import apiClient from "../axios.js";
 
-export const FileAPI = {
+export const AssignmentFileApi = {
   // 파일 다운로드 URL 조회
   getFileDownloadUrl: async (courseId, assignmentId, fileId) => {
     try {
       const response = await apiClient.get(
           `/api/courses/${courseId}/assignments/${assignmentId}/files/${fileId}`
       );
-      return response.data;
+      return response.data;  // 여기를 response.data로 수정
     } catch (error) {
       console.error('Error getting file download URL:', error);
       throw error;
