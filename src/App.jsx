@@ -28,6 +28,7 @@ import NoticeDetailPage from "./pages/notice/NoticeDetailPage.jsx";
 import NoticeListPage from "./pages/notice/NoticeListPage.jsx";
 import { ProtectedRoute } from "./auth/ProtectedRoute.jsx";
 import NoticeWritePage from "./pages/notice/NoticeWritePage.jsx";
+import NoticeEditContent from "./components/notice/NoticeEditContent.jsx";
 
 function App() {
   return (
@@ -54,6 +55,7 @@ function App() {
                   </ProtectedRoute>
                 }/>
                 <Route path=":noticeId" element={<NoticeDetailPage/>}/>
+                <Route path=":noticeId/edit" element={<NoticeEditContent/>}/>
               </Route>
             </Route>
 
@@ -64,22 +66,8 @@ function App() {
                 <Route index element={<NoticeListPage type="COURSE"/>}/>
                 <Route path="create" element={<NoticeWritePage/>}/>
                 <Route path=":noticeId" element={<NoticeDetailPage/>}/>
+                <Route path=":noticeId/edit" element={<NoticeEditContent/>}/>
               </Route>
-
-              {/*/!* 강의 공지사항 *!/*/}
-              {/*<Route path="/courses/:courseId" element={<MainLayout/>}>*/}
-              {/*  <Route index element={<CourseDetailPage/>}/>*/}
-
-              {/*  /!* 강의 공지사항 *!/*/}
-              {/*  <Route path="notices">*/}
-              {/*    <Route index element={<NoticeListPage type="COURSE" />}/>*/}
-              {/*    <Route path="create" element={*/}
-              {/*      <ProtectedRoute requiredRoles={['INSTRUCTOR']}>*/}
-              {/*        <NoticeWritePage type="COURSE" />*/}
-              {/*      </ProtectedRoute>*/}
-              {/*    }/>*/}
-              {/*    <Route path=":noticeId" element={<NoticeDetailPage />}/>*/}
-              {/*  </Route>*/}
 
               {/* Q&A */}
               <Route path="qna">
