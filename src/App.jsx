@@ -1,4 +1,4 @@
-import {BrowserRouter as Router, Outlet, Route, Routes} from 'react-router-dom';
+import { BrowserRouter as Router, Outlet, Route, Routes } from 'react-router-dom';
 import React from 'react';
 import SignInPage from './pages/SignInPage.jsx';
 import SignUpPage from './pages/SignUpPage.jsx';
@@ -47,13 +47,13 @@ function App() {
 
               {/* 전체 공지사항 */}
               <Route path="/notices">
-                <Route index element={<NoticeListPage type="GLOBAL" />}/>
+                <Route index element={<NoticeListPage type="GLOBAL"/>}/>
                 <Route path="create" element={
                   <ProtectedRoute requiredRoles={['ADMIN']}>
-                    <NoticeWritePage type="GLOBAL" />
+                    <NoticeWritePage type="GLOBAL"/>
                   </ProtectedRoute>
                 }/>
-                <Route path=":noticeId" element={<NoticeDetailPage />}/>
+                <Route path=":noticeId" element={<NoticeDetailPage/>}/>
               </Route>
             </Route>
 
@@ -61,25 +61,25 @@ function App() {
             <Route path="/courses/:courseId" element={<MainLayout/>}>
               <Route index element={<CourseDetailPage/>}/>
               <Route path="notices">
-                <Route index element={<NoticeListPage type="COURSE" />}/>
-                <Route path="create" element={<NoticeWritePage />}/>
-                <Route path=":noticeId" element={<NoticeDetailPage />}/>
+                <Route index element={<NoticeListPage type="COURSE"/>}/>
+                <Route path="create" element={<NoticeWritePage/>}/>
+                <Route path=":noticeId" element={<NoticeDetailPage/>}/>
               </Route>
 
-            {/*/!* 강의 공지사항 *!/*/}
-            {/*<Route path="/courses/:courseId" element={<MainLayout/>}>*/}
-            {/*  <Route index element={<CourseDetailPage/>}/>*/}
+              {/*/!* 강의 공지사항 *!/*/}
+              {/*<Route path="/courses/:courseId" element={<MainLayout/>}>*/}
+              {/*  <Route index element={<CourseDetailPage/>}/>*/}
 
-            {/*  /!* 강의 공지사항 *!/*/}
-            {/*  <Route path="notices">*/}
-            {/*    <Route index element={<NoticeListPage type="COURSE" />}/>*/}
-            {/*    <Route path="create" element={*/}
-            {/*      <ProtectedRoute requiredRoles={['INSTRUCTOR']}>*/}
-            {/*        <NoticeWritePage type="COURSE" />*/}
-            {/*      </ProtectedRoute>*/}
-            {/*    }/>*/}
-            {/*    <Route path=":noticeId" element={<NoticeDetailPage />}/>*/}
-            {/*  </Route>*/}
+              {/*  /!* 강의 공지사항 *!/*/}
+              {/*  <Route path="notices">*/}
+              {/*    <Route index element={<NoticeListPage type="COURSE" />}/>*/}
+              {/*    <Route path="create" element={*/}
+              {/*      <ProtectedRoute requiredRoles={['INSTRUCTOR']}>*/}
+              {/*        <NoticeWritePage type="COURSE" />*/}
+              {/*      </ProtectedRoute>*/}
+              {/*    }/>*/}
+              {/*    <Route path=":noticeId" element={<NoticeDetailPage />}/>*/}
+              {/*  </Route>*/}
 
               {/* Q&A */}
               <Route path="qna">

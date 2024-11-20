@@ -114,14 +114,14 @@ const NoticeListContent = ({ type }) => {
                       onClick={handleWriteClick}
                       className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
                   >
-                    <Plus size={20} />
+                    <Plus size={20}/>
                     글작성
                   </button>
                 </RoleBasedComponent>
 
                 {/* 검색 영역 */}
                 <div className="flex items-center bg-gray-100 rounded-lg px-4 py-2">
-                  <Search className="text-gray-400" size={20} />
+                  <Search className="text-gray-400" size={20}/>
                   <input
                       type="text"
                       placeholder="검색"
