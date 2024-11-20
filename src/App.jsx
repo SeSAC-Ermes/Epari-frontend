@@ -28,6 +28,9 @@ import ExamBasicSettingsPage from "./pages/exam/ExamBasicSettingsPage.jsx";
 import ExamQuestionPage from "./pages/exam/ExamQuestionPage.jsx";
 import ExamDetailPage from "./pages/exam/ExamDetailPage.jsx";
 import ExamEditPage from "./pages/exam/ExamEditPage.jsx";
+import ResetPasswordForm from "./components/auth/ResetPasswordForm.jsx";
+import MyPage from "./pages/mypage/MyPage.jsx";
+import ChangePasswordForm from "./components/auth/ChangePasswordForm.jsx";
 
 function App() {
   return (
@@ -37,6 +40,8 @@ function App() {
           <Route path="/signin" element={<SignInPage/>}/>
           <Route path="/signup" element={<SignUpPage/>}/>
           <Route path="/unauthorized" element={<UnauthorizedPage/>}/>
+          <Route path="/reset-password" element={<ResetPasswordForm/>}/>
+
 
           {/* Protected Routes */}
           <Route element={<AuthProvider><Outlet/></AuthProvider>}>
@@ -44,6 +49,8 @@ function App() {
             <Route element={<SimpleLayout/>}>
               <Route path="/" element={<RootRedirect/>}/>
               <Route path="/courses" element={<CourseListPage/>}/>
+              <Route path="/mypage" element={<MyPage/>}/>
+              <Route path="/mypage/change-password" element={<ChangePasswordForm/>}/>
             </Route>
 
             {/* Main Layout - 코스 관련 */}

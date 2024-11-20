@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import 'react-quill/dist/quill.snow.css';
-import Sidebar from '../../components/layout/Sidebar';
 import QuillEditor from '../../components/common/QuillEditor';
 import FileUpload from "../../components/common/FileUpload.jsx";
 import { AssignmentAPI } from "../../api/assignment/AssignmentApi.js";
@@ -85,7 +84,6 @@ const AssignmentCreatePage = () => {
 
   return (
       <div className="flex h-screen bg-gray-50">
-        <Sidebar/>
         <div className="flex-1 flex flex-col overflow-hidden">
           <TopBar/>
           <div className="flex-1 overflow-y-auto p-8">
