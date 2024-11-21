@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ChevronDown, ChevronUp, Download, FileText, Pencil, Trash2 } from 'lucide-react';
 import QuillEditor from '../../components/common/QuillEditor';
@@ -6,10 +6,18 @@ import FileUpload from "../../components/common/FileUpload";
 import courseAPI from "../../api/course/courseAPI.js";
 import { calculateDday, formatDate, getAssignmentStatus } from "../../utils/DateUtils.js";
 import { useAssignmentActions, useAssignmentState, useAuth, useFileHandling } from './hooks/useAssignment';
+import { SubmissionApi } from "../../api/assignment/SubmissionApi.js";
 
 const AssignmentDetail = () => {
   const { courseId } = useParams();
   const navigate = useNavigate();
+  const [submission, setSubmission] = useState({});
+
+  const formatDateForInput = (date) => {
+    return new Date(date).toISOString().split('T')[0];
+  };
+
+  const today = formatDateForInput(new Date());
 
   // Custom hooks 사용
   const state = useAssignmentState();
@@ -32,6 +40,31 @@ const AssignmentDetail = () => {
     state.setFiles([]);
     state.setFilesToRemove([]);
   };
+
+  const fetchSubmissionStatus = async (assignmentId) => {
+    try {
+      if (state.isInstructor) {
+        return;
+      }
+      const submission = await SubmissionApi.getSubmissionById(courseId, assignmentId);
+      if (submission) {
+        setSubmission(prev => ({
+          ...prev,
+          [assignmentId]: submission
+        }));
+      }
+    } catch (error) {
+      console.error('Error fetching submission:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (state.assignments?.length > 0) {
+      state.assignments.forEach(assignment => {
+        fetchSubmissionStatus(assignment.id);
+      });
+    }
+  }, [state.assignments]);
 
   useEffect(() => {
     fetchAssignments();
@@ -66,6 +99,20 @@ const AssignmentDetail = () => {
     );
   }
 
+  const getSubmissionStatusStyle = (status) => {
+    switch (status) {
+      case '제출완료':
+        return 'bg-blue-100 text-blue-700';
+      case '채점완료':
+        return 'bg-green-100 text-green-700';
+      case '미제출':
+      default:
+        return 'bg-gray-100 text-gray-700';
+    }
+  };
+
+  const getSubmissionStatusText = (status) => status || '미제출';
+
   return (
       <div className="flex-1 overflow-y-auto p-4 lg:p-6">
         <div className="max-w-5xl mx-auto">
@@ -99,7 +146,17 @@ const AssignmentDetail = () => {
                           <React.Fragment key={assignment.id}>
                             <tr className="hover:bg-gray-50 border-b border-gray-200 last:border-0">
                               <td className="px-6 py-4 text-sm text-gray-600">{index + 1}</td>
-                              <td className="px-6 py-4 text-sm text-gray-900">{assignment.title}</td>
+                              <td className="px-6 py-4 text-sm text-gray-900">
+                                <button
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      navigate(`/courses/${courseId}/assignments/${assignment.id}/submissions`);
+                                    }}
+                                    className="text-blue-600 hover:text-blue-800 hover:underline text-left"
+                                >
+                                  {assignment.title}
+                                </button>
+                              </td>
                               <td className="px-6 py-4 text-sm text-gray-600">{assignment.instructor?.name}</td>
                               <td className="px-6 py-4">
                                 <div className="text-sm text-gray-600">
@@ -176,9 +233,15 @@ const AssignmentDetail = () => {
                                                 type="date"
                                                 value={state.editDueDate}
                                                 onChange={(e) => state.setEditDueDate(e.target.value)}
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                                                min={today}  // 최소 날짜를 오늘로 설정
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                                 required
                                             />
+                                            {state.editDueDate && state.editDueDate < today && (
+                                                <p className="text-red-500 text-sm mt-1">
+                                                  마감일은 현재 날짜보다 이후여야 합니다.
+                                                </p>
+                                            )}
                                           </div>
 
                                           <div className="space-y-4">
@@ -259,7 +322,7 @@ const AssignmentDetail = () => {
                                           />
                                           {assignment.files?.length > 0 && (
                                               <div className="mt-4 pt-4 border-t">
-                                                <h3 className="font-medium mb-3 text-gray-700">첨부파일</h3>
+                                              <h3 className="font-medium mb-3 text-gray-700">첨부파일</h3>
                                                 <div className="space-y-2">
                                                   {assignment.files.map((file) => (
                                                       <div key={file.id}
@@ -299,7 +362,7 @@ const AssignmentDetail = () => {
                         <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">제목</th>
                         <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">작성자</th>
                         <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">제출 마감일자</th>
-                        <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">제출 여부</th>
+                        <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">제출 상태</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -327,15 +390,17 @@ const AssignmentDetail = () => {
                               </div>
                               <div className="mt-1">
                           <span
-                              className={`px-2 py-0.5 rounded-full text-xs font-medium ${calculateDday(assignment.deadline).class}`}>
+                              className={`px-2 py-0.5 rounded-full text-xs font-medium ${calculateDday(assignment.deadline).class}`}
+                          >
                             {calculateDday(assignment.deadline).text}
                           </span>
                               </div>
                             </td>
                             <td className="px-6 py-4">
                         <span
-                            className={`px-3 py-1 rounded-full text-xs font-medium ${assignment.submitted ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-700'}`}>
-                          {assignment.submitted ? '제출 완료' : '미제출'}
+                            className={`px-3 py-1 rounded-full text-xs font-medium ${getSubmissionStatusStyle(submission[assignment.id]?.status)}`}
+                        >
+                          {getSubmissionStatusText(submission[assignment.id]?.status)}
                         </span>
                             </td>
                           </tr>

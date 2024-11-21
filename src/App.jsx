@@ -1,4 +1,4 @@
-import {BrowserRouter as Router, Outlet, Route, Routes} from 'react-router-dom';
+import { BrowserRouter as Router, Outlet, Route, Routes } from 'react-router-dom';
 import React from 'react';
 import SignInPage from './pages/SignInPage.jsx';
 import SignUpPage from './pages/SignUpPage.jsx';
@@ -23,10 +23,6 @@ import SimpleLayout from "./components/layout/SimpleLayout.jsx";
 import MainLayout from "./components/layout/MainLayout.jsx";
 import AttendanceManagementPage from "./pages/attendance/AttendanceManagementPage.jsx";
 import ExamPage from "./pages/exam/ExamPage.jsx";
-import ExamBasicSettingsPage from "./pages/exam/ExamBasicSettingsPage.jsx";
-import ExamQuestionPage from "./pages/exam/ExamQuestionPage.jsx";
-import ExamDetailPage from "./pages/exam/ExamDetailPage.jsx";
-import ExamEditPage from "./pages/exam/ExamEditPage.jsx";
 import ResetPasswordForm from "./components/auth/ResetPasswordForm.jsx";
 import MyPage from "./pages/mypage/MyPage.jsx";
 import ChangePasswordForm from "./components/auth/ChangePasswordForm.jsx";
@@ -36,6 +32,11 @@ import { ProtectedRoute } from "./auth/ProtectedRoute.jsx";
 import NoticeWritePage from "./pages/notice/NoticeWritePage.jsx";
 import NoticeDetailPage from "./pages/notice/NoticeDetailPage.jsx";
 import NoticeEditContent from "./components/notice/NoticeEditContent.jsx";
+import SubmissionListPage from "./pages/assignment/SubmissionListPage.jsx";
+import ExamBasicSettingsPage from "./pages/exam/ExamBasicSettingsPage.jsx";
+import ExamDetailPage from "./pages/exam/ExamDetailPage.jsx";
+import ExamQuestionPage from "./pages/exam/ExamQuestionPage.jsx";
+import ExamEditPage from "./pages/exam/ExamEditPage.jsx";
 
 function App() {
   return (
@@ -92,7 +93,10 @@ function App() {
               <Route path="assignments">
                 <Route index element={<AssignmentPage/>}/>
                 <Route path="create" element={<AssignmentCreatePage/>}/>
-                <Route path=":assignmentId" element={<AssignmentDetailPage/>}/>
+                <Route path=":assignmentId">
+                  <Route index element={<AssignmentDetailPage/>}/>
+                  <Route path="submissions" element={<SubmissionListPage/>}/>
+                </Route>
               </Route>
 
               {/* 시험 */}
@@ -102,7 +106,7 @@ function App() {
                 <Route path=":examId" element={<ExamDetailPage/>}/>
                 <Route path=":examId/questions" element={<ExamQuestionPage/>}/>
                 <Route path=":examId/edit" element={<ExamEditPage/>}/>
-                <Route path=":examId/take" element={<ExamSubmissionPage />} />
+                <Route path=":examId/take" element={<ExamSubmissionPage/>}/>
 
               </Route>
 
