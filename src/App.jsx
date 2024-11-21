@@ -31,6 +31,7 @@ import ExamEditPage from "./pages/exam/ExamEditPage.jsx";
 import ResetPasswordForm from "./components/auth/ResetPasswordForm.jsx";
 import MyPage from "./pages/mypage/MyPage.jsx";
 import ChangePasswordForm from "./components/auth/ChangePasswordForm.jsx";
+import ExamSubmissionPage from "./pages/exam/ExamSubmissionPage.jsx";
 
 function App() {
   return (
@@ -81,6 +82,7 @@ function App() {
                 <Route path=":examId" element={<ExamDetailPage/>}/>
                 <Route path=":examId/questions" element={<ExamQuestionPage/>}/>
                 <Route path=":examId/edit" element={<ExamEditPage/>}/>
+                <Route path=":examId/take" element={<ExamSubmissionPage />} />
 
               </Route>
 
