@@ -96,5 +96,16 @@ export const SubmissionApi = {
       console.error('Delete file error:', error);
       throw error;
     }
-  }
+  },
+
+  // 강의의 전체 과제 제출 현황 조회
+  getCourseSubmissions: async (courseId) => {
+    try {
+      const response = await apiClient.get(`/api/courses/${courseId}/submissions`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching course submissions:', error);
+      throw error;
+    }
+  },
 };
