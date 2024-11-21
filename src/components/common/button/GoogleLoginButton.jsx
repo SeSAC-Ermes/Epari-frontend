@@ -1,10 +1,56 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { signInWithRedirect } from 'aws-amplify/auth';
+import { Hub } from 'aws-amplify/utils';
+import { useNavigate } from 'react-router-dom';
 
 const GoogleLoginButton = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const unsubscribe = Hub.listen("auth", async ({ payload }) => {
+      console.log('Auth event:', payload.event); // 디버깅을 위한 로그
+
+      switch (payload.event) {
+        case "signInWithRedirect":
+          console.log('로그인 성공:', payload);
+          // 로그인 성공 후 처리
+          navigate('/courses');
+          break;
+
+        case "signInWithRedirect_failure":
+          console.error('로그인 실패:', payload.data);
+          // 실패 원인 파악을 위한 상세 로깅
+          console.error('Error details:', {
+            message: payload.data?.message,
+            code: payload.data?.code
+          });
+          break;
+
+        case "customOAuthState":
+          console.log('Custom OAuth state:', payload.data);
+          break;
+      }
+    });
+
+    return () => unsubscribe(); // cleanup
+  }, [navigate]);
+
+  const handleGoogleSignIn = async () => {
+    try {
+      console.log('Google 로그인 시도');
+      await signInWithRedirect({
+        provider: 'Google',
+        customState: 'googleSignIn' // 추적을 위한 커스텀 상태
+      });
+    } catch (error) {
+      console.error('Google sign in error:', error);
+    }
+  };
+
   return (
       <button
           className="w-60 flex items-center justify-center gap-2 px-4 py-2 bg-white text-gray-700 rounded-lg border border-gray-300 hover:bg-gray-50 hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          onClick={() => console.log('Google login clicked')}
+          onClick={handleGoogleSignIn}
       >
         <svg
             className="w-5 h-5"
