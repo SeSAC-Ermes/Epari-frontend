@@ -1,5 +1,5 @@
 import { AssignmentFileApi } from "../../../api/assignment/AssignmentFileApi.js";
-import {downloadFileFromUrl} from "../../../utils/FileDownloadUtils.js";
+import { downloadFileFromUrl } from "../../../utils/FileDownloadUtils.js";
 
 export const useFileHandling = (courseId, assignmentId) => {
   const handleDownloadFile = async (fileId, fileName) => {

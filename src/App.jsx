@@ -29,6 +29,7 @@ import ResetPasswordForm from "./components/auth/ResetPasswordForm.jsx";
 import MyPage from "./pages/mypage/MyPage.jsx";
 import ChangePasswordForm from "./components/auth/ChangePasswordForm.jsx";
 import SubmissionList from "./components/assignment/SubmissionList.jsx";
+import ExamSubmissionPage from "./pages/exam/ExamSubmissionPage.jsx";
 
 function App() {
   return (
@@ -78,8 +79,12 @@ function App() {
               {/* 시험 */}
               <Route path="exams">
                 <Route index element={<ExamPage/>}/>
-                <Route path="create" element={<ExamCreatePage/>}/>
-                {/*<Route path="/courses/:courseId/exams/:examId" element={<ExamDetailPage/>}/>*/}
+                <Route path="settings" element={<ExamBasicSettingsPage/>}/>
+                <Route path=":examId" element={<ExamDetailPage/>}/>
+                <Route path=":examId/questions" element={<ExamQuestionPage/>}/>
+                <Route path=":examId/edit" element={<ExamEditPage/>}/>
+                <Route path=":examId/take" element={<ExamSubmissionPage />} />
+
               </Route>
 
               {/* 파일/자료 */}
