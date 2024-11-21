@@ -1,46 +1,47 @@
 import React, { useEffect } from 'react';
-import { signInWithRedirect } from 'aws-amplify/auth';
+import { signInWithRedirect, signOut } from 'aws-amplify/auth';
 import { Hub } from 'aws-amplify/utils';
 import { useNavigate } from 'react-router-dom';
+import axios from '../../../api/axios.js';
 
 const GoogleLoginButton = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
     const unsubscribe = Hub.listen("auth", async ({ payload }) => {
-      console.log('Auth event:', payload.event); // 디버깅을 위한 로그
-
       switch (payload.event) {
         case "signInWithRedirect":
-          console.log('로그인 성공:', payload);
-          // 로그인 성공 후 처리
-          navigate('/courses');
+          try {
+            const email = payload.data.username;
+            const response = await axios.post('/api/auth/check-user', { email });
+            const groups = response.data.groups;
+
+            if (groups.includes('INSTRUCTOR') || groups.includes('STUDENT')) {
+              navigate('/courses');
+            } else {
+              navigate('/pending-approval');
+              await signOut(); // 로그아웃 처리 추가
+            }
+          } catch (error) {
+            console.error('사용자 그룹 확인 실패:', error);
+            navigate('/pending-approval');
+          }
           break;
 
         case "signInWithRedirect_failure":
           console.error('로그인 실패:', payload.data);
-          // 실패 원인 파악을 위한 상세 로깅
-          console.error('Error details:', {
-            message: payload.data?.message,
-            code: payload.data?.code
-          });
-          break;
-
-        case "customOAuthState":
-          console.log('Custom OAuth state:', payload.data);
           break;
       }
     });
 
-    return () => unsubscribe(); // cleanup
+    return () => unsubscribe();
   }, [navigate]);
 
   const handleGoogleSignIn = async () => {
     try {
-      console.log('Google 로그인 시도');
       await signInWithRedirect({
         provider: 'Google',
-        customState: 'googleSignIn' // 추적을 위한 커스텀 상태
+        customState: 'googleSignIn'
       });
     } catch (error) {
       console.error('Google sign in error:', error);
