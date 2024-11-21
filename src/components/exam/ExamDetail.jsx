@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { BookOpen, Calendar, ChevronUp, Clock, GraduationCap, User, Users } from 'lucide-react';
 import { ExamAPI } from '../../api/exam/examAPI.js';
+import { PAGE_PERMISSIONS } from '../../constants/auth';
+import { RoleBasedComponent } from '../../auth/RoleBasedComponent';
 
 const ExamDetail = () => {
   const { courseId, examId } = useParams();
@@ -81,18 +83,36 @@ const ExamDetail = () => {
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold">{exam.title}</h1>
             <div className="flex gap-2">
-              <button
-                  onClick={() => setShowAnswers(!showAnswers)}
-                  className="px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-              >
-                {showAnswers ? '정답 숨기기' : '정답 보기'}
-              </button>
-              <button
-                  onClick={() => navigate(`/courses/${courseId}/exams/${examId}/edit`)}
-                  className="px-4 py-2 text-sm bg-green-500 text-white rounded-lg hover:bg-green-600"
-              >
-                수정하기
-              </button>
+              {/* 학생 전용: 시험 응시 버튼 */}
+              <RoleBasedComponent requiredPermissions={[PAGE_PERMISSIONS.EXAM_TAKE]}>
+                <button
+                    onClick={() => navigate(`/courses/${courseId}/exams/${examId}/take`)}
+                    className="px-4 py-2 text-sm bg-green-500 text-white rounded-lg hover:bg-green-600"
+                >
+                  시험 응시하기
+                </button>
+              </RoleBasedComponent>
+
+              {/* 강사 전용: 정답 보기, 수정 버튼 */}
+              <RoleBasedComponent requiredPermissions={[PAGE_PERMISSIONS.EXAM_VIEW_ANSWERS]}>
+                <button
+                    onClick={() => setShowAnswers(!showAnswers)}
+                    className="px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                >
+                  {showAnswers ? '정답 숨기기' : '정답 보기'}
+                </button>
+              </RoleBasedComponent>
+
+              <RoleBasedComponent requiredPermissions={[PAGE_PERMISSIONS.EXAM_EDIT]}>
+                <button
+                    onClick={() => navigate(`/courses/${courseId}/exams/${examId}/edit`)}
+                    className="px-4 py-2 text-sm bg-green-500 text-white rounded-lg hover:bg-green-600"
+                >
+                  수정하기
+                </button>
+              </RoleBasedComponent>
+
+              {/* 공통 버튼 */}
               <button
                   onClick={() => navigate(`/courses/${courseId}/exams`)}
                   className="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
@@ -106,7 +126,7 @@ const ExamDetail = () => {
             <div className="space-y-4">
               <div className="flex items-center gap-2 text-gray-600">
                 <User className="w-5 h-5"/>
-                <span>출제자: {exam.instructorName}</span>
+                <span>출제자: {exam.instructor?.name || exam.instructorName || '정보 없음'}</span>
               </div>
               <div className="flex items-center gap-2 text-gray-600">
                 <Calendar className="w-5 h-5"/>
