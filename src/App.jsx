@@ -24,12 +24,15 @@ import SimpleLayout from "./components/layout/SimpleLayout.jsx";
 import MainLayout from "./components/layout/MainLayout.jsx";
 import AttendanceManagementPage from "./pages/attendance/AttendanceManagementPage.jsx";
 import ExamPage from "./pages/exam/ExamPage.jsx";
-import ExamCreatePage from "./pages/exam/ExamCreatePage.jsx";
 import ResetPasswordForm from "./components/auth/ResetPasswordForm.jsx";
 import MyPage from "./pages/mypage/MyPage.jsx";
 import ChangePasswordForm from "./components/auth/ChangePasswordForm.jsx";
 import SubmissionList from "./components/assignment/SubmissionList.jsx";
 import ExamSubmissionPage from "./pages/exam/ExamSubmissionPage.jsx";
+import ExamBasicSettingsPage from "./pages/exam/ExamBasicSettingsPage.jsx";
+import ExamDetailPage from "./pages/exam/ExamDetailPage.jsx";
+import ExamQuestionPage from "./pages/exam/ExamQuestionPage.jsx";
+import ExamEditPage from "./pages/exam/ExamEditPage.jsx";
 
 function App() {
   return (
