@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import 'react-quill/dist/quill.snow.css';
-import Sidebar from '../../components/layout/Sidebar';
 import QuillEditor from '../../components/common/QuillEditor';
 import FileUpload from "../../components/common/FileUpload.jsx";
 import { AssignmentAPI } from "../../api/assignment/AssignmentApi.js";

@@ -24,10 +24,14 @@ import SimpleLayout from "./components/layout/SimpleLayout.jsx";
 import MainLayout from "./components/layout/MainLayout.jsx";
 import AttendanceManagementPage from "./pages/attendance/AttendanceManagementPage.jsx";
 import ExamPage from "./pages/exam/ExamPage.jsx";
-import ExamCreatePage from "./pages/exam/ExamCreatePage.jsx";
+import ExamBasicSettingsPage from "./pages/exam/ExamBasicSettingsPage.jsx";
+import ExamQuestionPage from "./pages/exam/ExamQuestionPage.jsx";
+import ExamDetailPage from "./pages/exam/ExamDetailPage.jsx";
+import ExamEditPage from "./pages/exam/ExamEditPage.jsx";
 import ResetPasswordForm from "./components/auth/ResetPasswordForm.jsx";
 import MyPage from "./pages/mypage/MyPage.jsx";
 import ChangePasswordForm from "./components/auth/ChangePasswordForm.jsx";
+import ExamSubmissionPage from "./pages/exam/ExamSubmissionPage.jsx";
 
 function App() {
   return (
@@ -74,8 +78,12 @@ function App() {
               {/* 시험 */}
               <Route path="exams">
                 <Route index element={<ExamPage/>}/>
-                <Route path="create" element={<ExamCreatePage/>}/>
-                {/*<Route path="/courses/:courseId/exams/:examId" element={<ExamDetailPage/>}/>*/}
+                <Route path="settings" element={<ExamBasicSettingsPage/>}/>
+                <Route path=":examId" element={<ExamDetailPage/>}/>
+                <Route path=":examId/questions" element={<ExamQuestionPage/>}/>
+                <Route path=":examId/edit" element={<ExamEditPage/>}/>
+                <Route path=":examId/take" element={<ExamSubmissionPage />} />
+
               </Route>
 
               {/* 파일/자료 */}
