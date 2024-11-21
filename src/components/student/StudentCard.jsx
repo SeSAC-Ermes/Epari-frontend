@@ -1,14 +1,20 @@
-import React from 'react'; // useEffect, useState 제거
+import React from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import AttendanceSection from './AttendanceSection';
+import { useNavigate } from 'react-router-dom';
 import ExamSection from './ExamSection';
 import AssignmentSection from './AssignmentSection';
 
-/**
- * 개별 학생의 정보를 카드 형태로 표시하는 컴포넌트
- * 학생의 기본 정보와 확장 시 상세 정보를 표시
- */
-const StudentCard = ({ student, examResult, isExpanded, onToggle }) => {
+const StudentCard = ({ student, examResult, isExpanded, onToggle, courseId }) => {
+  const navigate = useNavigate();
+
+  const handleAttendanceClick = (e) => {
+    e.stopPropagation(); // 카드 토글 방지
+    // 출석 관리 페이지로 이동하면서 학생 이름을 검색어로 전달
+    navigate(`/courses/${courseId}/attendance`, {
+      state: { searchQuery: student.name }
+    });
+  };
+
   return (
       <div className="bg-white rounded-lg shadow">
         <div
@@ -46,11 +52,47 @@ const StudentCard = ({ student, examResult, isExpanded, onToggle }) => {
         {isExpanded && (
             <div className="p-4 border-t">
               <div className="grid grid-cols-2 gap-6">
-                <AttendanceSection attendance={student.attendance}/>
+                <div>
+                  {/* 출석 현황 텍스트를 클릭 가능한 버튼으로 변경 */}
+                  <h4 className="font-medium mb-4 flex items-center">
+                    <button
+                        onClick={handleAttendanceClick}
+                        className="text-blue-600 hover:text-blue-800 hover:underline focus:outline-none"
+                    >
+                      출석 현황
+                    </button>
+                  </h4>
+                  <div className="grid grid-cols-4 gap-4">
+                    <div className="p-3 bg-green-50 rounded-lg">
+                      <p className="text-sm text-gray-600">출석</p>
+                      <p className="text-xl font-medium text-green-600">
+                        {student.attendance.present}
+                      </p>
+                    </div>
+                    <div className="p-3 bg-yellow-50 rounded-lg">
+                      <p className="text-sm text-gray-600">지각</p>
+                      <p className="text-xl font-medium text-yellow-600">
+                        {student.attendance.late}
+                      </p>
+                    </div>
+                    <div className="p-3 bg-purple-50 rounded-lg">
+                      <p className="text-sm text-gray-600">병가</p>
+                      <p className="text-xl font-medium text-purple-600">
+                        {student.attendance.sick}
+                      </p>
+                    </div>
+                    <div className="p-3 bg-red-50 rounded-lg">
+                      <p className="text-sm text-gray-600">결석</p>
+                      <p className="text-xl font-medium text-red-600">
+                        {student.attendance.absent}
+                      </p>
+                    </div>
+                  </div>
+                </div>
                 <ExamSection
                     exams={examResult?.examResults || []}
-                    loading={false}  // 부모로부터 받은 데이터를 사용하므로 항상 false
-                    error={null}     // 부모로부터 받은 데이터를 사용하므로 항상 null
+                    loading={false}
+                    error={null}
                 />
                 <AssignmentSection
                     assignments={student.submissions.assignments}
