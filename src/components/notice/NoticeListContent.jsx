@@ -50,7 +50,7 @@ const NoticeListContent = ({ type }) => {
   };
 
   const handleWriteClick = () => {
-    if (type === 'COURSE') {
+    if (type === 'GLOBAL') {
       navigate('/notices/create');
     } else {
       navigate(`/courses/${courseId}/notices/create`);
