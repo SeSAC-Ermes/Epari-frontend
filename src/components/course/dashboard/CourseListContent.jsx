@@ -103,7 +103,13 @@ const CourseListContent = () => {
 
   // 공지사항 클릭 핸들러
   const handleNoticeClick = (noticeId) => {
-    navigate(`/notices/${noticeId}`);
+    if (activeTab === 'courseNotice' && courses.length > 0) {
+      // 강의 공지사항인 경우 강의 ID를 포함한 경로로 이동
+      navigate(`/courses/${courses[0].id}/notices/${noticeId}`);
+    } else {
+      // 전체 공지사항인 경우 기존 경로로 이동
+      navigate(`/notices/${noticeId}`);
+    }
   };
 
   useEffect(() => {
@@ -288,6 +294,7 @@ const CourseListContent = () => {
           <NoticeTabs activeTab={activeTab} setActiveTab={setActiveTab}/>
           <NoticeTable
               notices={getCurrentNotices()}
+              courseId={activeTab === 'courseNotice' ? courses[0]?.id : undefined}
               onNoticeClick={handleNoticeClick}
           />
         </div>
