@@ -16,7 +16,7 @@ const InstructorCard = ({ instructor }) => {
   }
 
   return (
-      <div className="p-6 mb-6">
+      <div className="bg-white rounded-lg p-6 h-[204px]">
         <div className="flex items-start gap-6">
           <div className="w-16 h-16 rounded-full bg-gray-200 overflow-hidden flex-shrink-0">
             <img
@@ -33,10 +33,6 @@ const InstructorCard = ({ instructor }) => {
             <div className="flex items-center gap-2">
               <span className="text-gray-500 w-12">E-Mail</span>
               <span>{instructor.email || '정보 없음'}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-gray-500 w-12">Phone</span>
-              <span>{instructor.phoneNumber || instructor.phone || '정보 없음'}</span>
             </div>
           </div>
         </div>
