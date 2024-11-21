@@ -4,6 +4,7 @@ import { BookOpen, Calendar, ChevronUp, Clock, GraduationCap, User, Users } from
 import { ExamAPI } from '../../api/exam/examAPI.js';
 import { PAGE_PERMISSIONS } from '../../constants/auth';
 import { RoleBasedComponent } from '../../auth/RoleBasedComponent';
+import { ROLES } from '../../constants/auth';
 
 const ExamDetail = () => {
   const { courseId, examId } = useParams();
@@ -11,7 +12,7 @@ const ExamDetail = () => {
   const [exam, setExam] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showAnswers, setShowAnswers] = useState(false);  // 정답 표시 여부 상태 추가
+  const [showAnswers, setShowAnswers] = useState(false);
 
   useEffect(() => {
     const fetchExamDetail = async () => {
@@ -84,7 +85,7 @@ const ExamDetail = () => {
             <h1 className="text-2xl font-bold">{exam.title}</h1>
             <div className="flex gap-2">
               {/* 학생 전용: 시험 응시 버튼 */}
-              <RoleBasedComponent requiredPermissions={[PAGE_PERMISSIONS.EXAM_TAKE]}>
+              <RoleBasedComponent requiredRoles={[ROLES.STUDENT]}>
                 <button
                     onClick={() => navigate(`/courses/${courseId}/exams/${examId}/take`)}
                     className="px-4 py-2 text-sm bg-green-500 text-white rounded-lg hover:bg-green-600"
@@ -94,7 +95,7 @@ const ExamDetail = () => {
               </RoleBasedComponent>
 
               {/* 강사 전용: 정답 보기, 수정 버튼 */}
-              <RoleBasedComponent requiredPermissions={[PAGE_PERMISSIONS.EXAM_VIEW_ANSWERS]}>
+              <RoleBasedComponent requiredRoles={[ROLES.INSTRUCTOR]}>
                 <button
                     onClick={() => setShowAnswers(!showAnswers)}
                     className="px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600"
@@ -103,7 +104,7 @@ const ExamDetail = () => {
                 </button>
               </RoleBasedComponent>
 
-              <RoleBasedComponent requiredPermissions={[PAGE_PERMISSIONS.EXAM_EDIT]}>
+              <RoleBasedComponent requiredRoles={[ROLES.INSTRUCTOR]}>
                 <button
                     onClick={() => navigate(`/courses/${courseId}/exams/${examId}/edit`)}
                     className="px-4 py-2 text-sm bg-green-500 text-white rounded-lg hover:bg-green-600"
@@ -125,30 +126,34 @@ const ExamDetail = () => {
           <div className="grid grid-cols-2 gap-6 mb-8">
             <div className="space-y-4">
               <div className="flex items-center gap-2 text-gray-600">
-                <User className="w-5 h-5"/>
-                <span>출제자: {exam.instructor?.name || exam.instructorName || '정보 없음'}</span>
-              </div>
-              <div className="flex items-center gap-2 text-gray-600">
                 <Calendar className="w-5 h-5"/>
                 <span>시험 일시: {formatDate(exam.examDateTime)}</span>
               </div>
               <div className="flex items-center gap-2 text-gray-600">
-                <Clock className="w-5 h-5"/>
-                <span>제한 시간: {exam.duration}분</span>
+                <User className="w-5 h-5"/>
+                <span>출제자: {exam.instructor?.name || exam.instructorName || '정보 없음'}</span>
+              </div>
+              <div className="flex items-center gap-2 text-gray-600">
+                <RoleBasedComponent requiredRoles={[ROLES.INSTRUCTOR]}>
+                  <Users className="w-5 h-5"/>
+                  <span>응시 인원: {exam.statistics?.submittedStudentCount || 0}/{exam.statistics?.totalStudentCount || 0}명</span>
+                </RoleBasedComponent>
               </div>
             </div>
             <div className="space-y-4">
               <div className="flex items-center gap-2 text-gray-600">
-                <Users className="w-5 h-5"/>
-                <span>응시 인원: {exam.statistics?.submittedStudentCount || 0}/{exam.statistics?.totalStudentCount || 0}명</span>
-              </div>
-              <div className="flex items-center gap-2 text-gray-600">
-                <GraduationCap className="w-5 h-5"/>
-                <span>평균 점수: {exam.statistics?.averageScore ? exam.statistics.averageScore.toFixed(1) : '-'}점</span>
+                <Clock className="w-5 h-5"/>
+                <span>제한 시간: {exam.duration}분</span>
               </div>
               <div className="flex items-center gap-2 text-gray-600">
                 <BookOpen className="w-5 h-5"/>
                 <span>총점: {exam.totalScore}점</span>
+              </div>
+              <div className="flex items-center gap-2 text-gray-600">
+                <RoleBasedComponent requiredRoles={[ROLES.INSTRUCTOR]}>
+                  <GraduationCap className="w-5 h-5"/>
+                  <span>평균 점수: {exam.statistics?.averageScore ? exam.statistics.averageScore.toFixed(1) : '-'}점</span>
+                </RoleBasedComponent>
               </div>
             </div>
           </div>
