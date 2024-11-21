@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowDownToLine, Download, Trash2 } from 'lucide-react';
-import { CourseFileAPI } from '../../../api/course/CourseFileAPI.js';
+import { CourseFileAPI } from '../../../api/course/courseFileAPI.js';
 
 
 /**
@@ -18,6 +18,22 @@ const FileDownloadList = ({ files, courseId, contentId, onDelete, isEditMode = f
         return [...prev, fileId];
       }
     });
+  };
+
+  const handleSingleFileDownload = async (fileId, fileName) => {
+    try {
+      setDownloadingFiles(prev => new Set([...prev, fileId]));
+      await CourseFileAPI.downloadFile(courseId, contentId, fileId, fileName);
+    } catch (error) {
+      console.error('Download error:', error);
+      alert('파일 다운로드에 실패했습니다.');
+    } finally {
+      setDownloadingFiles(prev => {
+        const next = new Set(prev);
+        next.delete(fileId);
+        return next;
+      });
+    }
   };
 
   const handleSelectAll = () => {
@@ -98,7 +114,10 @@ const FileDownloadList = ({ files, courseId, contentId, onDelete, isEditMode = f
                     />
                 )}
                 <div className="flex items-center gap-2 flex-1">
-                  <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <div
+                      className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center cursor-pointer hover:bg-gray-200"
+                      onClick={() => handleSingleFileDownload(file.id, file.originalFileName)}
+                  >
                     {downloadingFiles.has(file.id) ? (
                         <div className="animate-spin rounded-full h-4 w-4 border-2 border-green-500 border-t-transparent" />
                     ) : (

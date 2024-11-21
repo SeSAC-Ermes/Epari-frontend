@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Outlet, Route, Routes } from 'react-router-dom';
+import {BrowserRouter as Router, Outlet, Route, Routes} from 'react-router-dom';
 import React from 'react';
 import SignInPage from './pages/SignInPage.jsx';
 import SignUpPage from './pages/SignUpPage.jsx';
@@ -23,11 +23,18 @@ import SimpleLayout from "./components/layout/SimpleLayout.jsx";
 import MainLayout from "./components/layout/MainLayout.jsx";
 import AttendanceManagementPage from "./pages/attendance/AttendanceManagementPage.jsx";
 import ExamPage from "./pages/exam/ExamPage.jsx";
-import ExamCreatePage from "./pages/exam/ExamCreatePage.jsx";
-import NoticeDetailPage from "./pages/notice/NoticeDetailPage.jsx";
+import ExamBasicSettingsPage from "./pages/exam/ExamBasicSettingsPage.jsx";
+import ExamQuestionPage from "./pages/exam/ExamQuestionPage.jsx";
+import ExamDetailPage from "./pages/exam/ExamDetailPage.jsx";
+import ExamEditPage from "./pages/exam/ExamEditPage.jsx";
+import ResetPasswordForm from "./components/auth/ResetPasswordForm.jsx";
+import MyPage from "./pages/mypage/MyPage.jsx";
+import ChangePasswordForm from "./components/auth/ChangePasswordForm.jsx";
+import ExamSubmissionPage from "./pages/exam/ExamSubmissionPage.jsx";
 import NoticeListPage from "./pages/notice/NoticeListPage.jsx";
 import { ProtectedRoute } from "./auth/ProtectedRoute.jsx";
 import NoticeWritePage from "./pages/notice/NoticeWritePage.jsx";
+import NoticeDetailPage from "./pages/notice/NoticeDetailPage.jsx";
 import NoticeEditContent from "./components/notice/NoticeEditContent.jsx";
 
 function App() {
@@ -38,13 +45,18 @@ function App() {
           <Route path="/signin" element={<SignInPage/>}/>
           <Route path="/signup" element={<SignUpPage/>}/>
           <Route path="/unauthorized" element={<UnauthorizedPage/>}/>
+          <Route path="/reset-password" element={<ResetPasswordForm/>}/>
+
 
           {/* Protected Routes */}
           <Route element={<AuthProvider><Outlet/></AuthProvider>}>
-
+            {/* Simple Layout - 코스 목록 */}
             <Route element={<SimpleLayout/>}>
               <Route path="/" element={<RootRedirect/>}/>
               <Route path="/courses" element={<CourseListPage/>}/>
+              <Route path="/mypage" element={<MyPage/>}/>
+              <Route path="/mypage/change-password" element={<ChangePasswordForm/>}/>
+
 
               {/* 전체 공지사항 */}
               <Route path="/notices">
@@ -86,7 +98,12 @@ function App() {
               {/* 시험 */}
               <Route path="exams">
                 <Route index element={<ExamPage/>}/>
-                <Route path="create" element={<ExamCreatePage/>}/>
+                <Route path="settings" element={<ExamBasicSettingsPage/>}/>
+                <Route path=":examId" element={<ExamDetailPage/>}/>
+                <Route path=":examId/questions" element={<ExamQuestionPage/>}/>
+                <Route path=":examId/edit" element={<ExamEditPage/>}/>
+                <Route path=":examId/take" element={<ExamSubmissionPage />} />
+
               </Route>
 
               {/* 파일/자료 */}

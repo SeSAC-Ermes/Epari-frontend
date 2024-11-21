@@ -7,7 +7,7 @@ import { MapPin } from 'lucide-react';
  */
 
 const CourseHeader = ({ title, period, classroom }) => (
-    <div className="bg-white rounded-lg p-6 mb-6">
+    <div className="p-6 mb-6">
       <h1 className="text-2xl font-bold mb-4">{title}</h1>
       <div className="space-y-2">
         <div className="flex items-center text-gray-500">
