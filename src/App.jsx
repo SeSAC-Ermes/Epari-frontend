@@ -28,6 +28,7 @@ import ExamCreatePage from "./pages/exam/ExamCreatePage.jsx";
 import ResetPasswordForm from "./components/auth/ResetPasswordForm.jsx";
 import MyPage from "./pages/mypage/MyPage.jsx";
 import ChangePasswordForm from "./components/auth/ChangePasswordForm.jsx";
+import SubmissionList from "./components/assignment/SubmissionList.jsx";
 
 function App() {
   return (
@@ -68,7 +69,10 @@ function App() {
               <Route path="assignments">
                 <Route index element={<AssignmentPage/>}/>
                 <Route path="create" element={<AssignmentCreatePage/>}/>
-                <Route path=":assignmentId" element={<AssignmentDetailPage/>}/>
+                <Route path=":assignmentId">
+                  <Route index element={<AssignmentDetailPage/>}/>
+                  <Route path="submissions" element={<SubmissionList/>}/>
+                </Route>
               </Route>
 
               {/* 시험 */}
