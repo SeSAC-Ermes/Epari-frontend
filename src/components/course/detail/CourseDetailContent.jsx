@@ -113,7 +113,7 @@ const CourseDetailContent = () => {
   const handleNavigate = (path) => {
     switch (path) {
       case 'notice':
-        navigate(`/courses/${courseId}/notices`);
+        navigate(`/notices`);
         break;
       case 'qna':
         navigate(`/courses/${courseId}/qna`);
