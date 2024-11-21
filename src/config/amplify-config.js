@@ -10,7 +10,7 @@ Amplify.configure({
         oauth: {
           domain: '202533495554epari-pool.auth.ap-northeast-2.amazoncognito.com',
           scopes: ['email', 'profile', 'openid'],
-          redirectSignIn: ['http://localhost:5173/courses'],
+          redirectSignIn: ['http://localhost:5173/signin'],
           redirectSignOut: ['http://localhost:5173/signin'],
           responseType: 'code',
           providers: ['Google']
