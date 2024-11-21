@@ -71,6 +71,31 @@ export const SubmissionApi = {
     }
   },
 
+  getAllSubmissions: async (courseId, assignmentId) => {
+    try {
+      const response = await apiClient.get(
+          `/api/courses/${courseId}/assignments/${assignmentId}/submissions/list`
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching all submissions:', error);
+      throw error;
+    }
+  },
+
+  gradeSubmission: async (courseId, assignmentId, submissionId, gradeData) => {
+    try {
+      const response = await apiClient.put(
+          `/api/courses/${courseId}/assignments/${assignmentId}/submissions/${submissionId}/grade`,
+          gradeData  // { grade: 'PASS' | 'NONE_PASS', feedback: string }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error grading submission:', error);
+      throw error;
+    }
+  },
+
   downloadSubmissionFile: async (courseId, assignmentId, submissionId, fileId, fileName) => {
     try {
       // presigned URL을 받아옵니다
