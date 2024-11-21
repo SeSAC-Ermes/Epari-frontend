@@ -28,6 +28,7 @@ import ExamCreatePage from "./pages/exam/ExamCreatePage.jsx";
 import ResetPasswordForm from "./components/auth/ResetPasswordForm.jsx";
 import MyPage from "./pages/mypage/MyPage.jsx";
 import ChangePasswordForm from "./components/auth/ChangePasswordForm.jsx";
+import PendingApprovalPage from "./pages/auth/PendingApprovalPage.jsx";
 
 function App() {
   return (
@@ -38,7 +39,7 @@ function App() {
           <Route path="/signup" element={<SignUpPage/>}/>
           <Route path="/unauthorized" element={<UnauthorizedPage/>}/>
           <Route path="/reset-password" element={<ResetPasswordForm/>}/>
-
+          <Route path="/pending-approval" element={<PendingApprovalPage/>}/>
 
           {/* Protected Routes */}
           <Route element={<AuthProvider><Outlet/></AuthProvider>}>
