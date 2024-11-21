@@ -123,6 +123,86 @@ export const ExamAPI = {
       console.error('Error deleting question:', error);
       throw error;
     }
+  },
+
+  //시험 시작
+  startExam: async (courseId, examId) => {
+    try {
+      const response = await apiClient.post(`/api/courses/${courseId}/exams/${examId}/submission/start`);
+      return response.data;
+    } catch (error) {
+      console.error('Error starting exam:', error);
+      throw error;
+    }
+  },
+
+  // 답안 임시 저장
+  saveAnswerTemporarily: async (courseId, examId, questionId, answerData) => {
+    try {
+      const response = await apiClient.post(
+          `/api/courses/${courseId}/exams/${examId}/submission/questions/${questionId}/save`,
+          answerData
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error saving answer temporarily:', error);
+      throw error;
+    }
+  },
+
+  // 답안 제출
+  submitAnswer: async (courseId, examId, questionId, answerData) => {
+    try {
+      const response = await apiClient.post(
+          `/api/courses/${courseId}/exams/${examId}/submission/questions/${questionId}`,
+          answerData
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error submitting answer:', error);
+      throw error;
+    }
+  },
+
+  // 시험 종료
+  finishExam: async (courseId, examId, force = false) => {
+    try {
+      const response = await apiClient.post(
+          `/api/courses/${courseId}/exams/${examId}/submission/finish`,
+          null,
+          { params: { force } }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error finishing exam:', error);
+      throw error;
+    }
+  },
+
+  // 제출 상태 조회
+  getSubmissionStatus: async (courseId, examId) => {
+    try {
+      const response = await apiClient.get(
+          `/api/courses/${courseId}/exams/${examId}/submission/status`
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching submission status:', error);
+      throw error;
+    }
+  },
+
+  // 시험 결과 조회 (학생용)
+  getExamResult: async (courseId, examId) => {
+    try {
+      const response = await apiClient.get(
+          `/api/courses/${courseId}/exams/${examId}/submission/result`
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching exam result:', error);
+      throw error;
+    }
   }
 };
 
