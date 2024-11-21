@@ -44,6 +44,12 @@ const AssignmentCreatePage = () => {
     fetchCourseInfo();
   }, [courseId]);
 
+  const formatDateForInput = (date) => {
+    return new Date(date).toISOString().split('T')[0];
+  };
+
+  const today = formatDateForInput(new Date());
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
@@ -126,9 +132,15 @@ const AssignmentCreatePage = () => {
                       type="date"
                       value={dueDate}
                       onChange={(e) => setDueDate(e.target.value)}
+                      min={today}  // 최소 날짜를 오늘로 설정
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                       required
                   />
+                  {dueDate && dueDate < today && (
+                      <p className="text-red-500 text-sm mt-1">
+                        마감일은 현재 날짜보다 이후여야 합니다.
+                      </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
