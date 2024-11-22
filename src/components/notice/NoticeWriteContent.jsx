@@ -97,62 +97,6 @@ const NoticeWriteContent = () => {
     }
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   setError(null);
-  //
-  //   if (!courseId) {
-  //     setError('강의 ID가 없습니다.');
-  //     return;
-  //   }
-  //
-  //   if (!title.trim() || !description.trim()) {
-  //     setError('제목과 내용을 모두 입력해 주세요.');
-  //     return;
-  //   }
-  //
-  //   if (!instructorId) {
-  //     setError('강사 정보를 찾을 수 없습니다.');
-  //     return;
-  //   }
-  //
-  //   try {
-  //     setIsSubmitting(true);
-  //
-  //     const formData = new FormData();
-  //     formData.append('title', title);
-  //     formData.append('content', description);
-  //     formData.append('type', 'COURSE');
-  //     formData.append('courseId', courseId);
-  //     formData.append('instructorId', instructorId);
-  //
-  //     // 전송 전 데이터 확인
-  //     console.log("=== Sending Data ===");
-  //     for (let pair of formData.entries()) {
-  //       console.log(`${pair[0]}: ${pair[1]} (type: ${typeof pair[1]})`);
-  //     }
-  //
-  //     if (files.length > 0) {
-  //       files.forEach(file => {
-  //         formData.append('files', file);
-  //       });
-  //     }
-  //
-  //     await NoticeApi.createNotice(formData);
-  //     alert('공지사항이 성공적으로 등록되었습니다.');
-  //     navigate(`/courses/${courseId}/notices`);
-  //   } catch (err) {
-  //     console.error('Upload Error:', err);
-  //     if (err.response?.data?.errors) {
-  //       const errorDetails = err.response.data.errors;
-  //       console.error('Validation Errors Details:', JSON.stringify(errorDetails, null, 2));
-  //       const errorMessage = errorDetails.map(error => error.defaultMessage || error.message).join('\n');
-  //       setError(errorMessage || '입력값이 올바르지 않습니다.');
-  //     }
-  //   } finally {
-  //     setIsSubmitting(false);
-  //   }
-  // };
 
   const handleFilesChange = (newFiles) => {
     setFiles(newFiles);

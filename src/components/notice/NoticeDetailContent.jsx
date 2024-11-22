@@ -12,12 +12,25 @@ const NoticeDetailContent = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [downloadingFiles, setDownloadingFiles] = useState(new Set());
+  const [viewCountUpdated, setViewCountUpdated] = useState(false);
 
   const isImageFile = useCallback((fileName) => {
     const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'svg'];
     const extension = fileName?.split('.').pop()?.toLowerCase();
     return imageExtensions.includes(extension);
   }, []);
+
+  // 조회수 증가 함수
+  const increaseViewCount = useCallback(async () => {
+    if (!noticeId || viewCountUpdated) return;
+
+    try {
+      await NoticeApi.increaseViewCount(noticeId);
+      setViewCountUpdated(true);
+    } catch (err) {
+      console.error('조회수 업데이트 실패:', err);
+    }
+  }, [noticeId, viewCountUpdated]);
 
   const fetchNotice = useCallback(async () => {
     if (!noticeId) return;
@@ -27,6 +40,9 @@ const NoticeDetailContent = () => {
       setError(null);
       const response = await NoticeApi.getNotice(noticeId);
       setNotice(response);
+
+      // 공지사항 데이터를 성공적으로 가져온 후 조회수 증가
+      await increaseViewCount();
     } catch (err) {
       console.error('공지사항 조회 실패:', err);
       setError(err.message || '공지사항을 불러오는데 실패했습니다.');
@@ -34,7 +50,7 @@ const NoticeDetailContent = () => {
     } finally {
       setLoading(false);
     }
-  }, [noticeId]);
+  }, [noticeId, increaseViewCount]);
 
   useEffect(() => {
     fetchNotice();
@@ -217,11 +233,11 @@ const NoticeDetailContent = () => {
         {/* 권한에 따른 수정/삭제 버튼 표시 */}
         {courseId ? (
             <RoleBasedComponent requiredRoles={['INSTRUCTOR']}>
-              <ActionButtons />
+              <ActionButtons/>
             </RoleBasedComponent>
         ) : (
             <RoleBasedComponent requiredRoles={['ADMIN']}>
-              <ActionButtons />
+              <ActionButtons/>
             </RoleBasedComponent>
         )}
       </div>
@@ -235,6 +251,7 @@ export default NoticeDetailContent;
 // import { NoticeApi } from '../../api/notice/NoticeApi';
 // import { Download, FileText, PenSquare, Trash2 } from 'lucide-react';
 // import { RoleBasedComponent } from "../../auth/RoleBasedComponent.jsx";
+// import { downloadFileFromUrl } from '../../utils/FileDownloadUtils';
 //
 // const NoticeDetailContent = () => {
 //   const { noticeId, courseId } = useParams();
@@ -242,9 +259,10 @@ export default NoticeDetailContent;
 //   const [notice, setNotice] = useState(null);
 //   const [loading, setLoading] = useState(true);
 //   const [error, setError] = useState(null);
+//   const [downloadingFiles, setDownloadingFiles] = useState(new Set());
 //
 //   const isImageFile = useCallback((fileName) => {
-//     const imageExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+//     const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'svg'];
 //     const extension = fileName?.split('.').pop()?.toLowerCase();
 //     return imageExtensions.includes(extension);
 //   }, []);
@@ -271,6 +289,8 @@ export default NoticeDetailContent;
 //   }, [fetchNotice]);
 //
 //   const handleDelete = async () => {
+//     if (!window.confirm('이 공지사항을 삭제하시겠습니까?')) return;
+//
 //     try {
 //       await NoticeApi.deleteNotice(noticeId);
 //       if (courseId) {
@@ -294,39 +314,28 @@ export default NoticeDetailContent;
 //
 //   const handleFileDownload = async (fileId, fileName) => {
 //     try {
-//       const response = await fetch(`/api/notices/${noticeId}/files/${fileId}/download`, {
-//         headers: {
-//           Authorization: `Bearer ${localStorage.getItem('token')}`,
-//         }
-//       });
+//       setDownloadingFiles(prev => new Set([...prev, fileId]));
 //
-//       if (!response.ok) {
-//         throw new Error('파일 다운로드 실패');
-//       }
-//
-//       const contentType = response.headers.get('content-type');
-//       const blob = await response.blob();
-//
-//       if (contentType && contentType.startsWith('image/')) {
-//         const imageUrl = URL.createObjectURL(blob);
-//         window.open(imageUrl);
+//       // 이미지 파일인 경우 새 탭에서 열기
+//       if (isImageFile(fileName)) {
+//         window.open(`/api/notices/${noticeId}/files/${fileId}/download`);
 //         return;
 //       }
 //
-//       const url = window.URL.createObjectURL(
-//           new Blob([blob], { type: contentType || 'application/octet-stream' })
+//       // 일반 파일 다운로드
+//       await downloadFileFromUrl(
+//           `/api/notices/${noticeId}/files/${fileId}/download`,
+//           fileName
 //       );
-//       const link = document.createElement('a');
-//       link.href = url;
-//       link.download = fileName;
-//       document.body.appendChild(link);
-//       link.click();
-//       document.body.removeChild(link);
-//       window.URL.revokeObjectURL(url);
-//
 //     } catch (error) {
 //       console.error('파일 다운로드 중 오류 발생:', error);
 //       alert('파일 다운로드에 실패했습니다.');
+//     } finally {
+//       setDownloadingFiles(prev => {
+//         const next = new Set(prev);
+//         next.delete(fileId);
+//         return next;
+//       });
 //     }
 //   };
 //
@@ -364,11 +373,7 @@ export default NoticeDetailContent;
 //           <span>수정</span>
 //         </button>
 //         <button
-//             onClick={() => {
-//               if (window.confirm('이 공지사항을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
-//                 handleDelete();
-//               }
-//             }}
+//             onClick={handleDelete}
 //             className="flex items-center gap-1 px-4 py-2 rounded-md bg-rose-50 text-rose-700 hover:bg-rose-100 transition-colors"
 //         >
 //           <Trash2 size={18}/>
@@ -395,16 +400,17 @@ export default NoticeDetailContent;
 //               <div dangerouslySetInnerHTML={{ __html: notice.content }}/>
 //             </div>
 //
+//             {/* 이미지 미리보기 영역 */}
 //             {notice.files?.some(file => isImageFile(file.originalFileName)) && (
 //                 <div className="mt-6 grid grid-cols-2 gap-4">
 //                   {notice.files
 //                       .filter(file => isImageFile(file.originalFileName))
 //                       .map(file => (
-//                           <div key={file.id} className="relative aspect-video">
+//                           <div key={file.id} className="relative aspect-video bg-gray-100 rounded-lg overflow-hidden">
 //                             <img
 //                                 src={`/api/notices/${noticeId}/files/${file.id}/download`}
 //                                 alt={file.originalFileName}
-//                                 className="rounded-lg object-contain w-full h-full"
+//                                 className="w-full h-full object-contain"
 //                                 onError={(e) => {
 //                                   console.error('Image loading error:', e);
 //                                   e.target.style.display = 'none';
@@ -415,6 +421,7 @@ export default NoticeDetailContent;
 //                 </div>
 //             )}
 //
+//             {/* 첨부파일 목록 */}
 //             {notice.files?.length > 0 && (
 //                 <div className="mt-6 border-t pt-4">
 //                   <h3 className="font-medium mb-2">첨부파일</h3>
@@ -438,8 +445,13 @@ export default NoticeDetailContent;
 //                           <button
 //                               onClick={() => handleFileDownload(file.id, file.originalFileName)}
 //                               className="flex items-center gap-1 text-blue-500 hover:text-blue-600 text-sm px-3 py-1 rounded-md hover:bg-blue-50"
+//                               disabled={downloadingFiles.has(file.id)}
 //                           >
-//                             <Download size={16}/>
+//                             {downloadingFiles.has(file.id) ? (
+//                                 <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-500 border-t-transparent"/>
+//                             ) : (
+//                                 <Download size={16}/>
+//                             )}
 //                             <span>다운로드</span>
 //                           </button>
 //                         </li>
@@ -452,12 +464,10 @@ export default NoticeDetailContent;
 //
 //         {/* 권한에 따른 수정/삭제 버튼 표시 */}
 //         {courseId ? (
-//             // 강의 공지사항일 경우 INSTRUCTOR 권한으로 확인
 //             <RoleBasedComponent requiredRoles={['INSTRUCTOR']}>
 //               <ActionButtons />
 //             </RoleBasedComponent>
 //         ) : (
-//             // 전체 공지사항일 경우 ADMIN 권한으로 확인
 //             <RoleBasedComponent requiredRoles={['ADMIN']}>
 //               <ActionButtons />
 //             </RoleBasedComponent>

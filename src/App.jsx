@@ -4,7 +4,6 @@ import SignInPage from './pages/SignInPage.jsx';
 import SignUpPage from './pages/SignUpPage.jsx';
 import CourseListPage from "./pages/course/CourseListPage.jsx";
 import CourseDetailPage from "./pages/course/CourseDetailPage.jsx";
-import CourseNoticeListPage from "./pages/CourseNoticeListPage.jsx";
 import QnAListPage from "./pages/qna/QnAListPage.jsx";
 import QnADetailPage from "./pages/qna/QnADetailPage.jsx";
 import QnAWritePage from "./pages/qna/QnAWritePage.jsx";
