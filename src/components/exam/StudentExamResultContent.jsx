@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ExamAPI } from '../../api/exam/examAPI.js';
 import { ChevronUp } from 'lucide-react';
+import { useAuth } from '../../auth/AuthContext';
+import { ROLES } from '../../constants/auth';
+import apiClient from "../../api/axios.js";
 
 const StudentExamResultContent = () => {
   const { courseId, examId } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [examResult, setExamResult] = useState(null);
   const [exam, setExam] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -15,23 +18,78 @@ const StudentExamResultContent = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [resultData, examData] = await Promise.all([
-          ExamAPI.getExamResult(courseId, examId),
-          ExamAPI.getExam(courseId, examId)
-        ]);
-        setExamResult(resultData);
-        setExam(examData);
-      } catch (err) {
-        console.error('Error:', err);
-        setError('시험 결과를 불러오는데 실패했습니다.');
+
+        // 권한 체크
+        if (!user?.roles?.includes(ROLES.STUDENT)) {
+          console.log('User roles:', user?.roles); // 권한 로깅
+          navigate('/unauthorized');
+          return;
+        }
+
+        // 시험 정보 먼저 조회
+        const examURL = `/api/courses/${courseId}/exams/${examId}`;
+        console.log('Requesting Exam URL:', examURL);
+
+        const examResponse = await apiClient.get(examURL);
+        console.log('Exam Response data:', examResponse.data);
+
+        if (examResponse.data) {
+          setExam(examResponse.data);
+        } else {
+          console.error('Exam API response is empty:', examResponse.data);
+          setError('시험 정보를 찾을 수 없습니다.');
+          return;
+        }
+
+        // 학생 결과 조회
+        const resultURL = `/api/courses/${courseId}/exams/${examId}/submission/result`;
+        console.log('Requesting Result URL:', resultURL);
+
+        const resultResponse = await apiClient.get(resultURL);
+        console.log('Result Response status:', resultResponse.status);
+        console.log('Result Response data:', resultResponse.data);
+
+        if (resultResponse.data) {
+          setExamResult(resultResponse.data);
+        } else {
+          console.error('Result API response is empty:', resultResponse.data);
+          setError('시험 결과를 찾을 수 없습니다.');
+        }
+
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        if (error.response) {
+          console.error('Error response:', error.response.data);
+          console.error('Error status:', error.response.status);
+
+          switch (error.response.status) {
+            case 401:
+              navigate('/signin');
+              break;
+            case 403:
+              setError('시험 결과를 조회할 권한이 없습니다. 시험 제출 후 잠시 기다려주세요.');
+              break;
+            case 404:
+              setError('시험 결과가 존재하지 않습니다. 시험에 응시해주세요.');
+              break;
+            case 500:
+              setError('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+              break;
+            default:
+              setError('시험 결과를 불러오는데 실패했습니다.');
+          }
+        } else {
+          setError('네트워크 오류가 발생했습니다.');
+        }
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
-  }, [courseId, examId]);
-
+    if (user && courseId && examId) {
+      fetchData();
+    }
+  }, [courseId, examId, user, navigate]);
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -39,7 +97,7 @@ const StudentExamResultContent = () => {
   if (loading) {
     return (
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500" />
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"/>
         </div>
     );
   }

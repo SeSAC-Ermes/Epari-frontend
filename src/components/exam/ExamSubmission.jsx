@@ -124,31 +124,39 @@ const ExamSubmission = () => {
     }
   };
 
-  const handleFinishExam = async (force = false) => {
-    if (!force) {
-      const unansweredQuestions = exam.questions.filter(
-          question => !localAnswers[question.id] || localAnswers[question.id].trim() === ''
-      );
-
-      if (unansweredQuestions.length > 0) {
-        alert(`답변하지 않은 문제: ${unansweredQuestions.map(q => q.id).join(', ')}`);
-        return;
-      }
-
-      if (!window.confirm('시험을 종료하시겠습니까?')) {
-        return;
-      }
-    }
-
+  const handleFinishExam = async (isTimeOut = false) => {
     try {
+      if (!isTimeOut) {
+        // 모든 문제 답변 확인
+        const unansweredQuestions = exam.questions.filter(
+            q => !localAnswers[q.id]
+        );
+
+        if (unansweredQuestions.length > 0) {
+          if (!window.confirm(
+              `아직 ${unansweredQuestions.length}개의 문제에 답하지 않았습니다. 정말 제출하시겠습니까?`
+          )) {
+            return;
+          }
+        } else {
+          if (!window.confirm('시험을 제출하시겠습니까?')) {
+            return;
+          }
+        }
+      }
+
       // 저장되지 않은 답안이 있다면 먼저 저장
       debouncedSaveAnswer.flush();
 
-      await ExamAPI.finishExam(courseId, examId, force);
+      // 시험 제출
+      await ExamAPI.finishExam(courseId, examId);
+
+      // 성공적으로 제출된 경우 결과 페이지로 이동
       navigate(`/courses/${courseId}/exams/${examId}/result`);
+
     } catch (err) {
-      const errorMessage = err.response?.data?.message || '시험 종료에 실패했습니다.';
-      alert(errorMessage);
+      console.error('시험 제출 실패:', err);
+      setError('시험 제출에 실패했습니다. 다시 시도해주세요.');
     }
   };
 
