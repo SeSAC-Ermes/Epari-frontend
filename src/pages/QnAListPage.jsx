@@ -1,5 +1,5 @@
 import React from 'react';
-import QnAContent from '../../components/qna/QnAContent.jsx';
+import QnAContent from '../components/QnAContent.jsx';
 
 const QnAListPage = () => {
   return (

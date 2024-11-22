@@ -5,15 +5,40 @@ import InstructorCard from './InstructorCard';
 import NoticeQnaSection from './NoticeQnaSection';
 import ExamAssignmentSection from './ExamAssignmentSection';
 import { CourseAPI } from '../../../api/course/courseAPI.js';
-import { NoticeApi } from '../../../api/notice/NoticeApi.js';
 import TodayArchiveList from "./archive/TodayArchiveList.jsx";
+
+/**
+ * 강의 상세 페이지의 메인 컨텐츠 컴포넌트
+ * - 강의 기본 정보 (제목, 기간, 강의실) 표시
+ * - 강사 정보 카드 표시
+ * - 오늘의 자료실 섹션 표시
+ * - 시험/과제 섹션 표시
+ * - 공지사항/Q&A 섹션 표시
+ */
 
 const CourseDetailContent = () => {
   const [activeTab, setActiveTab] = useState('notice');
   const [courseInfo, setCourseInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [notices, setNotices] = useState([]);
+  const navigate = useNavigate();
+  const { courseId } = useParams();
+
+  const [notices] = useState([
+    {
+      id: 1,
+      title: '휴강 안내',
+      writer: '윤지수',
+      date: '2024/09/13'
+    },
+    {
+      id: 2,
+      title: 'AWS 계정 안내',
+      writer: '윤지수',
+      date: '2024/09/13'
+    }
+  ]);
+
   const [qnas] = useState([
     {
       id: 1,
@@ -30,8 +55,6 @@ const CourseDetailContent = () => {
       status: '답변대기'
     }
   ]);
-  const navigate = useNavigate();
-  const { courseId } = useParams();
 
   const [examsAndAssignments] = useState([
     {
@@ -53,30 +76,6 @@ const CourseDetailContent = () => {
       status: '제출완료'
     }
   ]);
-
-  // 공지사항 데이터를 불러오는 useEffect
-  useEffect(() => {
-    const fetchNotices = async () => {
-      try {
-        const response = await NoticeApi.getGlobalNotices();
-        const formattedNotices = response
-            .slice(0, 5) // 최대 5개까지만 표시
-            .map(notice => ({
-              id: notice.id,
-              title: notice.title,
-              writer: notice.instructorName,
-              date: new Date(notice.createdAt).toLocaleDateString()
-            }));
-        setNotices(formattedNotices);
-      } catch (error) {
-        console.error('공지사항을 불러오는데 실패했습니다:', error);
-      }
-    };
-
-    if (activeTab === 'notice') {
-      fetchNotices();
-    }
-  }, [activeTab]);
 
   useEffect(() => {
     const fetchCourseDetails = async () => {
@@ -114,7 +113,7 @@ const CourseDetailContent = () => {
   const handleNavigate = (path) => {
     switch (path) {
       case 'notice':
-        navigate(`/notices`);
+        navigate(`/courses/${courseId}/notices`);
         break;
       case 'qna':
         navigate(`/courses/${courseId}/qna`);
@@ -176,6 +175,7 @@ const CourseDetailContent = () => {
               onNavigate={handleNavigate}
           />
         </div>
+
       </main>
   );
 };

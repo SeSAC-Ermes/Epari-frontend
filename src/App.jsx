@@ -4,9 +4,10 @@ import SignInPage from './pages/SignInPage.jsx';
 import SignUpPage from './pages/SignUpPage.jsx';
 import CourseListPage from "./pages/course/CourseListPage.jsx";
 import CourseDetailPage from "./pages/course/CourseDetailPage.jsx";
-import QnAListPage from "./pages/qna/QnAListPage.jsx";
-import QnADetailPage from "./pages/qna/QnADetailPage.jsx";
-import QnAWritePage from "./pages/qna/QnAWritePage.jsx";
+import CourseNoticeListPage from "./pages/CourseNoticeListPage.jsx";
+import QnAListPage from "./pages/QnAListPage.jsx";
+import QnADetailPage from "./pages/QnADetailPage.jsx";
+import QnAWritePage from "./pages/QnAWritePage.jsx";
 import CurriculumPage from "./pages/course/CurriculumPage.jsx";
 import AssignmentPage from "./pages/assignment/AssignmentPage.jsx";
 import AssignmentCreatePage from "./pages/assignment/AssignmentCreatePage.jsx";
@@ -32,6 +33,7 @@ import ExamDetailPage from "./pages/exam/ExamDetailPage.jsx";
 import ExamQuestionPage from "./pages/exam/ExamQuestionPage.jsx";
 import ExamEditPage from "./pages/exam/ExamEditPage.jsx";
 import SubmissionListPage from "./pages/assignment/SubmissionListPage.jsx";
+import ExamResults from './components/exam/ExamResults.jsx';
 
 function App() {
   return (
@@ -86,7 +88,7 @@ function App() {
                 <Route path=":examId/questions" element={<ExamQuestionPage/>}/>
                 <Route path=":examId/edit" element={<ExamEditPage/>}/>
                 <Route path=":examId/take" element={<ExamSubmissionPage/>}/>
-
+                <Route path=":examId/results" element={<ExamResults/>} />
               </Route>
 
               {/* 파일/자료 */}
