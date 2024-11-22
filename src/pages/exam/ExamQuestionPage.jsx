@@ -1,6 +1,6 @@
 import React from 'react';
 import ExamQuestions from '../../components/exam/ExamQuestions';
-import {withPageAuth} from '../../auth/WithAuth.jsx';
+import { withPageAuth } from '../../auth/WithAuth.jsx';
 
 const ExamQuestionsPage = () => {
   return (
