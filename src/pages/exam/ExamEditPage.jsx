@@ -1,6 +1,6 @@
 import React from 'react';
 import ExamEdit from '../../components/exam/ExamEdit';
-import { withPageAuth } from '../../auth/WithAuth.jsx';
+import {withPageAuth} from '../../auth/WithAuth.jsx';
 
 const ExamEditPage = () => {
   return (

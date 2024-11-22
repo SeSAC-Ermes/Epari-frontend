@@ -27,16 +27,11 @@ import ResetPasswordForm from "./components/auth/ResetPasswordForm.jsx";
 import MyPage from "./pages/mypage/MyPage.jsx";
 import ChangePasswordForm from "./components/auth/ChangePasswordForm.jsx";
 import ExamSubmissionPage from "./pages/exam/ExamSubmissionPage.jsx";
-import NoticeListPage from "./pages/notice/NoticeListPage.jsx";
-import { ProtectedRoute } from "./auth/ProtectedRoute.jsx";
-import NoticeWritePage from "./pages/notice/NoticeWritePage.jsx";
-import NoticeDetailPage from "./pages/notice/NoticeDetailPage.jsx";
-import NoticeEditContent from "./components/notice/NoticeEditContent.jsx";
-import SubmissionListPage from "./pages/assignment/SubmissionListPage.jsx";
 import ExamBasicSettingsPage from "./pages/exam/ExamBasicSettingsPage.jsx";
 import ExamDetailPage from "./pages/exam/ExamDetailPage.jsx";
 import ExamQuestionPage from "./pages/exam/ExamQuestionPage.jsx";
 import ExamEditPage from "./pages/exam/ExamEditPage.jsx";
+import SubmissionListPage from "./pages/assignment/SubmissionListPage.jsx";
 
 function App() {
   return (
@@ -57,30 +52,14 @@ function App() {
               <Route path="/courses" element={<CourseListPage/>}/>
               <Route path="/mypage" element={<MyPage/>}/>
               <Route path="/mypage/change-password" element={<ChangePasswordForm/>}/>
-
-
-              {/* 전체 공지사항 */}
-              <Route path="/notices">
-                <Route index element={<NoticeListPage type="GLOBAL"/>}/>
-                <Route path="create" element={
-                  <ProtectedRoute requiredRoles={['ADMIN']}>
-                    <NoticeWritePage type="GLOBAL"/>
-                  </ProtectedRoute>
-                }/>
-                <Route path=":noticeId" element={<NoticeDetailPage/>}/>
-                <Route path=":noticeId/edit" element={<NoticeEditContent/>}/>
-              </Route>
             </Route>
 
-            {/* 강의 공지사항 */}
+            {/* Main Layout - 코스 관련 */}
             <Route path="/courses/:courseId" element={<MainLayout/>}>
               <Route index element={<CourseDetailPage/>}/>
-              <Route path="notices">
-                <Route index element={<NoticeListPage type="COURSE"/>}/>
-                <Route path="create" element={<NoticeWritePage/>}/>
-                <Route path=":noticeId" element={<NoticeDetailPage/>}/>
-                <Route path=":noticeId/edit" element={<NoticeEditContent/>}/>
-              </Route>
+
+              {/* 공지사항 */}
+              <Route path="notices" element={<CourseNoticeListPage/>}/>
 
               {/* Q&A */}
               <Route path="qna">

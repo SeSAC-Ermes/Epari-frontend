@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { Search } from 'lucide-react';
-import { ExamAPI } from '../../api/exam/examAPI.js';
-import { RoleBasedComponent } from '../../auth/RoleBasedComponent';
-import { ROLES } from '../../constants/auth';
+import React, {useEffect, useState} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
+import {Search} from 'lucide-react';
+import {ExamAPI} from '../../api/exam/examAPI.js';
+import {RoleBasedComponent} from '../../auth/RoleBasedComponent';
+import {ROLES} from '../../constants/auth';
 
 /**
  * 강의 내 시험들을 상태별(예정/진행중/완료)로 보여주고 검색, 정렬, 상세 조회가 가능한 시험 관리 대시보드입니다.
  */
 export const ExamContainer = () => {
-  const { courseId } = useParams();
+  const {courseId} = useParams();
   const navigate = useNavigate();
   const [examData, setExamData] = useState({
     scheduledExams: [],
@@ -105,13 +105,13 @@ export const ExamContainer = () => {
                 />
               </div>
               <RoleBasedComponent requiredRoles={[ROLES.INSTRUCTOR]}>
-              <button
-                  type="button"
-                  onClick={() => navigate(`/courses/${courseId}/exams/settings`)}
-                  className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
-              >
-                시험 출제하기
-              </button>
+                <button
+                    type="button"
+                    onClick={() => navigate(`/courses/${courseId}/exams/settings`)}
+                    className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                >
+                  시험 출제하기
+                </button>
               </RoleBasedComponent>
             </div>
           </div>
@@ -134,8 +134,8 @@ export const ExamContainer = () => {
                 <th className="py-4 text-left text-sm font-medium text-gray-600">시험 응시 일자</th>
                 <th className="py-4 text-left text-sm font-medium text-gray-600">제한 시간</th>
                 <RoleBasedComponent requiredRoles={[ROLES.INSTRUCTOR]}>
-                   <th className="py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">응시 인원</th>
-                   <th className="py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">평균 점수</th>
+                  <th className="py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">응시 인원</th>
+                  <th className="py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">평균 점수</th>
                 </RoleBasedComponent>
                 <th className="py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">점수 확인</th>
               </tr>
@@ -143,7 +143,7 @@ export const ExamContainer = () => {
               <tbody>
               {filteredExams.length > 0 ? (
                   filteredExams.map((exam, index) => (
-                    <tr key={exam?.id || index} className="hover:bg-gray-50 border-b border-gray-100">
+                      <tr key={exam?.id || index} className="hover:bg-gray-50 border-b border-gray-100">
                         <td className="py-4 text-sm text-gray-900">{index + 1}</td>
                         <td className="py-4 text-sm">{getStatusBadge(exam)}</td>
                         <td className="py-4 text-sm text-gray-500">{formatDate(exam?.createdAt)}</td>
@@ -159,16 +159,16 @@ export const ExamContainer = () => {
                         <td className="py-4 text-sm text-gray-500">{formatDate(exam?.examDateTime)}</td>
                         <td className="py-4 text-sm text-gray-500">{exam?.duration}분</td>
                         <RoleBasedComponent requiredRoles={[ROLES.INSTRUCTOR]}>
-                           <td className="py-4 text-sm text-gray-500">
-                            {exam?.statistics?.submittedStudentCount || 0}/{exam?.statistics?.totalStudentCount || 0}
+                          <td className="py-4 text-sm text-gray-500">
+                            {exam?.submittedStudentCount || 0}/{exam?.totalStudentCount || 0}
                           </td>
                           <td className="py-4 text-sm text-gray-500">
-                            {exam?.statistics?.averageScore ? exam.statistics.averageScore.toFixed(1) : '-'}
+                            {exam?.averageScore ? exam.averageScore.toFixed(1) : '-'}
                           </td>
                         </RoleBasedComponent>
                         <td className="py-4 text-sm">
                           <button
-                              onClick={() => navigate(`/courses/${courseId}/exams/${exam?.id}/scores`)}
+                              onClick={() => navigate(`/courses/${courseId}/exams/${exam?.id}/results`)}
                               className="text-blue-600 hover:text-blue-800 font-medium"
                           >
                             점수 확인
