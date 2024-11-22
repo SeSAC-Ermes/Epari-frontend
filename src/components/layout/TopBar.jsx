@@ -44,13 +44,13 @@ const TopBar = () => {
               className="flex items-center gap-2 cursor-pointer"
               onClick={() => navigate('/')}
           >
+            
+            <span className="text-xl font-semibold">SeSAC</span>
             <img
                 src={Logo}
                 alt="Epari Logo"
                 className="w-10 h-10 object-contain"
             />
-            <span className="text-xl font-semibold">SeSAC</span>
-            <sup className="text-sm text-gray-500">epari</sup>
           </div>
 
           <div className="relative">

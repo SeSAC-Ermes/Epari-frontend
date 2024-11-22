@@ -188,18 +188,15 @@ const SignInForm = () => {
       <>
         {/* Logo Section */}
         <div className="flex items-center gap-3 mb-12">
+          <div className="flex items-baseline">
+          <span className="text-3xl font-semibold">
+            SeSAC
+          </span>
           <img
               src={Logo}
               alt="Epari Logo"
               className="w-15 h-14 object-contain"
           />
-          <div className="flex items-baseline">
-          <span className="text-3xl font-semibold">
-            SeSAC
-          </span>
-            <span className="text-base text-gray-500 font-normal">
-            epari
-          </span>
           </div>
         </div>
 
