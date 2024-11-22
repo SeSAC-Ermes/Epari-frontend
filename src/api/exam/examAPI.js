@@ -59,6 +59,7 @@ export const ExamAPI = {
       throw error;
     }
   },
+
   // 시험 삭제
   deleteExam: async (courseId, examId) => {
     try {
@@ -170,7 +171,7 @@ export const ExamAPI = {
       const response = await apiClient.post(
           `/api/courses/${courseId}/exams/${examId}/submission/finish`,
           null,
-          { params: { force } }
+          {params: {force}}
       );
       return response.data;
     } catch (error) {

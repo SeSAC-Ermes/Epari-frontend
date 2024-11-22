@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { AlertCircle, Clock } from 'lucide-react';
-import { ExamAPI } from '../../api/exam/examAPI.js';
+import React, {useEffect, useState} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
+import {AlertCircle, Clock} from 'lucide-react';
+import {ExamAPI} from '../../api/exam/examAPI.js';
 
 const ExamSubmission = () => {
-  const { courseId, examId } = useParams();
+  const {courseId, examId} = useParams();
   const navigate = useNavigate();
   const [exam, setExam] = useState(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -112,7 +112,7 @@ const ExamSubmission = () => {
   if (loading) {
     return (
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500" />
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"/>
         </div>
     );
   }
@@ -120,7 +120,7 @@ const ExamSubmission = () => {
   if (error) {
     return (
         <div className="p-4 bg-red-50 text-red-600 rounded-lg flex items-center gap-2">
-          <AlertCircle size={20} />
+          <AlertCircle size={20}/>
           <span>{error}</span>
         </div>
     );
@@ -178,7 +178,7 @@ const ExamSubmission = () => {
           <div className="flex justify-between items-center mb-4">
             <h1 className="text-2xl font-bold">{exam?.title}</h1>
             <div className="flex items-center gap-2 text-gray-600">
-              <Clock size={20} />
+              <Clock size={20}/>
               <span>남은 시간: {Math.floor(remainingTime / 60)}시간 {remainingTime % 60}분</span>
             </div>
           </div>

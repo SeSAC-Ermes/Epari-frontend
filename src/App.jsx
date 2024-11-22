@@ -33,6 +33,7 @@ import ExamDetailPage from "./pages/exam/ExamDetailPage.jsx";
 import ExamQuestionPage from "./pages/exam/ExamQuestionPage.jsx";
 import ExamEditPage from "./pages/exam/ExamEditPage.jsx";
 import SubmissionListPage from "./pages/assignment/SubmissionListPage.jsx";
+import ExamResults from './components/exam/ExamResults.jsx';
 
 function App() {
   return (
@@ -87,7 +88,7 @@ function App() {
                 <Route path=":examId/questions" element={<ExamQuestionPage/>}/>
                 <Route path=":examId/edit" element={<ExamEditPage/>}/>
                 <Route path=":examId/take" element={<ExamSubmissionPage/>}/>
-
+                <Route path=":examId/results" element={<ExamResults/>} />
               </Route>
 
               {/* 파일/자료 */}

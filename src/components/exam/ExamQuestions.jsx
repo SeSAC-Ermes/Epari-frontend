@@ -1,14 +1,14 @@
-import React, { useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { ExamAPI } from '../../api/exam/examAPI.js';
-import { ChevronUp, X, } from 'lucide-react';
+import React, {useRef, useState} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
+import {ExamAPI} from '../../api/exam/examAPI.js';
+import {ChevronUp, X,} from 'lucide-react';
 
 /**
  * 문제 추가 컴포넌트
  */
 
 export default function ExamQuestions() {
-  const { courseId, examId } = useParams();
+  const {courseId, examId} = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [questions, setQuestions] = useState([]);
@@ -59,7 +59,7 @@ export default function ExamQuestions() {
 
   // 스크롤업 버튼
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({top: 0, behavior: 'smooth'});
   };
 
   const handleSubmit = async (e) => {
@@ -124,7 +124,6 @@ export default function ExamQuestions() {
       setQuestions(updatedQuestions);
     }
   };
-
 
 
   return (
