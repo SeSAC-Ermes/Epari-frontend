@@ -33,6 +33,9 @@ import ExamDetailPage from "./pages/exam/ExamDetailPage.jsx";
 import ExamQuestionPage from "./pages/exam/ExamQuestionPage.jsx";
 import ExamEditPage from "./pages/exam/ExamEditPage.jsx";
 import SubmissionListPage from "./pages/assignment/SubmissionListPage.jsx";
+import ExamResultPage from "./pages/ExamResultPage.jsx";
+import ExamGradingListPage from "./pages/exam/ExamGradingListPage.jsx";
+import ExamGradingFormPage from "./pages/exam/ExamGradingFormPage.jsx";
 
 function App() {
   return (
@@ -87,7 +90,9 @@ function App() {
                 <Route path=":examId/questions" element={<ExamQuestionPage/>}/>
                 <Route path=":examId/edit" element={<ExamEditPage/>}/>
                 <Route path=":examId/take" element={<ExamSubmissionPage/>}/>
-
+                <Route path=":examId/result" element={<ExamResultPage/>}/>
+                <Route path=":examId/grading" element={<ExamGradingListPage/>}/>
+                <Route path=":examId/grade/:submissionId" element={<ExamGradingFormPage/>}/>
               </Route>
 
               {/* 파일/자료 */}
