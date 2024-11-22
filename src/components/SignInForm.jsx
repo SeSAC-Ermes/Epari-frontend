@@ -153,9 +153,17 @@ const SignInForm = () => {
       // 권한 검사
       checkUserAuthorization(userGroups);
 
-      // 토큰 저장 및 리다이렉트
+      // 토큰 저장
       localStorage.setItem('token', token);
-      navigate('/courses');
+
+      // PENDING_ROLES 체크 후 리다이렉트
+      if (userGroups.includes('PENDING_ROLES')) {
+        navigate('/pending-approval');
+      } else if (userGroups.includes('INSTRUCTOR') || userGroups.includes('STUDENT')) {
+        navigate('/courses');
+      } else {
+        throw new Error('적절한 권한이 없습니다.');
+      }
 
     } catch (error) {
       console.error('Session/token handling error:', error);
