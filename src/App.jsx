@@ -1,13 +1,12 @@
-import { BrowserRouter as Router, Outlet, Route, Routes } from 'react-router-dom';
+import {BrowserRouter as Router, Outlet, Route, Routes} from 'react-router-dom';
 import React from 'react';
 import SignInPage from './pages/SignInPage.jsx';
 import SignUpPage from './pages/SignUpPage.jsx';
 import CourseListPage from "./pages/course/CourseListPage.jsx";
 import CourseDetailPage from "./pages/course/CourseDetailPage.jsx";
-import CourseNoticeListPage from "./pages/CourseNoticeListPage.jsx";
-import QnAListPage from "./pages/QnAListPage.jsx";
-import QnADetailPage from "./pages/QnADetailPage.jsx";
-import QnAWritePage from "./pages/QnAWritePage.jsx";
+import QnAListPage from "./pages/qna/QnAListPage.jsx";
+import QnADetailPage from "./pages/qna/QnADetailPage.jsx";
+import QnAWritePage from "./pages/qna/QnAWritePage.jsx";
 import CurriculumPage from "./pages/course/CurriculumPage.jsx";
 import AssignmentPage from "./pages/assignment/AssignmentPage.jsx";
 import AssignmentCreatePage from "./pages/assignment/AssignmentCreatePage.jsx";
@@ -24,16 +23,19 @@ import SimpleLayout from "./components/layout/SimpleLayout.jsx";
 import MainLayout from "./components/layout/MainLayout.jsx";
 import AttendanceManagementPage from "./pages/attendance/AttendanceManagementPage.jsx";
 import ExamPage from "./pages/exam/ExamPage.jsx";
+import ExamBasicSettingsPage from "./pages/exam/ExamBasicSettingsPage.jsx";
+import ExamQuestionPage from "./pages/exam/ExamQuestionPage.jsx";
+import ExamDetailPage from "./pages/exam/ExamDetailPage.jsx";
+import ExamEditPage from "./pages/exam/ExamEditPage.jsx";
 import ResetPasswordForm from "./components/auth/ResetPasswordForm.jsx";
 import MyPage from "./pages/mypage/MyPage.jsx";
 import ChangePasswordForm from "./components/auth/ChangePasswordForm.jsx";
 import ExamSubmissionPage from "./pages/exam/ExamSubmissionPage.jsx";
-import ExamBasicSettingsPage from "./pages/exam/ExamBasicSettingsPage.jsx";
-import ExamDetailPage from "./pages/exam/ExamDetailPage.jsx";
-import ExamQuestionPage from "./pages/exam/ExamQuestionPage.jsx";
-import ExamEditPage from "./pages/exam/ExamEditPage.jsx";
-import SubmissionListPage from "./pages/assignment/SubmissionListPage.jsx";
-import ExamResults from './components/exam/ExamResults.jsx';
+import NoticeListPage from "./pages/notice/NoticeListPage.jsx";
+import { ProtectedRoute } from "./auth/ProtectedRoute.jsx";
+import NoticeWritePage from "./pages/notice/NoticeWritePage.jsx";
+import NoticeDetailPage from "./pages/notice/NoticeDetailPage.jsx";
+import NoticeEditContent from "./components/notice/NoticeEditContent.jsx";
 
 function App() {
   return (
@@ -54,14 +56,30 @@ function App() {
               <Route path="/courses" element={<CourseListPage/>}/>
               <Route path="/mypage" element={<MyPage/>}/>
               <Route path="/mypage/change-password" element={<ChangePasswordForm/>}/>
+
+
+              {/* 전체 공지사항 */}
+              <Route path="/notices">
+                <Route index element={<NoticeListPage type="GLOBAL"/>}/>
+                <Route path="create" element={
+                  <ProtectedRoute requiredRoles={['ADMIN']}>
+                    <NoticeWritePage type="GLOBAL"/>
+                  </ProtectedRoute>
+                }/>
+                <Route path=":noticeId" element={<NoticeDetailPage/>}/>
+                <Route path=":noticeId/edit" element={<NoticeEditContent/>}/>
+              </Route>
             </Route>
 
-            {/* Main Layout - 코스 관련 */}
+            {/* 강의 공지사항 */}
             <Route path="/courses/:courseId" element={<MainLayout/>}>
               <Route index element={<CourseDetailPage/>}/>
-
-              {/* 공지사항 */}
-              <Route path="notices" element={<CourseNoticeListPage/>}/>
+              <Route path="notices">
+                <Route index element={<NoticeListPage type="COURSE"/>}/>
+                <Route path="create" element={<NoticeWritePage/>}/>
+                <Route path=":noticeId" element={<NoticeDetailPage/>}/>
+                <Route path=":noticeId/edit" element={<NoticeEditContent/>}/>
+              </Route>
 
               {/* Q&A */}
               <Route path="qna">
@@ -74,10 +92,7 @@ function App() {
               <Route path="assignments">
                 <Route index element={<AssignmentPage/>}/>
                 <Route path="create" element={<AssignmentCreatePage/>}/>
-                <Route path=":assignmentId">
-                  <Route index element={<AssignmentDetailPage/>}/>
-                  <Route path="submissions" element={<SubmissionListPage/>}/>
-                </Route>
+                <Route path=":assignmentId" element={<AssignmentDetailPage/>}/>
               </Route>
 
               {/* 시험 */}
@@ -87,8 +102,8 @@ function App() {
                 <Route path=":examId" element={<ExamDetailPage/>}/>
                 <Route path=":examId/questions" element={<ExamQuestionPage/>}/>
                 <Route path=":examId/edit" element={<ExamEditPage/>}/>
-                <Route path=":examId/take" element={<ExamSubmissionPage/>}/>
-                <Route path=":examId/results" element={<ExamResults/>} />
+                <Route path=":examId/take" element={<ExamSubmissionPage />} />
+
               </Route>
 
               {/* 파일/자료 */}
