@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
+import Logo from '../../assets/epariLogo.jpg';
 import {
   Bell,
   BookOpen,
