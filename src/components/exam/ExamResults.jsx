@@ -1,37 +1,22 @@
-import React, {useState, useEffect} from 'react';
-import {ChevronDown, ChevronUp, FileText} from 'lucide-react';
-import axios from 'axios';
-import {useParams} from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { ChevronDown, ChevronUp, FileText } from 'lucide-react';
+import { useParams } from 'react-router-dom';
+import apiClient from "../../api/axios.js";
 
 const ExamResults = () => {
   const [expandedStudents, setExpandedStudents] = useState(new Set());
   const [examResults, setExamResults] = useState([]); // 빈 배열로 초기화
   const [loading, setLoading] = useState(true);
-  const {courseId, examId} = useParams();
+  const { courseId, examId } = useParams();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          console.error('토큰이 없습니다');
-          return;
-        }
-
-        const config = {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        };
-
-        // API URL 설정 수정
-        const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-        const resultsURL = `${baseURL}/api/courses/${courseId}/exams/${examId}/submission/results`;
+        const resultsURL = `/api/courses/${courseId}/exams/${examId}/submission/results`;
 
         console.log('Requesting URL:', resultsURL); // URL 확인용
 
-        const response = await axios.get(resultsURL, config);
+        const response = await apiClient.get(resultsURL);
 
         // 응답 데이터 로깅
         console.log('Response status:', response.status);

@@ -1,7 +1,7 @@
 import React from 'react';
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-const ExamListItem = ({exam, courseId}) => {
+const ExamListItem = ({ exam, courseId }) => {
   const navigate = useNavigate();
 
   const handleExamClick = () => {
@@ -10,7 +10,7 @@ const ExamListItem = ({exam, courseId}) => {
 
   const handleScoreClick = (e) => {
     e.stopPropagation();
-    navigate(`/courses/${courseId}/exams/${exam.id}/scores`);
+    navigate(`/courses/${courseId}/exams/${exam.id}/results`);
   };
 
   return (
