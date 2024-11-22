@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Logo from '../assets/epariLogo.jpg';
 import apiClient from '../api/axios';
 import NewPasswordForm from './auth/NewPasswordForm';
+import GoogleLoginButton from './common/button/GoogleLoginButton';
 
 /**
  * 사용자 로그인 처리 및 인증을 담당하는 컴포넌트
@@ -152,9 +153,17 @@ const SignInForm = () => {
       // 권한 검사
       checkUserAuthorization(userGroups);
 
-      // 토큰 저장 및 리다이렉트
+      // 토큰 저장
       localStorage.setItem('token', token);
-      navigate('/courses');
+
+      // PENDING_ROLES 체크 후 리다이렉트
+      if (userGroups.includes('PENDING_ROLES')) {
+        navigate('/pending-approval');
+      } else if (userGroups.includes('INSTRUCTOR') || userGroups.includes('STUDENT')) {
+        navigate('/courses');
+      } else {
+        throw new Error('적절한 권한이 없습니다.');
+      }
 
     } catch (error) {
       console.error('Session/token handling error:', error);
@@ -245,21 +254,32 @@ const SignInForm = () => {
             {/* Buttons Container */}
             <div className="flex flex-col items-center space-y-4">
               {/* Sign In Button */}
-              <button type="submit" className="w-60 py-2 px-4 bg-green-400 hover:bg-green-500 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2">
+              <button
+                  type="submit"
+                  className="w-60 py-2 px-4 bg-green-400 hover:bg-green-500 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2"
+              >
                 로그인
               </button>
 
               {/* Sign Up Button */}
-              <button type="button" onClick={() => navigate('/signup')} className="w-60 py-2 px-4 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2">
+              <button
+                  type="button"
+                  onClick={() => navigate('/signup')}
+                  className="w-60 py-2 px-4 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+              >
                 회원가입
               </button>
 
               {/* Password Reset Button - 추가 */}
-              <button type="button" onClick={() => navigate('/reset-password')} className="text-sm text-gray-500 hover:text-gray-700">
+              <button type="button" onClick={() => navigate('/reset-password')}
+                      className="text-sm text-gray-500 hover:text-gray-700">
                 비밀번호를 잊으셨나요?
               </button>
             </div>
           </form>
+          <div className="mt-4 flex justify-center">
+            <GoogleLoginButton/>
+          </div>
         </div>
       </>
   );
