@@ -234,7 +234,7 @@ const SignUpForm = () => {
       });
 
       alert('회원가입이 완료되었습니다. 관리자 승인 후 이용하실 수 있습니다.');
-      navigate('/signin');
+      navigate('/pending-approval');
     } catch (err) {
       console.error('SignUp error:', err);
       const errorMessage = err.response?.data?.message;

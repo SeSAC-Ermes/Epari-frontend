@@ -56,9 +56,9 @@ export const getAssignmentStatus = (deadline) => {
   dueDate.setHours(0, 0, 0, 0);
 
   if (today > dueDate) {
-    return { text: '과제 확인', class: 'bg-gray-100 text-gray-600' };
+    return { text: '마감', class: 'bg-gray-100 text-gray-600' };
   } else {
-    return { text: '과제 진행 중', class: 'bg-green-100 text-green-600' };
+    return { text: '진행 중', class: 'bg-green-100 text-green-600' };
   }
 };
 
