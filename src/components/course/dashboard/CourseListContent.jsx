@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import CourseCard from './CourseCard';
 import CourseManagementModal from './CourseManagementModal.jsx';
-import { Pencil, Plus, Trash2 } from 'lucide-react';
 import NoticeTabs from './NoticeTabs';
 import NoticeTable from './NoticeTable';
 import { CourseAPI } from "../../../api/course/courseAPI.js";
@@ -216,15 +215,6 @@ const CourseListContent = () => {
       <main className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">내 강의 목록</h1>
-          {isInstructor && (
-              <button
-                  onClick={handleCreateCourse}
-                  className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-              >
-                <Plus size={20}/>
-                새 강의 만들기
-              </button>
-          )}
         </div>
 
         <div className="grid grid-cols-3 gap-4">
@@ -236,18 +226,6 @@ const CourseListContent = () => {
                         className="absolute top-2 right-2 flex gap-2 z-10"
                         onClick={(e) => e.stopPropagation()} // 이벤트 버블링 방지
                     >
-                      <button
-                          onClick={() => handleEditCourse(course)}
-                          className="p-2 bg-white rounded-full shadow hover:bg-gray-50"
-                      >
-                        <Pencil size={16} className="text-gray-600"/>
-                      </button>
-                      <button
-                          onClick={() => handleDeleteCourse(course.id)}
-                          className="p-2 bg-white rounded-full shadow hover:bg-gray-50"
-                      >
-                        <Trash2 size={16} className="text-red-500"/>
-                      </button>
                     </div>
                 )}
               </div>

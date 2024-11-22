@@ -23,12 +23,9 @@ export const AuthProvider = ({ children }) => {
         setUser(currentUser);
         setUserGroups(groups);
       } catch (error) {
-
-        // UserUnAuthenticatedException는 예상된 에러이므로 조용히 처리
         if (error.name !== 'UserUnAuthenticatedException') {
           console.error('Unexpected auth error:', error);
         }
-        // 인증되지 않은 경우 user와 userGroups를 null로 설정
         setUser(null);
         setUserGroups([]);
       } finally {

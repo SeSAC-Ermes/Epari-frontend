@@ -27,6 +27,7 @@ import ExamPage from "./pages/exam/ExamPage.jsx";
 import ResetPasswordForm from "./components/auth/ResetPasswordForm.jsx";
 import MyPage from "./pages/mypage/MyPage.jsx";
 import ChangePasswordForm from "./components/auth/ChangePasswordForm.jsx";
+import PendingApprovalPage from "./pages/auth/PendingApprovalPage.jsx";
 import ExamSubmissionPage from "./pages/exam/ExamSubmissionPage.jsx";
 import ExamBasicSettingsPage from "./pages/exam/ExamBasicSettingsPage.jsx";
 import ExamDetailPage from "./pages/exam/ExamDetailPage.jsx";
@@ -44,7 +45,7 @@ function App() {
           <Route path="/signup" element={<SignUpPage/>}/>
           <Route path="/unauthorized" element={<UnauthorizedPage/>}/>
           <Route path="/reset-password" element={<ResetPasswordForm/>}/>
-
+          <Route path="/pending-approval" element={<PendingApprovalPage/>}/>
 
           {/* Protected Routes */}
           <Route element={<AuthProvider><Outlet/></AuthProvider>}>
@@ -88,7 +89,7 @@ function App() {
                 <Route path=":examId/questions" element={<ExamQuestionPage/>}/>
                 <Route path=":examId/edit" element={<ExamEditPage/>}/>
                 <Route path=":examId/take" element={<ExamSubmissionPage/>}/>
-                <Route path=":examId/results" element={<ExamResults/>} />
+                <Route path=":examId/results" element={<ExamResults/>}/>
               </Route>
 
               {/* 파일/자료 */}

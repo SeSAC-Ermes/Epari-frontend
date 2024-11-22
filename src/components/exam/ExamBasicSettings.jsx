@@ -1,7 +1,7 @@
-import React, {useState} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
-import {Settings} from 'lucide-react';
-import {ExamAPI} from '../../api/exam/examAPI.js';
+import React, { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Settings } from 'lucide-react';
+import { ExamAPI } from '../../api/exam/examAPI.js';
 
 /**
  * 시험 설정 컴포넌트

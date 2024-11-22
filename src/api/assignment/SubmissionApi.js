@@ -111,15 +111,14 @@ export const SubmissionApi = {
     }
   },
 
-  deleteSubmissionFile: async (courseId, assignmentId, submissionId, fileId) => {
+  // 강의의 전체 과제 제출 현황 조회
+  getCourseSubmissions: async (courseId) => {
     try {
-      const response = await apiClient.delete(
-          `/api/courses/${courseId}/assignments/${assignmentId}/submissions/${submissionId}/files/${fileId}`
-      );
+      const response = await apiClient.get(`/api/courses/${courseId}/submissions`);
       return response.data;
     } catch (error) {
-      console.error('Delete file error:', error);
+      console.error('Error fetching course submissions:', error);
       throw error;
     }
-  }
+  },
 };
