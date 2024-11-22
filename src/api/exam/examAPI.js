@@ -59,6 +59,7 @@ export const ExamAPI = {
       throw error;
     }
   },
+
   // 시험 삭제
   deleteExam: async (courseId, examId) => {
     try {
@@ -170,7 +171,7 @@ export const ExamAPI = {
       const response = await apiClient.post(
           `/api/courses/${courseId}/exams/${examId}/submission/finish`,
           null,
-          { params: { force } }
+          {params: {force}}
       );
       return response.data;
     } catch (error) {
@@ -198,9 +199,6 @@ export const ExamAPI = {
       const response = await apiClient.get(
           `/api/courses/${courseId}/exams/${examId}/submission/result`
       );
-      if (!response.data) {
-        throw new Error('시험 결과 데이터가 없습니다.');
-      }
       return response.data;
     } catch (error) {
       console.error('Error fetching exam result:', error);

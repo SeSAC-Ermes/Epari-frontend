@@ -10,7 +10,7 @@ const ExamListItem = ({ exam, courseId }) => {
 
   const handleScoreClick = (e) => {
     e.stopPropagation();
-    navigate(`/courses/${courseId}/exams/${exam.id}/scores`);
+    navigate(`/courses/${courseId}/exams/${exam.id}/results`);
   };
 
   return (

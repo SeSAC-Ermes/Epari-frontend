@@ -12,7 +12,7 @@ export const ExamCreateContainer = () => {
                 {error}
               </div>
           )}
-          <ExamCreateForm setError={setError} />
+          <ExamCreateForm setError={setError}/>
         </main>
       </div>
   );

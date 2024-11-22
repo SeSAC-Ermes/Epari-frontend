@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ExamAPI } from '../../api/exam/examAPI';
 import { ChevronUp } from 'lucide-react';
-
+import { useAuth } from '../../auth/AuthContext'; // 추가
+import { ROLES } from '../../constants/auth'; // 추가
 const ExamResult = () => {
   const { courseId, examId } = useParams();
   const navigate = useNavigate();
@@ -10,11 +11,25 @@ const ExamResult = () => {
   const [exam, setExam] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { user } = useAuth();
+
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
+
+        // 권한 검사 추가
+        if (!user) {
+          throw new Error('로그인이 필요합니다.');
+        }
+
+        // 강사인 경우 채점 페이지로 리다이렉트
+        if (user.roles.includes(ROLES.INSTRUCTOR)) {
+          navigate(`/courses/${courseId}/exams/${examId}/grading`);
+          return;
+        }
+
         const [resultData, examData] = await Promise.all([
           ExamAPI.getExamResult(courseId, examId),
           ExamAPI.getExam(courseId, examId)
@@ -24,7 +39,14 @@ const ExamResult = () => {
         setExam(examData);
       } catch (err) {
         console.error('Error:', err);
-        setError(err.message || '시험 결과를 불러오는데 실패했습니다.');
+        // 에러 메시지 처리 개선
+        if (err.response?.status === 403) {
+          setError('이 시험 결과를 볼 수 있는 권한이 없습니다.');
+        } else if (err.response?.status === 401) {
+          setError('로그인이 필요합니다.');
+        } else {
+          setError(err.message || '시험 결과를 불러오는데 실패했습니다.');
+        }
       } finally {
         setLoading(false);
       }
@@ -33,7 +55,7 @@ const ExamResult = () => {
     if (courseId && examId) {
       fetchData();
     }
-  }, [courseId, examId]);
+  }, [courseId, examId, user, navigate]);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });

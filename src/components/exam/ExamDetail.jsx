@@ -2,12 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { BookOpen, Calendar, ChevronUp, Clock, GraduationCap, User, Users } from 'lucide-react';
 import { ExamAPI } from '../../api/exam/examAPI.js';
-import { PAGE_PERMISSIONS } from '../../constants/auth';
-import { RoleBasedComponent } from '../../auth/RoleBasedComponent';
 import { ROLES } from '../../constants/auth';
+import { RoleBasedComponent } from '../../auth/RoleBasedComponent';
 
 const ExamDetail = () => {
-  const { courseId, examId } = useParams();
+  const {courseId, examId} = useParams();
   const navigate = useNavigate();
   const [exam, setExam] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -68,7 +67,7 @@ const ExamDetail = () => {
 
   // 스크롤업 함수 추가
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({top: 0, behavior: 'smooth'});
   };
 
   return (

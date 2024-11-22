@@ -7,7 +7,7 @@ import { ExamAPI } from '../../api/exam/examAPI.js';
  * 시험 설정 컴포넌트
  */
 export default function ExamBasicSettings() {
-  const { courseId } = useParams();
+  const {courseId} = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [examInfo, setExamInfo] = useState({
@@ -126,7 +126,7 @@ export default function ExamBasicSettings() {
           >
             {loading ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"/>
                   처리중...
                 </>
             ) : '다음: 문제 출제'}
