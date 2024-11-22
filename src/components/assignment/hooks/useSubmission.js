@@ -100,7 +100,7 @@ export const useSubmission = (courseId, assignmentId) => {
   };
 
   const handleFilesChange = (files) => {
-    setNewFiles(files); // 이 함수가 전달되지 않았나봅니다
+    setNewFiles(files);
   };
 
   return {
@@ -140,7 +140,7 @@ const useFileHandling = (courseId, assignmentId, submission, setExistingFiles, s
 
     } catch (error) {
       console.error('파일 삭제 중 오류가 발생했습니다.', error);
-      throw error; // 에러를 다시 던져서 상위에서 처리하도록
+      throw error;
     }
   };
 

@@ -171,8 +171,11 @@ const AssignmentDetailPage = () => {
                       </h2>
                       {submission?.grade && (
                           <div className="flex items-center gap-4">
-                      <span className="text-blue-600 font-medium">
-                        성적: {submission.grade}
+                      <span className={`font-medium ${
+                          submission.grade === '통과' ? 'text-blue-600' :
+                              submission.grade === '미통과' ? 'text-red-600' :
+                                  'text-yellow-600'}`}>
+                          성적: {submission.grade}
                       </span>
                             {submission.updatedAt && (
                                 <span className="text-gray-500 text-sm">

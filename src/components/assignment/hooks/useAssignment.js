@@ -159,19 +159,16 @@ export const useFileHandling = (courseId) => {
     try {
       const downloadUrl = await AssignmentFileApi.getFileDownloadUrl(courseId, assignmentId, fileId);
 
-      // fetch로 파일을 가져옵니다
       const response = await fetch(downloadUrl);
       const blob = await response.blob();
 
-      // FileSaver.js 라이브러리를 사용하거나 아래 방식으로 다운로드
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', fileName); // 파일명 지정
+      link.setAttribute('download', fileName);
       document.body.appendChild(link);
       link.click();
 
-      // Cleanup
       window.URL.revokeObjectURL(url);
       document.body.removeChild(link);
     } catch (error) {
