@@ -54,47 +54,30 @@ const SubmissionList = () => {
       );
       setSubmissions(actualSubmissions);
 
-      const submittedStudents = submissionsResponse
-          .filter(submission => submission.status !== '미제출')
-          .map(submission => ({
-            id: submission.student?.id,
-            name: submission.student?.name,
-            email: submission.student?.email,
-            submission: submission,
-            status: submission.status || '제출완료',
-            grade: submission.grade,
-            files: submission.files || [],
-            description: submission.description || '',
-            createdAt: submission.createdAt,
-            submissionId: submission.id
-          }));
+      const allStudentsData = submissionsResponse.map(submission => ({
+        id: submission.student?.id,
+        name: submission.student?.name,
+        email: submission.student?.email,
+        submission: submission,
+        status: submission.status,
+        grade: submission.grade,
+        files: submission.files || [],
+        description: submission.description || '',
+        createdAt: submission.createdAt,
+        submissionId: submission.id
+      }));
 
-      const unsubmittedStudents = submissionsResponse
-          .filter(submission => submission.status === '미제출')
-          .map(submission => ({
-            id: submission.student?.id,
-            name: submission.student?.name,
-            email: submission.student?.email,
-            submission: null,
-            status: '미제출',
-            grade: null,
-            files: [],
-            description: '',
-            createdAt: null,
-            submissionId: null
-          }));
+      const sortedData = allStudentsData.sort((a, b) =>
+          a.name.localeCompare(b.name)
+      );
 
-      const combined = [...submittedStudents, ...unsubmittedStudents]
-          .sort((a, b) => a.name.localeCompare(b.name));
-
-      console.log('최종 결합된 데이터:', combined);
-      setCombinedData(combined);
+      setCombinedData(sortedData);
 
       // 피드백 초기 상태 설정
       const initialFeedbacks = {};
-      submittedStudents.forEach(student => {
-        if (student.submissionId) {
-          initialFeedbacks[student.submissionId] = student.submission?.feedback || '';
+      actualSubmissions.forEach(submission => {
+        if (submission.id) {
+          initialFeedbacks[submission.id] = submission.feedback || '';
         }
       });
       setFeedbacks(initialFeedbacks);
