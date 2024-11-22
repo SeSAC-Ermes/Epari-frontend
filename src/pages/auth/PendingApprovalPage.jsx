@@ -3,12 +3,16 @@ import { Clock, CheckCircle2, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { signOut } from "aws-amplify/auth";
 
+/**
+ * 관리자 승인을 기다리는 사용자를 위한 대기 화면 컴포넌트
+ */
 const PendingApprovalPage = () => {
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
     try {
       await signOut();
+      localStorage.clear();
       navigate('/signin');
     } catch (error) {
       console.error('로그아웃 실패:', error);
