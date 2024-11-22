@@ -32,6 +32,7 @@ import ResetPasswordForm from "./components/auth/ResetPasswordForm.jsx";
 import MyPage from "./pages/mypage/MyPage.jsx";
 import ChangePasswordForm from "./components/auth/ChangePasswordForm.jsx";
 import ExamSubmissionPage from "./pages/exam/ExamSubmissionPage.jsx";
+import ExamResults from './components/exam/ExamResults.jsx';
 
 function App() {
   return (
@@ -83,7 +84,7 @@ function App() {
                 <Route path=":examId/questions" element={<ExamQuestionPage/>}/>
                 <Route path=":examId/edit" element={<ExamEditPage/>}/>
                 <Route path=":examId/take" element={<ExamSubmissionPage />} />
-
+                <Route path=":examId/results" element={<ExamResults />} />
               </Route>
 
               {/* 파일/자료 */}
