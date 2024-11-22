@@ -1,5 +1,6 @@
 import React from 'react';
 import StudentManagementContent from '../../components/student/StudentManagementContent.jsx';
+import { withPageAuth } from '../../auth/WithAuth.jsx';
 
 /**
  * 수강생 관리를 위한 페이지 컴포넌트
@@ -14,4 +15,4 @@ const StudentManagementPage = () => {
   );
 };
 
-export default StudentManagementPage;
+export default withPageAuth(StudentManagementPage, 'STUDENT_MANAGEMENT')

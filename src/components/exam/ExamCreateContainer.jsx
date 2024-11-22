@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ExamCreateForm } from './ExamCreateForm';
+import React, {useState} from 'react';
+import {ExamCreateForm} from './ExamCreateForm';
 
 export const ExamCreateContainer = () => {
   const [error, setError] = useState(null);
@@ -12,7 +12,7 @@ export const ExamCreateContainer = () => {
                 {error}
               </div>
           )}
-          <ExamCreateForm setError={setError} />
+          <ExamCreateForm setError={setError}/>
         </main>
       </div>
   );

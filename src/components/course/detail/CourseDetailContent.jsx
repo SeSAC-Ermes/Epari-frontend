@@ -163,7 +163,7 @@ const CourseDetailContent = () => {
 
         <div className="space-y-8">
           <ExamAssignmentSection
-              examsAndAssignments={examsAndAssignments}
+              courseId={courseId}
               onNavigate={handleNavigate}
           />
 

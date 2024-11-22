@@ -24,11 +24,17 @@ import SimpleLayout from "./components/layout/SimpleLayout.jsx";
 import MainLayout from "./components/layout/MainLayout.jsx";
 import AttendanceManagementPage from "./pages/attendance/AttendanceManagementPage.jsx";
 import ExamPage from "./pages/exam/ExamPage.jsx";
-import ExamCreatePage from "./pages/exam/ExamCreatePage.jsx";
 import ResetPasswordForm from "./components/auth/ResetPasswordForm.jsx";
 import MyPage from "./pages/mypage/MyPage.jsx";
 import ChangePasswordForm from "./components/auth/ChangePasswordForm.jsx";
 import PendingApprovalPage from "./pages/auth/PendingApprovalPage.jsx";
+import ExamSubmissionPage from "./pages/exam/ExamSubmissionPage.jsx";
+import ExamBasicSettingsPage from "./pages/exam/ExamBasicSettingsPage.jsx";
+import ExamDetailPage from "./pages/exam/ExamDetailPage.jsx";
+import ExamQuestionPage from "./pages/exam/ExamQuestionPage.jsx";
+import ExamEditPage from "./pages/exam/ExamEditPage.jsx";
+import SubmissionListPage from "./pages/assignment/SubmissionListPage.jsx";
+import ExamResults from './components/exam/ExamResults.jsx';
 
 function App() {
   return (
@@ -69,14 +75,21 @@ function App() {
               <Route path="assignments">
                 <Route index element={<AssignmentPage/>}/>
                 <Route path="create" element={<AssignmentCreatePage/>}/>
-                <Route path=":assignmentId" element={<AssignmentDetailPage/>}/>
+                <Route path=":assignmentId">
+                  <Route index element={<AssignmentDetailPage/>}/>
+                  <Route path="submissions" element={<SubmissionListPage/>}/>
+                </Route>
               </Route>
 
               {/* 시험 */}
               <Route path="exams">
                 <Route index element={<ExamPage/>}/>
-                <Route path="create" element={<ExamCreatePage/>}/>
-                {/*<Route path="/courses/:courseId/exams/:examId" element={<ExamDetailPage/>}/>*/}
+                <Route path="settings" element={<ExamBasicSettingsPage/>}/>
+                <Route path=":examId" element={<ExamDetailPage/>}/>
+                <Route path=":examId/questions" element={<ExamQuestionPage/>}/>
+                <Route path=":examId/edit" element={<ExamEditPage/>}/>
+                <Route path=":examId/take" element={<ExamSubmissionPage/>}/>
+                <Route path=":examId/results" element={<ExamResults/>}/>
               </Route>
 
               {/* 파일/자료 */}

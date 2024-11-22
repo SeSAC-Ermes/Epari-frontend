@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import StudentSearchBar from "./StudentSearchBar.jsx";
 import StudentCard from "./StudentCard.jsx";
+import { ArrowUp } from 'lucide-react';
 import { AttendanceAPI } from "../../api/attendance/attendanceAPI.js";
 import { ExamAPI } from '../../api/exam/examAPI';
 
@@ -18,6 +19,20 @@ const StudentManagementContent = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [examResults, setExamResults] = useState([]);
+  const location = useLocation();
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
+
+  useEffect(() => {
+    if (location.state?.searchQuery) {
+      setSearchTerm(location.state.searchQuery);
+    }
+  }, [location.state]);
 
   useEffect(() => {
     const fetchExamResults = async () => {
@@ -135,6 +150,7 @@ const StudentManagementContent = () => {
                     onToggle={() => setExpandedStudent(
                         expandedStudent === student.id ? null : student.id
                     )}
+                    courseId={courseId}
                 />
             ))}
 
@@ -145,6 +161,16 @@ const StudentManagementContent = () => {
             )}
           </div>
         </div>
+
+        {/* ScrollToTop 버튼 추가 */}
+        <button
+            onClick={scrollToTop}
+            className="fixed bottom-8 right-8 p-3 bg-green-500 text-white rounded-full shadow-lg hover:bg-green-600 transition-all duration-300 z-[9999]"
+            aria-label="페이지 최상단으로 이동"
+        >
+          <ArrowUp size={24}/>
+        </button>
+
       </div>
   );
 };

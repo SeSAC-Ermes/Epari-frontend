@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { resetPassword, confirmResetPassword } from 'aws-amplify/auth';
+import { confirmResetPassword, resetPassword } from 'aws-amplify/auth';
 import Logo from '../../assets/epariLogo.jpg';
 import apiClient from '../../api/axios';
 import PasswordValidation from './PasswordValidation';
