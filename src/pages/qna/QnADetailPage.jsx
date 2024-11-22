@@ -1,5 +1,5 @@
 import React from 'react';
-import QnADetailContent from '../components/QnADetailContent.jsx';
+import QnADetailContent from '../../components/qna/QnADetailContent.jsx';
 
 const QnADetailPage = () => {
   return (

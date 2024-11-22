@@ -1,6 +1,5 @@
 import React from 'react';
-import QnAWriteContent from '../components/QnAWriteContent.jsx';
-
+import QnAWriteContent from '../../components/qna/QnAWriteContent.jsx';
 const QnAWritePage = () => {
   return (
       <QnAWriteContent/>
