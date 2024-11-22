@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { ChevronUp, X } from 'lucide-react';
-import { ExamAPI } from '../../api/exam/examAPI.js';
+import React, {useEffect, useState} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
+import {ChevronUp, X} from 'lucide-react';
+import {ExamAPI} from '../../api/exam/examAPI.js';
 
 export const ExamEdit = () => {
-  const { courseId, examId } = useParams();
+  const {courseId, examId} = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -160,7 +160,7 @@ export const ExamEdit = () => {
       <div className="max-w-4xl mx-auto px-4 py-8">
         <button
             type="button"
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}
             className="fixed bottom-6 right-6 p-3 bg-green-500 text-white rounded-full shadow-lg hover:bg-green-600 transition-colors"
         >
           <ChevronUp size={24}/>
