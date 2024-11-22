@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { CheckCircle2, Download, XCircle, FileText } from 'lucide-react';
+import { CheckCircle2, Download, FileText, XCircle } from 'lucide-react';
 import { SubmissionApi } from "../../api/assignment/SubmissionApi.js";
 import { formatDate } from "../../utils/DateUtils.js";
 import { SubmissionFileApi } from "../../api/assignment/SubmissionFileApi.js";
@@ -13,8 +13,11 @@ const SubmissionList = () => {
   const [feedbacks, setFeedbacks] = useState({});
   const [expandedId, setExpandedId] = useState(null);
 
-  const handleRowClick = (submissionId) => {
-    setExpandedId(expandedId === submissionId ? null : submissionId);
+  // 모든 학생 정보와 제출 정보를 결합한 데이터
+  const [combinedData, setCombinedData] = useState([]);
+
+  const handleRowClick = (studentId) => {
+    setExpandedId(expandedId === studentId ? null : studentId);
   };
 
   const handleFileDownload = async (submissionId, fileId, fileName) => {
@@ -26,7 +29,6 @@ const SubmissionList = () => {
           fileId
       );
 
-      // 다운로드 URL을 받아서 직접 다운로드 처리
       const response = await fetch(downloadUrl);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
@@ -43,30 +45,78 @@ const SubmissionList = () => {
     }
   };
 
-  const fetchSubmissions = async () => {
+  const fetchAllData = async () => {
     try {
-      const response = await SubmissionApi.getAllSubmissions(courseId, assignmentId);
-      setSubmissions(response);
+      const submissionsResponse = await SubmissionApi.getAllSubmissions(courseId, assignmentId);
+
+      const actualSubmissions = submissionsResponse.filter(
+          submission => submission.status !== '미제출'
+      );
+      setSubmissions(actualSubmissions);
+
+      const submittedStudents = submissionsResponse
+          .filter(submission => submission.status !== '미제출')
+          .map(submission => ({
+            id: submission.student?.id,
+            name: submission.student?.name,
+            email: submission.student?.email,
+            submission: submission,
+            status: submission.status || '제출완료',
+            grade: submission.grade,
+            files: submission.files || [],
+            description: submission.description || '',
+            createdAt: submission.createdAt,
+            submissionId: submission.id
+          }));
+
+      const unsubmittedStudents = submissionsResponse
+          .filter(submission => submission.status === '미제출')
+          .map(submission => ({
+            id: submission.student?.id,
+            name: submission.student?.name,
+            email: submission.student?.email,
+            submission: null,
+            status: '미제출',
+            grade: null,
+            files: [],
+            description: '',
+            createdAt: null,
+            submissionId: null
+          }));
+
+      const combined = [...submittedStudents, ...unsubmittedStudents]
+          .sort((a, b) => a.name.localeCompare(b.name));
+
+      console.log('최종 결합된 데이터:', combined);
+      setCombinedData(combined);
+
       // 피드백 초기 상태 설정
       const initialFeedbacks = {};
-      response.forEach(sub => {
-        initialFeedbacks[sub.id] = sub.feedback || '';
+      submittedStudents.forEach(student => {
+        if (student.submissionId) {
+          initialFeedbacks[student.submissionId] = student.submission?.feedback || '';
+        }
       });
       setFeedbacks(initialFeedbacks);
     } catch (error) {
-      console.error('Error fetching submissions:', error);
+      console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
     }
   };
 
   const handleGradeWithFeedback = async (submissionId, grade) => {
+    if (!submissionId) {
+      alert('미제출된 과제는 채점할 수 없습니다.');
+      return;
+    }
+
     try {
       await SubmissionApi.gradeSubmission(courseId, assignmentId, submissionId, {
         grade,
         feedback: feedbacks[submissionId]
       });
-      fetchSubmissions(); // 목록 새로고침
+      fetchAllData();
     } catch (error) {
       console.error('Error grading submission:', error);
       alert('채점 중 오류가 발생했습니다.');
@@ -74,14 +124,16 @@ const SubmissionList = () => {
   };
 
   const handleFeedbackChange = (submissionId, value) => {
-    setFeedbacks(prev => ({
-      ...prev,
-      [submissionId]: value
-    }));
+    if (submissionId) {
+      setFeedbacks(prev => ({
+        ...prev,
+        [submissionId]: value
+      }));
+    }
   };
 
   useEffect(() => {
-    fetchSubmissions();
+    fetchAllData();
   }, [courseId, assignmentId]);
 
   if (loading) {
@@ -97,7 +149,31 @@ const SubmissionList = () => {
         <div className="max-w-6xl mx-auto">
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-bold text-gray-900">제출된 과제 목록</h2>
+              <h2 className="text-lg font-bold text-gray-900">전체 학생 과제 현황</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                <div className="bg-gray-50 rounded-lg p-3">
+                  <h3 className="text-sm font-medium text-gray-500">전체 학생</h3>
+                  <p className="text-xl font-bold mt-1">{combinedData.length}명</p>
+                </div>
+                <div className="bg-gray-50 rounded-lg p-3">
+                  <h3 className="text-sm font-medium text-gray-500">과제 제출</h3>
+                  <p className="text-xl font-bold mt-1 text-green-600">
+                    {submissions.length}명
+                    <span className="text-sm text-gray-500 font-normal ml-2">
+                                    ({Math.round((submissions.length / combinedData.length) * 100)}%)
+                                </span>
+                  </p>
+                </div>
+                <div className="bg-gray-50 rounded-lg p-3">
+                  <h3 className="text-sm font-medium text-gray-500">미제출</h3>
+                  <p className="text-xl font-bold mt-1 text-gray-600">
+                    {combinedData.length - submissions.length}명
+                    <span className="text-sm text-gray-500 font-normal ml-2">
+                                    ({Math.round(((combinedData.length - submissions.length) / combinedData.length) * 100)}%)
+                                </span>
+                  </p>
+                </div>
+              </div>
             </div>
             <table className="w-full">
               <thead className="bg-gray-50">
@@ -111,81 +187,88 @@ const SubmissionList = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {submissions.map((submission) => (
-                    <React.Fragment key={submission.id}>
-                      <tr className="hover:bg-gray-50">
-                        {/* 첫 4개 칼럼은 클릭 가능하게 */}
+                {combinedData.map((student) => (
+                    <React.Fragment key={student.id}>
+                      <tr className={`hover:bg-gray-50 ${student.status === '미제출' ? 'bg-gray-50' : ''}`}>
                         <td
                             className="px-6 py-4 cursor-pointer"
-                            onClick={() => handleRowClick(submission.id)}
+                            onClick={() => student.status !== '미제출' && handleRowClick(student.id)}
                         >
                           <div className="text-sm font-medium text-gray-900">
-                            {submission.student?.name}
+                            {student.name}
                           </div>
                           <div className="text-sm text-gray-500">
-                            {submission.student?.email}
+                            {student.email}
                           </div>
                         </td>
                         <td
                             className="px-6 py-4 text-sm text-gray-500 cursor-pointer"
-                            onClick={() => handleRowClick(submission.id)}
+                            onClick={() => student.status !== '미제출' && handleRowClick(student.id)}
                         >
-                          {formatDate(submission.createdAt)}
+                          {student.createdAt ? formatDate(student.createdAt) : '-'}
                         </td>
                         <td
                             className="px-6 py-4 cursor-pointer"
-                            onClick={() => handleRowClick(submission.id)}
+                            onClick={() => student.status !== '미제출' && handleRowClick(student.id)}
                         >
-            <span className={`px-2 py-1 text-xs font-medium rounded-full...`}>
-              {submission.status}
-            </span>
+                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                          student.status === '미제출'
+                              ? 'bg-gray-100 text-gray-600'
+                              : 'bg-green-100 text-green-600'
+                      }`}>
+                        {student.status}
+                      </span>
                         </td>
-                        <td
-                            className="px-6 py-4 cursor-pointer"
-                            onClick={() => handleRowClick(submission.id)}
-                        >
-            <textarea
-                className="w-full px-3 py-2 text-sm border rounded-lg..."
-                onClick={e => e.stopPropagation()}  // textarea는 클릭해도 행이 확장되지 않게
-                value={feedbacks[submission.id]}
-                onChange={(e) => handleFeedbackChange(submission.id, e.target.value)}
-            />
+                        <td className="px-6 py-4">
+                      <textarea
+                          className={`w-full px-3 py-2 text-sm border rounded-lg ${
+                              student.status === '미제출' ? 'bg-gray-50' : ''
+                          }`}
+                          value={student.submissionId ? (feedbacks[student.submissionId] || '') : ''}
+                          onChange={(e) => handleFeedbackChange(student.submissionId, e.target.value)}
+                          placeholder={student.status === '미제출' ? '미제출된 과제입니다' : '피드백을 입력하세요'}
+                          disabled={student.status === '미제출'}
+                      />
                         </td>
-                        {/* 채점 버튼 칼럼 - 클릭해도 행이 확장되지 않음 */}
                         <td className="px-6 py-4">
                           <div className="flex justify-center gap-2">
                             <button
-                                onClick={(e) => handleGradeWithFeedback(submission.id, 'PASS')}
+                                onClick={() => handleGradeWithFeedback(student.submissionId, 'PASS')}
+                                disabled={student.status === '미제출'}
                                 className={`p-2 rounded-lg transition-colors flex items-center ${
-                                    submission.grade === '통과'
+                                    student.grade === '통과'
                                         ? 'bg-green-100 text-green-600 font-medium'
-                                        : 'hover:bg-green-50 text-gray-400 hover:text-green-600'
+                                        : student.status === '미제출'
+                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                            : 'hover:bg-green-50 text-gray-400 hover:text-green-600'
                                 }`}
                             >
-                              <CheckCircle2 size={20} className={submission.grade === '통과' ? 'fill-green-100' : ''}/>
+                              <CheckCircle2 size={20} className={student.grade === '통과' ? 'fill-green-100' : ''}/>
                               <span className="text-xs ml-1">통과</span>
                             </button>
                             <button
-                                onClick={(e) => handleGradeWithFeedback(submission.id, 'NONE_PASS')}
+                                onClick={() => handleGradeWithFeedback(student.submissionId, 'NONE_PASS')}
+                                disabled={student.status === '미제출'}
                                 className={`p-2 rounded-lg transition-colors flex items-center ${
-                                    submission.grade === '미통과'
+                                    student.grade === '미통과'
                                         ? 'bg-red-100 text-red-600 font-medium'
-                                        : 'hover:bg-red-50 text-gray-400 hover:text-red-600'
+                                        : student.status === '미제출'
+                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                            : 'hover:bg-red-50 text-gray-400 hover:text-red-600'
                                 }`}
                             >
-                              <XCircle size={20} className={submission.grade === '미통과' ? 'fill-red-100' : ''}/>
+                              <XCircle size={20} className={student.grade === '미통과' ? 'fill-red-100' : ''}/>
                               <span className="text-xs ml-1">미통과</span>
                             </button>
                           </div>
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex justify-center space-x-2">
-                            {/* 파일 다운로드 버튼들도 클릭해도 행이 확장되지 않음 */}
-                            {submission.files?.map((file) => (
+                            {student.files?.map((file) => (
                                 <button
                                     key={file.id}
-                                    onClick={() => handleFileDownload(submission.id, file.id, file.originalFileName)}
-                                    className="p-2 hover:bg-gray-100..."
+                                    onClick={() => handleFileDownload(student.submissionId, file.id, file.originalFileName)}
+                                    className="p-2 hover:bg-gray-100 rounded-full"
                                 >
                                   <Download size={18}/>
                                 </button>
@@ -193,23 +276,23 @@ const SubmissionList = () => {
                           </div>
                         </td>
                       </tr>
-                      {expandedId === submission.id && (
+                      {expandedId === student.id && student.status !== '미제출' && (
                           <tr>
                             <td colSpan={6} className="px-6 py-4 bg-gray-50">
                               <div className="space-y-4">
                                 <div className="bg-white rounded-lg p-4">
                                   <h3 className="font-medium text-gray-900 mb-2">제출 내용</h3>
                                   <QuillEditor
-                                      value={submission.description}
+                                      value={student.description}
                                       readOnly={true}
                                   />
                                 </div>
 
-                                {submission.files?.length > 0 && (
+                                {student.files?.length > 0 && (
                                     <div className="bg-white rounded-lg p-4">
                                       <h3 className="font-medium text-gray-900 mb-2">첨부 파일</h3>
                                       <div className="space-y-2">
-                                        {submission.files.map((file) => (
+                                        {student.files.map((file) => (
                                             <div
                                                 key={file.id}
                                                 className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
@@ -217,13 +300,13 @@ const SubmissionList = () => {
                                               <div className="flex items-center gap-3">
                                                 <FileText size={20} className="text-gray-500"/>
                                                 <span className="text-sm text-gray-600">
-                                {file.originalFileName}
-                              </span>
+                                        {file.originalFileName}
+                                      </span>
                                               </div>
                                               <button
                                                   onClick={(e) => {
                                                     e.stopPropagation();
-                                                    handleFileDownload(submission.id, file.id, file.originalFileName);
+                                                    handleFileDownload(student.submissionId, file.id, file.originalFileName);
                                                   }}
                                                   className="p-2 hover:bg-gray-200 rounded-full transition-colors"
                                               >
@@ -243,9 +326,9 @@ const SubmissionList = () => {
               </tbody>
             </table>
 
-            {submissions.length === 0 && (
+            {combinedData.length === 0 && (
                 <div className="text-center py-8 text-gray-500">
-                  제출된 과제가 없습니다.
+                  등록된 학생이 없습니다.
                 </div>
             )}
           </div>
