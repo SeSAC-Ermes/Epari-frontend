@@ -1,60 +1,32 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 
 /**
  * 공지사항 목록을 테이블 형태로 표시하는 컴포넌트
  * 번호, 제목, 작성자, 날짜, 조회수 정보를 컬럼으로 표시
- * 클릭 시 해당 공지사항의 상세 페이지로 이동
  */
-const NoticeTable = ({ notices, courseId }) => {
-  const navigate = useNavigate();
 
-  // 로딩 상태 처리
-  if (!notices || notices.length === 0 || notices[0].id === 'loading') {
-    return (
-        <div className="flex justify-center items-center h-40">
-          <p className="text-red-600 mb-4">공지사항을 불러오는 중입니다...</p>
-        </div>
-    );
-  }
-
-  // 최신 5개의 공지사항만 표시
-  const recentNotices = notices.slice(0, 5);
-
-  // 공지사항 클릭 시 상세 페이지로 이동
-  const handleNoticeClick = (noticeId) => {
-    if (courseId) {
-      // 강의 공지사항인 경우
-      navigate(`/courses/${courseId}/notices/${noticeId}`);
-    } else {
-      // 전체 공지사항인 경우
-      navigate(`/notices/${noticeId}`);
-    }
-  };
+const NoticeTable = ({ notices }) => {
+  const headers = ['No.', '제목', '작성자', '날짜', '조회수'];
 
   return (
-      <table className="w-full border-collapse">
+      <table className="w-full">
         <thead>
-        <tr className="border-y bg-gray-100">
-          <th className="py-4 text-center w-20">No.</th>
-          <th className="py-4 text-center w-96">제목</th>
-          <th className="py-4 text-center w-32">작성자</th>
-          <th className="py-4 text-center w-32">날짜</th>
-          <th className="py-4 text-center w-32">조회수</th>
+        <tr className="border-t border-b">
+          {headers.map((header, index) => (
+              <th key={index} className="py-3 text-left">
+                {header}
+              </th>
+          ))}
         </tr>
         </thead>
         <tbody>
-        {recentNotices.map((notice) => (
-            <tr
-                key={notice.id}
-                className="border-b hover:bg-gray-50 cursor-pointer"
-                onClick={() => handleNoticeClick(notice.id)}
-            >
-              <td className="py-4 text-center">{notice.displayNumber}</td>
-              <td className="py-4 text-center truncate">{notice.title}</td>
-              <td className="py-4 text-center">{notice.writer}</td>
-              <td className="py-4 text-center">{notice.date}</td>
-              <td className="py-4 text-center">{notice.views}</td>
+        {notices.map((item) => (
+            <tr key={item.id} className="border-b hover:bg-gray-50">
+              <td className="py-3">{item.id}</td>
+              <td className="py-3">{item.title}</td>
+              <td className="py-3">{item.writer}</td>
+              <td className="py-3">{item.date}</td>
+              <td className="py-3">{item.views}</td>
             </tr>
         ))}
         </tbody>
