@@ -1,36 +1,61 @@
 import React, { useEffect } from 'react';
-import { signInWithRedirect, signOut } from 'aws-amplify/auth';
+import { fetchAuthSession, signInWithRedirect, signOut } from 'aws-amplify/auth';
 import { Hub } from 'aws-amplify/utils';
 import { useNavigate } from 'react-router-dom';
 import axios from '../../../api/axios.js';
 
+/**
+ * Google 로그인 버튼 컴포넌트, 그룹 확인 후 적절한 페이지로 이동 처리.
+ */
 const GoogleLoginButton = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
     const unsubscribe = Hub.listen("auth", async ({ payload }) => {
-      switch (payload.event) {
-        case "signInWithRedirect":
-          try {
-            const email = payload.data.username;
-            const response = await axios.post('/api/auth/check-user', { email });
-            const groups = response.data.groups;
+      console.log('Auth Hub Event:', payload);
 
-            if (groups.includes('INSTRUCTOR') || groups.includes('STUDENT')) {
-              navigate('/courses');
-            } else {
-              navigate('/pending-approval');
-              await signOut(); // 로그아웃 처리 추가
-            }
-          } catch (error) {
-            console.error('사용자 그룹 확인 실패:', error);
+      if (payload.event === "signInWithRedirect") {
+        try {
+          const session = await fetchAuthSession();
+          console.log('Auth Session:', session);
+
+          const token = session.tokens.accessToken.toString();
+          localStorage.setItem('token', token);
+
+          // 토큰에서 그룹 정보 직접 확인
+          const groups = session.tokens.accessToken.payload['cognito:groups'] || [];
+          console.log('User Groups:', groups);
+
+          // INSTRUCTOR나 STUDENT 그룹이 있으면 courses로 이동
+          if (groups.includes('INSTRUCTOR') || groups.includes('STUDENT')) {
+            navigate('/courses');
+          }
+          // PENDING_ROLES 그룹이면 pending-approval로 이동
+          else if (groups.includes('PENDING_ROLES')) {
             navigate('/pending-approval');
           }
-          break;
+          // 그 외의 경우(ap-northeast-2_pD4FKh81Z_Google 그룹만 있는 경우)
+          else {
+            // 백엔드에 PENDING_ROLES 그룹 추가 요청
+            const email = session.tokens.accessToken.payload['email'];
+            console.log('Attempting to add user to PENDING_ROLES:', email);
 
-        case "signInWithRedirect_failure":
-          console.error('로그인 실패:', payload.data);
-          break;
+            const response = await axios.post('/api/auth/add-pending-role', { email });
+            console.log('Add pending role response:', response);
+
+            if (response.status === 200) {
+              // 성공적으로 그룹이 추가되면 페이지 이동
+              navigate('/pending-approval');
+            } else {
+              console.error('Failed to add PENDING_ROLES:', response);
+              throw new Error('Failed to add PENDING_ROLES');
+            }
+          }
+        } catch (error) {
+          console.error('Error during login process:', error.response?.data || error);
+          await signOut();
+          navigate('/signin');
+        }
       }
     });
 
@@ -39,10 +64,7 @@ const GoogleLoginButton = () => {
 
   const handleGoogleSignIn = async () => {
     try {
-      await signInWithRedirect({
-        provider: 'Google',
-        customState: 'googleSignIn'
-      });
+      await signInWithRedirect({ provider: 'Google' });
     } catch (error) {
       console.error('Google sign in error:', error);
     }
@@ -50,8 +72,8 @@ const GoogleLoginButton = () => {
 
   return (
       <button
-          className="w-60 flex items-center justify-center gap-2 px-4 py-2 bg-white text-gray-700 rounded-lg border border-gray-300 hover:bg-gray-50 hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           onClick={handleGoogleSignIn}
+          className="w-60 flex items-center justify-center gap-2 px-4 py-2 bg-white text-gray-700 rounded-lg border border-gray-300 hover:bg-gray-50 hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
       >
         <svg
             className="w-5 h-5"
