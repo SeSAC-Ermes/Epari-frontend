@@ -28,6 +28,7 @@ const ExamSubmission = () => {
         type: 'MULTIPLE_CHOICE',
         questionText: "자바의 기본 데이터 타입이 아닌 것은?",
         score: 5,
+        imageUrl: "https://picsum.photos/400/300",
         choices: [
           { number: 1, choiceText: "int" },
           { number: 2, choiceText: "boolean" },
