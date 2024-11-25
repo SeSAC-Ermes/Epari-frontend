@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Search } from 'lucide-react';
-import { ExamAPI } from '../../api/exam/examAPI.js';
-import { RoleBasedComponent } from '../../auth/RoleBasedComponent';
-import { ROLES } from '../../constants/auth';
+import { ExamAPI } from '../../../api/exam/examAPI.js';
+import { RoleBasedComponent } from '../../../auth/RoleBasedComponent.jsx';
+import { ROLES } from '../../../constants/auth.js';
 
 /**
  * 강의 내 시험들을 상태별(예정/진행중/완료)로 보여주고 검색, 정렬, 상세 조회가 가능한 시험 관리 대시보드입니다.
