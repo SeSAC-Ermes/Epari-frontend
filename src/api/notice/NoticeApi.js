@@ -105,6 +105,37 @@ export const NoticeApi = {
     }
   },
 
+
+  // 이미지 업로드용 메서드 추가
+  async uploadImage(formData) {
+    try {
+      console.log('API 요청 시작');
+      const response = await apiClient.post('/api/notices/upload-image', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }
+      });
+      console.log('API 응답:', response);
+      return response.data;
+    } catch (error) {
+      console.error('Image upload error:', error);
+      throw error;
+    }
+  },
+  // async uploadImage(formData) {
+  //   try {
+  //     const response = await axios.post('/api/notices/upload-image', formData, {
+  //       headers: {
+  //         'Content-Type': 'multipart/form-data',
+  //       }
+  //     });
+  //     return response.data;
+  //   } catch (error) {
+  //     console.error('Image upload error:', error);
+  //     throw error;
+  //   }
+  // },
+
   // 파일 다운로드
   downloadFile: async (noticeId, fileId) => {
     try {
