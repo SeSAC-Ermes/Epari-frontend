@@ -122,19 +122,7 @@ export const NoticeApi = {
       throw error;
     }
   },
-  // async uploadImage(formData) {
-  //   try {
-  //     const response = await axios.post('/api/notices/upload-image', formData, {
-  //       headers: {
-  //         'Content-Type': 'multipart/form-data',
-  //       }
-  //     });
-  //     return response.data;
-  //   } catch (error) {
-  //     console.error('Image upload error:', error);
-  //     throw error;
-  //   }
-  // },
+  
 
   // 파일 다운로드
   downloadFile: async (noticeId, fileId) => {

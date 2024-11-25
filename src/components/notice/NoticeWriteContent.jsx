@@ -103,39 +103,6 @@ const NoticeWriteContent = () => {
     }
   }, []);
 
-  // // Quill 에디터 이미지 핸들러 설정
-  // useEffect(() => {
-  //   if (quillRef.current) {
-  //     const editor = quillRef.current.getEditor();
-  //
-  //     editor.getModule('toolbar').addHandler('image', () => {
-  //       const input = document.createElement('input');
-  //       input.setAttribute('type', 'file');
-  //       input.setAttribute('accept', 'image/*');
-  //       input.click();
-  //
-  //       input.onchange = async () => {
-  //         const file = input.files[0];
-  //
-  //         // 이미지 파일 검증
-  //         if (!file.type.startsWith('image/')) {
-  //           alert('이미지 파일만 업로드 가능합니다.');
-  //           return;
-  //         }
-  //
-  //         // 파일 크기 제한 (5MB)
-  //         if (file.size > 5 * 1024 * 1024) {
-  //           alert('이미지 크기는 5MB를 초과할 수 없습니다.');
-  //           return;
-  //         }
-  //
-  //         if (file) {
-  //           await handleImageUpload(file);
-  //         }
-  //       };
-  //     });
-  //   }
-  // }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
