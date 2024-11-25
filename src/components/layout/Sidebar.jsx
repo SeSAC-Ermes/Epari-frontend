@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
+import Logo from '../../assets/epariLogo.jpg';
 import {
   Bell,
   BookOpen,
@@ -49,6 +50,7 @@ const Sidebar = () => {
 
   // 공통 메뉴 - 핵심 학습
   const mainMenuItems = courseId ? [
+
     {
       icon: <Bell size={20}/>,
       text: '강의 공지사항',
@@ -102,7 +104,7 @@ const Sidebar = () => {
       text: '수강생 관리',
       path: `/courses/${courseId}/students`
     }
-  ]: [];
+  ] : [];
 
   // 학생 전용 메뉴
   const studentMenuItems = courseId ? [
