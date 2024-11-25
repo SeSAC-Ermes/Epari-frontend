@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExamContainer } from '../../components/exam/ExamContainer';
+import { ExamContainer } from '../../components/exam/management/ExamContainer.jsx';
 
 const ExamPage = () => {
   return (
