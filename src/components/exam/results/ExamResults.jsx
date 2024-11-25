@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ChevronDown, ChevronUp, FileText } from 'lucide-react';
 import { useParams } from 'react-router-dom';
-import apiClient from "../../api/axios.js";
+import apiClient from "../../../api/axios.js";
 
 const ExamResults = () => {
   const [expandedStudents, setExpandedStudents] = useState(new Set());
