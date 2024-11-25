@@ -1,5 +1,5 @@
 import React from 'react';
-import ExamEdit from '../../components/exam/ExamEdit';
+import ExamEdit from '../../components/exam/management/ExamEdit.jsx';
 import { withPageAuth } from '../../auth/WithAuth.jsx';
 
 const ExamEditPage = () => {
