@@ -66,29 +66,53 @@ function App() {
               <Route index element={<CourseDetailPage/>}/>
 
               {/* 전체 공지사항 */}
-              <Route path="/notices">
+              <Route path="notices">
                 <Route index element={<NoticeListPage type="GLOBAL"/>}/>
                 <Route path="create" element={
                   <ProtectedRoute requiredRoles={['ADMIN']}>
                     <NoticeWritePage type="GLOBAL"/>
                   </ProtectedRoute>
                 }/>
-                <Route path=":noticeId" element={<NoticeDetailPage/>}/>
-                <Route path=":noticeId/edit" element={<NoticeEditContent/>}/>
+                <Route path=":noticeId" element={<NoticeDetailPage type="GLOBAL"/>}/>
+                <Route path=":noticeId/edit" element={<NoticeEditContent type="GLOBAL"/>}/>
               </Route>
+            </Route>
 
-              {/* 코스 관련 라우트 */}
-              <Route path="/courses/:courseId" element={<MainLayout/>}>
-                <Route index element={<CourseDetailPage/>}/>
+            {/* Main Layout - 코스 관련 */}
+            <Route path="courses/:courseId" element={<MainLayout/>}>
+              <Route index element={<CourseDetailPage/>}/>
 
-                {/* 강의 공지사항 */}
-                <Route path="notices">
-                  <Route index element={<NoticeListPage type="COURSE"/>}/>
-                  <Route path="create" element={<NoticeWritePage type="COURSE"/>}/>
-                  <Route path=":noticeId" element={<NoticeDetailPage/>}/>
-                  <Route path=":noticeId/edit" element={<NoticeEditContent/>}/>
-                </Route>
+              {/* 강의 공지사항 */}
+              <Route path="notices">
+                <Route index element={<NoticeListPage type="COURSE"/>}/>
+                <Route path="create" element={<NoticeWritePage type="COURSE"/>}/>
+                <Route path=":noticeId" element={<NoticeDetailPage type="COURSE"/>}/>
+                <Route path=":noticeId/edit" element={<NoticeEditContent type="COURSE"/>}/>
               </Route>
+            {/*  /!* 전체 공지사항 *!/*/}
+            {/*  <Route path="notices/global">*/}
+            {/*    <Route index element={<NoticeListPage type="GLOBAL"/>}/>*/}
+            {/*    <Route path="create" element={*/}
+            {/*      <ProtectedRoute requiredRoles={['ADMIN']}>*/}
+            {/*        <NoticeWritePage type="GLOBAL"/>*/}
+            {/*      </ProtectedRoute>*/}
+            {/*    }/>*/}
+            {/*    <Route path=":noticeId" element={<NoticeDetailPage type="GLOBAL"/>}/>*/}
+            {/*    <Route path=":noticeId/edit" element={<NoticeEditContent type="GLOBAL"/>}/>*/}
+            {/*  </Route>*/}
+            {/*</Route>*/}
+
+            {/*/!* Main Layout - 코스 관련 *!/*/}
+            {/*<Route path="courses/:courseId" element={<MainLayout/>}>*/}
+            {/*  <Route index element={<CourseDetailPage/>}/>*/}
+
+            {/*  /!* 강의 공지사항 *!/*/}
+            {/*  <Route path="notices/course">*/}
+            {/*    <Route index element={<NoticeListPage type="COURSE"/>}/>*/}
+            {/*    <Route path="create" element={<NoticeWritePage type="COURSE"/>}/>*/}
+            {/*    <Route path=":noticeId" element={<NoticeDetailPage type="COURSE"/>}/>*/}
+            {/*    <Route path=":noticeId/edit" element={<NoticeEditContent type="COURSE"/>}/>*/}
+            {/*  </Route>*/}
 
               {/* Q&A */}
               <Route path="qna">
