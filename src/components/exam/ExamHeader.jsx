@@ -1,6 +1,6 @@
 // components/exam/ExamHeader.jsx
 import React from 'react';
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const ExamHeader = () => {
   const navigate = useNavigate();

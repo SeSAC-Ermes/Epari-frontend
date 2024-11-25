@@ -229,14 +229,13 @@ const ResetPasswordForm = () => {
   return (
       <div className="min-h-screen flex flex-col items-center justify-center px-4">
         <div className="flex items-center gap-3 mb-12">
-          <img
+          <div className="flex items-baseline">
+            <span className="text-3xl font-semibold">SeSAC</span>
+            <img
               src={Logo}
               alt="Epari Logo"
               className="w-15 h-14 object-contain"
           />
-          <div className="flex items-baseline">
-            <span className="text-3xl font-semibold">SeSAC</span>
-            <span className="text-base text-gray-500 font-normal">epari</span>
           </div>
         </div>
 

@@ -1,10 +1,9 @@
-import React, {useEffect, useState} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
-import {BookOpen, Calendar, ChevronUp, Clock, GraduationCap, User, Users} from 'lucide-react';
-import {ExamAPI} from '../../api/exam/examAPI.js';
-import {PAGE_PERMISSIONS} from '../../constants/auth';
-import {RoleBasedComponent} from '../../auth/RoleBasedComponent';
-import {ROLES} from '../../constants/auth';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { BookOpen, Calendar, ChevronUp, Clock, GraduationCap, User, Users } from 'lucide-react';
+import { ExamAPI } from '../../api/exam/examAPI.js';
+import { ROLES } from '../../constants/auth';
+import { RoleBasedComponent } from '../../auth/RoleBasedComponent';
 
 const ExamDetail = () => {
   const {courseId, examId} = useParams();

@@ -9,18 +9,15 @@ const SignIn = () => {
       <div className="min-h-screen flex flex-col items-center justify-center bg-white p-6">
         {/* Logo Section */}
         <div className="flex items-center gap-3 mb-12">
-          <img
-              src={Logo}
-              alt="Epari Logo"
-              className="w-15 h-14 object-contain"
-          />
           <div className="flex items-baseline">
             <span className="text-3xl font-semibold">
               SeSAC
             </span>
-            <span className="text-base text-gray-500 font-normal">
-              epari
-            </span>
+            <img
+              src={Logo}
+              alt="Epari Logo"
+              className="w-15 h-14 object-contain"
+          />
           </div>
         </div>
 
