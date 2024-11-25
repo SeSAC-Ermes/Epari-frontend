@@ -1,5 +1,4 @@
 import React from 'react';
-import TopBar from '../../components/layout/TopBar';
 import NoticeDetailContent from '../../components/notice/NoticeDetailContent';
 
 const NoticeDetailPage = () => {

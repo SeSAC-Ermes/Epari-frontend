@@ -1,5 +1,4 @@
 import React from 'react';
-import TopBar from '../../components/layout/TopBar';
 import NoticeWriteContent from "../../components/notice/NoticeWriteContent.jsx";
 import { withPageAuth } from "../../auth/WithAuth.jsx";
 
