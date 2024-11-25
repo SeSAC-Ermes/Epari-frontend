@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ChevronDown, ChevronUp, Download, FileText, Pencil, Trash2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, Download, FileText, Pencil, Search, Trash2 } from 'lucide-react';
 import QuillEditor from '../../components/common/QuillEditor';
 import FileUpload from "../../components/common/FileUpload";
 import courseAPI from "../../api/course/courseAPI.js";
@@ -12,6 +12,7 @@ const AssignmentDetail = () => {
   const { courseId } = useParams();
   const navigate = useNavigate();
   const [submission, setSubmission] = useState({});
+  const [searchKeyword, setSearchKeyword] = useState('');
 
   const formatDateForInput = (date) => {
     return new Date(date).toISOString().split('T')[0];
@@ -113,19 +114,39 @@ const AssignmentDetail = () => {
 
   const getSubmissionStatusText = (status) => status || '미제출';
 
+  const filteredAssignments = searchKeyword
+      ? state.assignments.filter(assignment =>
+          assignment.title.toLowerCase().includes(searchKeyword.toLowerCase())
+      )
+      : state.assignments;
+
   return (
-      <div className="flex-1 overflow-y-auto p-4 lg:p-6">
-        <div className="max-w-5xl mx-auto">
-          <div className="flex justify-between items-center mb-4">
-            <h1 className="text-lg font-bold text-gray-900">과제</h1>
-            {state.isInstructor && (
-                <button
-                    onClick={handleCreateClick}
-                    className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg text-sm font-medium hover:bg-green-600 transition-colors"
-                >
-                  출제하기
-                </button>
-            )}
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        <div className="bg-white rounded-lg p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-2xl font-bold">과제</h1>
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                  <Search className="h-5 w-5 text-gray-400"/>
+                </div>
+                <input
+                    type="text"
+                    placeholder="과제 제목 검색"
+                    value={searchKeyword}
+                    onChange={(e) => setSearchKeyword(e.target.value)}
+                    className="w-64 pl-10 pr-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+              </div>
+              {state.isInstructor && (
+                  <button
+                      onClick={handleCreateClick}
+                      className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg text-sm font-medium hover:bg-green-600 transition-colors"
+                  >
+                    출제하기
+                  </button>
+              )}
+            </div>
           </div>
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
             <table className="w-full">
@@ -142,7 +163,7 @@ const AssignmentDetail = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {state.assignments.map((assignment, index) => (
+                      {filteredAssignments.map((assignment, index) => (
                           <React.Fragment key={assignment.id}>
                             <tr className="hover:bg-gray-50 border-b border-gray-200 last:border-0">
                               <td className="px-6 py-4 text-sm text-gray-600">{index + 1}</td>
@@ -322,7 +343,7 @@ const AssignmentDetail = () => {
                                           />
                                           {assignment.files?.length > 0 && (
                                               <div className="mt-4 pt-4 border-t">
-                                              <h3 className="font-medium mb-3 text-gray-700">첨부파일</h3>
+                                                <h3 className="font-medium mb-3 text-gray-700">첨부파일</h3>
                                                 <div className="space-y-2">
                                                   {assignment.files.map((file) => (
                                                       <div key={file.id}
@@ -366,7 +387,7 @@ const AssignmentDetail = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {state.assignments.map((assignment, index) => (
+                      {filteredAssignments.map((assignment, index) => (
                           <tr
                               key={assignment.id}
                               className="hover:bg-gray-50 border-b border-gray-200 last:border-0 cursor-pointer"
@@ -410,14 +431,14 @@ const AssignmentDetail = () => {
               )}
             </table>
 
-            {state.assignments.length === 0 && (
+            {filteredAssignments.length === 0 && (
                 <div className="text-center py-8 text-gray-500">
-                  등록된 과제가 없습니다.
+                  {searchKeyword ? '검색 결과가 없습니다.' : '등록된 과제가 없습니다.'}
                 </div>
             )}
           </div>
         </div>
-      </div>
+      </main>
   );
 };
 

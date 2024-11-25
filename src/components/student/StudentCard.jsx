@@ -95,7 +95,8 @@ const StudentCard = ({ student, examResult, isExpanded, onToggle, courseId }) =>
                     error={null}
                 />
                 <AssignmentSection
-                    assignments={student.submissions.assignments}
+                    courseId={courseId}
+                    student={student}
                     className="col-span-2"
                 />
               </div>
