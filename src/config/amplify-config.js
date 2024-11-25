@@ -8,10 +8,10 @@ Amplify.configure({
       region: 'ap-northeast-2',
       loginWith: {
         oauth: {
-          domain: '202533495554epari-pool.auth.ap-northeast-2.amazoncognito.com',
+          domain: import.meta.env.VITE_COGNITO_DOMAIN,
           scopes: ['email', 'profile', 'openid'],
-          redirectSignIn: ['http://localhost:5173/signin'],
-          redirectSignOut: ['http://localhost:5173/signin'],
+          redirectSignIn: [import.meta.env.VITE_REDIRECT_SIGNIN],
+          redirectSignOut: [import.meta.env.VITE_REDIRECT_SIGNOUT],
           responseType: 'code',
           providers: ['Google']
         },

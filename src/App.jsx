@@ -4,10 +4,9 @@ import SignInPage from './pages/SignInPage.jsx';
 import SignUpPage from './pages/SignUpPage.jsx';
 import CourseListPage from "./pages/course/CourseListPage.jsx";
 import CourseDetailPage from "./pages/course/CourseDetailPage.jsx";
-import CourseNoticeListPage from "./pages/CourseNoticeListPage.jsx";
-import QnAListPage from "./pages/QnAListPage.jsx";
-import QnADetailPage from "./pages/QnADetailPage.jsx";
-import QnAWritePage from "./pages/QnAWritePage.jsx";
+import QnAListPage from "./pages/qna/QnAListPage.jsx";
+import QnADetailPage from "./pages/qna/QnADetailPage.jsx";
+import QnAWritePage from "./pages/qna/QnAWritePage.jsx";
 import CurriculumPage from "./pages/course/CurriculumPage.jsx";
 import AssignmentPage from "./pages/assignment/AssignmentPage.jsx";
 import AssignmentCreatePage from "./pages/assignment/AssignmentCreatePage.jsx";
@@ -35,6 +34,11 @@ import ExamQuestionPage from "./pages/exam/ExamQuestionPage.jsx";
 import ExamEditPage from "./pages/exam/ExamEditPage.jsx";
 import SubmissionListPage from "./pages/assignment/SubmissionListPage.jsx";
 import ExamResults from './components/exam/results/ExamResults.jsx';
+import { ProtectedRoute } from "./auth/ProtectedRoute.jsx";
+import NoticeWritePage from "./pages/notice/NoticeWritePage.jsx";
+import NoticeListPage from "./pages/notice/NoticeListPage.jsx";
+import NoticeDetailPage from "./pages/notice/NoticeDetailPage.jsx";
+import NoticeEditContent from "./components/notice/NoticeEditContent.jsx";
 
 function App() {
   return (
@@ -55,14 +59,31 @@ function App() {
               <Route path="/courses" element={<CourseListPage/>}/>
               <Route path="/mypage" element={<MyPage/>}/>
               <Route path="/mypage/change-password" element={<ChangePasswordForm/>}/>
+
+              {/* 전체 공지사항 */}
+              <Route path="/notices">
+                <Route index element={<NoticeListPage type="GLOBAL"/>}/>
+                <Route path="create" element={
+                  <ProtectedRoute requiredRoles={['ADMIN']}>
+                    <NoticeWritePage type="GLOBAL"/>
+                  </ProtectedRoute>
+                }/>
+                <Route path=":noticeId" element={<NoticeDetailPage type="GLOBAL"/>}/>
+                <Route path=":noticeId/edit" element={<NoticeEditContent type="GLOBAL"/>}/>
+              </Route>
             </Route>
 
             {/* Main Layout - 코스 관련 */}
             <Route path="/courses/:courseId" element={<MainLayout/>}>
               <Route index element={<CourseDetailPage/>}/>
 
-              {/* 공지사항 */}
-              <Route path="notices" element={<CourseNoticeListPage/>}/>
+              {/* 강의 공지사항 */}
+              <Route path="notices">
+                <Route index element={<NoticeListPage type="COURSE"/>}/>
+                <Route path="create" element={<NoticeWritePage type="COURSE"/>}/>
+                <Route path=":noticeId" element={<NoticeDetailPage type="COURSE"/>}/>
+                <Route path=":noticeId/edit" element={<NoticeEditContent type="COURSE"/>}/>
+              </Route>
 
               {/* Q&A */}
               <Route path="qna">
@@ -114,5 +135,6 @@ function App() {
       </Router>
   );
 }
+
 
 export default App;
