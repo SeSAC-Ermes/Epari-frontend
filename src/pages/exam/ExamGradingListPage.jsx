@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAuth } from '../../auth/AuthContext';
 import { PAGE_PERMISSIONS, ROLES } from '../../constants/auth'; // PAGE_PERMISSIONS import 추가
-import { ExamGradingList } from '../../components/exam/ExamGradingList';
+import { ExamGradingList } from '../../components/exam/grading/ExamGradingList.jsx';
 import { Navigate, useParams } from 'react-router-dom';
 import { withPageAuth } from '../../auth/WithAuth.jsx';
 
