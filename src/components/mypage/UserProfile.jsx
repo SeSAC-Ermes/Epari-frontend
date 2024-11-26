@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchUserAttributes, getCurrentUser, fetchAuthSession } from 'aws-amplify/auth';  // 이 줄 추가
-import { useAuth } from '../../auth/AuthContext';  // 이 줄 추가
+import { fetchAuthSession, getCurrentUser, fetchUserAttributes } from 'aws-amplify/auth';
+import { useAuth } from '../../auth/AuthContext';
 import axios from '../../api/axios.js';
 
 const UserProfile = () => {
@@ -17,7 +17,6 @@ const UserProfile = () => {
 
   const fetchUserInfo = async () => {
     try {
-      const currentUser = await getCurrentUser();
       const session = await fetchAuthSession();
       const idToken = session.tokens.idToken.payload;
 
@@ -25,10 +24,12 @@ const UserProfile = () => {
         setUserInfo({
           name: idToken.name || '',
           email: idToken.email || '',
-          profileImage: null
+          profileImage: idToken.picture || null  // Google 프로필 이미지
         });
       } else {
+        const currentUser = await getCurrentUser();
         const userAttributes = await fetchUserAttributes();
+
         setUserInfo({
           name: userAttributes.name || currentUser.username,
           email: userAttributes.email,
@@ -41,10 +42,6 @@ const UserProfile = () => {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchUserInfo();
-  }, [isGoogleUser]);
 
   const handleImageUpload = async (event) => {
     const file = event.target.files[0];
@@ -77,7 +74,7 @@ const UserProfile = () => {
         profileImage: response.data
       }));
 
-      await fetchUserInfo();
+      await fetchUserInfo();  // 프로필 정보 새로고침
 
     } catch (error) {
       console.error('Profile image upload failed:', error);
@@ -98,12 +95,40 @@ const UserProfile = () => {
         profileImage: null
       }));
 
-      await fetchUserInfo();
+      await fetchUserInfo();  // 프로필 정보 새로고침
 
     } catch (error) {
       console.error('Profile image deletion failed:', error);
       alert('프로필 이미지 삭제에 실패했습니다.');
     }
+  };
+
+  useEffect(() => {
+    fetchUserInfo();
+  }, [isGoogleUser]);
+
+  // 프로필 이미지 컴포넌트
+  const ProfileImage = ({ userInfo }) => {
+    const [imageError, setImageError] = useState(false);
+
+    if (!userInfo.profileImage || imageError) {
+      return (
+          <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+          <span className="text-4xl font-semibold">
+            {userInfo.name ? userInfo.name[0].toUpperCase() : '?'}
+          </span>
+          </div>
+      );
+    }
+
+    return (
+        <img
+            src={userInfo.profileImage}
+            alt={`${userInfo.name}'s profile`}
+            className="w-full h-full object-cover"
+            onError={() => setImageError(true)}
+        />
+    );
   };
 
   if (loading) {
@@ -116,30 +141,16 @@ const UserProfile = () => {
 
   return (
       <div className="w-full bg-white rounded-lg px-12">
-        {/* Page Title */}
         <div className="max-w-7xl mx-auto px-8 pt-8 pb-6">
         </div>
 
-        {/* Profile Section */}
         <div className="max-w-7xl mx-auto px-8 pb-12 border-b">
           <div className="flex items-start gap-12">
-            {/* Profile Image Section */}
             <div className="space-y-6">
               <div className="w-32 h-32 rounded-full bg-gray-100 overflow-hidden ring-2 ring-offset-2 ring-gray-200">
-                {userInfo.profileImage ? (
-                    <img
-                        src={userInfo.profileImage}
-                        alt="Profile"
-                        className="w-full h-full object-cover"
-                    />
-                ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
-                      <span className="text-4xl font-semibold">{userInfo.name[0]}</span>
-                    </div>
-                )}
+                <ProfileImage userInfo={userInfo}/>
               </div>
 
-              {/* Image Buttons */}
               {!isGoogleUser && (
                   <div className="flex gap-4">
                     <label>
@@ -166,14 +177,12 @@ const UserProfile = () => {
               )}
             </div>
 
-            {/* User Info Section */}
             <div className="flex-1 space-y-6 pt-2">
               <div>
                 <h2 className="text-xl font-semibold text-gray-900">{userInfo.name}</h2>
                 <p className="text-lg text-gray-500 mt-2">{userInfo.email}</p>
               </div>
 
-              {/* Security Section - Google 사용자가 아닌 경우에만 표시 */}
               {!isGoogleUser && (
                   <div className="pt-2">
                     <button
