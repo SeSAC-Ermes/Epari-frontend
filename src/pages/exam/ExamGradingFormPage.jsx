@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExamGradingForm } from '../../components/exam/ExamGradingForm';
+import { ExamGradingForm } from '../../components/exam/grading/ExamGradingForm.jsx';
 
 const ExamGradingFormPage = () => {
   return (

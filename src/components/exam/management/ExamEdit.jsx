@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ChevronUp, X } from 'lucide-react';
-import { ExamAPI } from '../../api/exam/examAPI.js';
+import { ExamAPI } from '../../../api/exam/examAPI.js';
 
 export const ExamEdit = () => {
   const {courseId, examId} = useParams();

@@ -1,5 +1,5 @@
 import React from 'react';
-import ExamDetail from '../../components/exam/ExamDetail';
+import ExamDetail from '../../components/exam/details/ExamDetail.jsx';
 
 const ExamDetailPage = () => {
   return (

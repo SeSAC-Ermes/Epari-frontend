@@ -1,5 +1,5 @@
 import React from 'react';
-import ExamBasicSettings from '../../components/exam/ExamBasicSettings';
+import ExamBasicSettings from '../../components/exam/creation/ExamBasicSettings.jsx';
 import { withPageAuth } from '../../auth/WithAuth.jsx';
 
 const ExamBasicSettingsPage = () => {

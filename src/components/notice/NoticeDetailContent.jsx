@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { NoticeApi } from '../../api/notice/NoticeApi';
 import { Download, FileText, PenSquare, Trash2 } from 'lucide-react';
 import { RoleBasedComponent } from "../../auth/RoleBasedComponent.jsx";
@@ -80,21 +80,30 @@ const NoticeDetailContent = () => {
     }
   };
 
+  // NoticeDetailContent.jsx의 handleFileDownload 함수 수정
   const handleFileDownload = async (fileId, fileName) => {
     try {
       setDownloadingFiles(prev => new Set([...prev, fileId]));
 
-      // 이미지 파일인 경우 새 탭에서 열기
-      if (isImageFile(fileName)) {
-        window.open(`/api/notices/${noticeId}/files/${fileId}/download`);
-        return;
-      }
+      // 다운로드 URL로 직접 요청
+      const response = await fetch(`/api/notices/${noticeId}/files/${fileId}/download`);
+      if (!response.ok) throw new Error('Download failed');
 
-      // 일반 파일 다운로드
-      await downloadFileFromUrl(
-          `/api/notices/${noticeId}/files/${fileId}/download`,
-          fileName
-      );
+      // 응답을 Blob으로 변환
+      const blob = await response.blob();
+
+      // 다운로드 링크 생성 및 클릭
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+
+      // 정리
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
     } catch (error) {
       console.error('파일 다운로드 중 오류 발생:', error);
       alert('파일 다운로드에 실패했습니다.');
@@ -106,6 +115,33 @@ const NoticeDetailContent = () => {
       });
     }
   };
+
+  // const handleFileDownload = async (fileId, fileName) => {
+  //   try {
+  //     setDownloadingFiles(prev => new Set([...prev, fileId]));
+  //
+  //     // 이미지 파일인 경우 새 탭에서 열기
+  //     if (isImageFile(fileName)) {
+  //       window.open(`/api/notices/${noticeId}/files/${fileId}/download`);
+  //       return;
+  //     }
+  //
+  //     // 일반 파일 다운로드
+  //     await downloadFileFromUrl(
+  //         `/api/notices/${noticeId}/files/${fileId}/download`,
+  //         fileName
+  //     );
+  //   } catch (error) {
+  //     console.error('파일 다운로드 중 오류 발생:', error);
+  //     alert('파일 다운로드에 실패했습니다.');
+  //   } finally {
+  //     setDownloadingFiles(prev => {
+  //       const next = new Set(prev);
+  //       next.delete(fileId);
+  //       return next;
+  //     });
+  //   }
+  // };
 
   if (loading) {
     return (
@@ -216,7 +252,8 @@ const NoticeDetailContent = () => {
                               disabled={downloadingFiles.has(file.id)}
                           >
                             {downloadingFiles.has(file.id) ? (
-                                <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-500 border-t-transparent"/>
+                                <div
+                                    className="animate-spin rounded-full h-4 w-4 border-2 border-blue-500 border-t-transparent"/>
                             ) : (
                                 <Download size={16}/>
                             )}

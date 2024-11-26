@@ -33,7 +33,7 @@ import ExamDetailPage from "./pages/exam/ExamDetailPage.jsx";
 import ExamQuestionPage from "./pages/exam/ExamQuestionPage.jsx";
 import ExamEditPage from "./pages/exam/ExamEditPage.jsx";
 import SubmissionListPage from "./pages/assignment/SubmissionListPage.jsx";
-import ExamResults from './components/exam/ExamResults.jsx';
+import ExamResults from './components/exam/results/ExamResults.jsx';
 import { ProtectedRoute } from "./auth/ProtectedRoute.jsx";
 import NoticeWritePage from "./pages/notice/NoticeWritePage.jsx";
 import NoticeListPage from "./pages/notice/NoticeListPage.jsx";

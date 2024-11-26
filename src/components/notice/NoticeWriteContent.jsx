@@ -150,6 +150,7 @@ const NoticeWriteContent = () => {
     }
   };
 
+
   const handleFilesChange = (newFiles) => {
     setFiles(newFiles);
   };

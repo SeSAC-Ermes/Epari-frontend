@@ -1,5 +1,5 @@
 import React from 'react';
-import StudentExamResultContent from '../../components/exam/StudentExamResultContent.jsx';
+import StudentExamResultContent from '../../components/exam/results/StudentExamResultContent.jsx';
 
 const StudentExamResultPage = () => {
   return (
