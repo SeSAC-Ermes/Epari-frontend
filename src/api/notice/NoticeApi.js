@@ -122,7 +122,7 @@ export const NoticeApi = {
       throw error;
     }
   },
-  
+
 
   // 파일 다운로드
   downloadFile: async (noticeId, fileId) => {
