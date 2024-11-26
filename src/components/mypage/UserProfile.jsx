@@ -1,10 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { fetchUserAttributes, getCurrentUser, fetchAuthSession } from 'aws-amplify/auth';  // 이 줄 추가
+import { useAuth } from '../../auth/AuthContext';  // 이 줄 추가
 import axios from '../../api/axios.js';
 
-const UserProfile = ({ userInfo, setUserInfo, onProfileUpdate }) => {
+const UserProfile = () => {
   const [uploading, setUploading] = useState(false);
   const navigate = useNavigate();
+  const { isGoogleUser } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [userInfo, setUserInfo] = useState({
+    name: "",
+    email: "",
+    profileImage: null
+  });
+
+  const fetchUserInfo = async () => {
+    try {
+      const currentUser = await getCurrentUser();
+      const session = await fetchAuthSession();
+      const idToken = session.tokens.idToken.payload;
+
+      if (isGoogleUser) {
+        setUserInfo({
+          name: idToken.name || '',
+          email: idToken.email || '',
+          profileImage: null
+        });
+      } else {
+        const userAttributes = await fetchUserAttributes();
+        setUserInfo({
+          name: userAttributes.name || currentUser.username,
+          email: userAttributes.email,
+          profileImage: userAttributes['custom:profile_image']
+        });
+      }
+      setLoading(false);
+    } catch (err) {
+      console.error('Error fetching user info:', err);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserInfo();
+  }, [isGoogleUser]);
 
   const handleImageUpload = async (event) => {
     const file = event.target.files[0];
@@ -37,7 +77,7 @@ const UserProfile = ({ userInfo, setUserInfo, onProfileUpdate }) => {
         profileImage: response.data
       }));
 
-      await onProfileUpdate();
+      await fetchUserInfo();
 
     } catch (error) {
       console.error('Profile image upload failed:', error);
@@ -58,13 +98,21 @@ const UserProfile = ({ userInfo, setUserInfo, onProfileUpdate }) => {
         profileImage: null
       }));
 
-      await onProfileUpdate();
+      await fetchUserInfo();
 
     } catch (error) {
       console.error('Profile image deletion failed:', error);
       alert('프로필 이미지 삭제에 실패했습니다.');
     }
   };
+
+  if (loading) {
+    return (
+        <div className="flex justify-center items-center min-h-32">
+          <div className="text-gray-500">Loading...</div>
+        </div>
+    );
+  }
 
   return (
       <div className="w-full bg-white rounded-lg px-12">
@@ -92,28 +140,30 @@ const UserProfile = ({ userInfo, setUserInfo, onProfileUpdate }) => {
               </div>
 
               {/* Image Buttons */}
-              <div className="flex gap-4">
-                <label>
-                  <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={handleImageUpload}
-                      disabled={uploading}
-                  />
-                  <span className="text-sm text-gray-600 hover:underline cursor-pointer">
+              {!isGoogleUser && (
+                  <div className="flex gap-4">
+                    <label>
+                      <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={handleImageUpload}
+                          disabled={uploading}
+                      />
+                      <span className="text-sm text-gray-600 hover:underline cursor-pointer">
                     이미지 변경
                   </span>
-                </label>
+                    </label>
 
-                <button
-                    onClick={handleImageDelete}
-                    disabled={!userInfo.profileImage}
-                    className={`text-sm ${userInfo.profileImage ? 'text-rose-500 hover:underline' : 'text-gray-400 cursor-not-allowed'}`}
-                >
-                  삭제
-                </button>
-              </div>
+                    <button
+                        onClick={handleImageDelete}
+                        disabled={!userInfo.profileImage}
+                        className={`text-sm ${userInfo.profileImage ? 'text-rose-500 hover:underline' : 'text-gray-400 cursor-not-allowed'}`}
+                    >
+                      삭제
+                    </button>
+                  </div>
+              )}
             </div>
 
             {/* User Info Section */}
@@ -123,15 +173,17 @@ const UserProfile = ({ userInfo, setUserInfo, onProfileUpdate }) => {
                 <p className="text-lg text-gray-500 mt-2">{userInfo.email}</p>
               </div>
 
-              {/* Security Section */}
-              <div className="pt-2">
-                <button
-                    onClick={() => navigate('/mypage/change-password')}
-                    className="text-sm text-blue-600 hover:text-blue-800 underline"
-                >
-                  비밀번호 변경
-                </button>
-              </div>
+              {/* Security Section - Google 사용자가 아닌 경우에만 표시 */}
+              {!isGoogleUser && (
+                  <div className="pt-2">
+                    <button
+                        onClick={() => navigate('/mypage/change-password')}
+                        className="text-sm text-blue-600 hover:text-blue-800 underline"
+                    >
+                      비밀번호 변경
+                    </button>
+                  </div>
+              )}
             </div>
           </div>
         </div>
