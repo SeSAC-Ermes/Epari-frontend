@@ -3,7 +3,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { NoticeApi } from '../../api/notice/NoticeApi';
 import { Download, FileText, PenSquare, Trash2 } from 'lucide-react';
 import { RoleBasedComponent } from "../../auth/RoleBasedComponent.jsx";
-import { downloadFileFromUrl } from '../../utils/FileDownloadUtils';
 
 const NoticeDetailContent = () => {
   const { noticeId, courseId } = useParams();
@@ -81,28 +80,12 @@ const NoticeDetailContent = () => {
   };
 
   // NoticeDetailContent.jsx의 handleFileDownload 함수 수정
+  // NoticeDetailContent.jsx
   const handleFileDownload = async (fileId, fileName) => {
     try {
       setDownloadingFiles(prev => new Set([...prev, fileId]));
 
-      // 다운로드 URL로 직접 요청
-      const response = await fetch(`/api/notices/${noticeId}/files/${fileId}/download`);
-      if (!response.ok) throw new Error('Download failed');
-
-      // 응답을 Blob으로 변환
-      const blob = await response.blob();
-
-      // 다운로드 링크 생성 및 클릭
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-
-      // 정리
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      await NoticeApi.downloadFile(noticeId, fileId, fileName);
 
     } catch (error) {
       console.error('파일 다운로드 중 오류 발생:', error);
@@ -116,32 +99,6 @@ const NoticeDetailContent = () => {
     }
   };
 
-  // const handleFileDownload = async (fileId, fileName) => {
-  //   try {
-  //     setDownloadingFiles(prev => new Set([...prev, fileId]));
-  //
-  //     // 이미지 파일인 경우 새 탭에서 열기
-  //     if (isImageFile(fileName)) {
-  //       window.open(`/api/notices/${noticeId}/files/${fileId}/download`);
-  //       return;
-  //     }
-  //
-  //     // 일반 파일 다운로드
-  //     await downloadFileFromUrl(
-  //         `/api/notices/${noticeId}/files/${fileId}/download`,
-  //         fileName
-  //     );
-  //   } catch (error) {
-  //     console.error('파일 다운로드 중 오류 발생:', error);
-  //     alert('파일 다운로드에 실패했습니다.');
-  //   } finally {
-  //     setDownloadingFiles(prev => {
-  //       const next = new Set(prev);
-  //       next.delete(fileId);
-  //       return next;
-  //     });
-  //   }
-  // };
 
   if (loading) {
     return (
