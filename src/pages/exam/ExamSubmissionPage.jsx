@@ -1,5 +1,5 @@
 import React from 'react';
-import ExamSubmission from '../../components/exam/ExamSubmission';
+import ExamSubmission from '../../components/exam/submission/ExamSubmission.jsx';
 import { withPageAuth } from '../../auth/WithAuth.jsx';
 
 const ExamSubmissionPage = () => {

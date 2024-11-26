@@ -1,8 +1,7 @@
 import React from 'react';
 import { useAuth } from '../auth/AuthContext';
 import { ROLES } from '../constants/auth';
-import ExamResult from '../components/exam/ExamResult';
-import { ExamGradingList } from '../components/exam/ExamGradingList';
+import { ExamGradingList } from '../components/exam/grading/ExamGradingList.jsx';
 
 const ExamResultPage = () => {
   const { user } = useAuth();

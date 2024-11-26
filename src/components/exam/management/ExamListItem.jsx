@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../auth/AuthContext';
-import { ROLES } from '../../constants/auth';
+import { useAuth } from '../../../auth/AuthContext.jsx';
+import { ROLES } from '../../../constants/auth.js';
 
 const ExamListItem = ({ exam, courseId }) => {
   const navigate = useNavigate();

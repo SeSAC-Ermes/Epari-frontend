@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { NoticeApi } from '../../api/notice/NoticeApi';
-import { Search, Plus } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import { RoleBasedComponent } from "../../auth/RoleBasedComponent.jsx";
 
 
