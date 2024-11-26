@@ -4,6 +4,10 @@ import { fetchAuthSession, getCurrentUser, fetchUserAttributes } from 'aws-ampli
 import { useAuth } from '../../auth/AuthContext';
 import axios from '../../api/axios.js';
 
+/**
+ * 사용자의 프로필(이름, 이메일, 프로필 사진)을 관리하는 컴포넌트
+ * 프로필 이미지 변경 및 삭제, 비밀번호 변경 버튼 포함
+ */
 const UserProfile = () => {
   const [uploading, setUploading] = useState(false);
   const navigate = useNavigate();
