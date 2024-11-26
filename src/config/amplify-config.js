@@ -1,5 +1,15 @@
 import { Amplify } from 'aws-amplify';
 
+const redirectUrls = {
+  signIn: [import.meta.env.VITE_REDIRECT_SIGNIN],
+  signOut: [import.meta.env.VITE_REDIRECT_SIGNOUT]
+};
+
+if (import.meta.env.PROD) {
+  redirectUrls.signIn.push(import.meta.env.VITE_REDIRECT_SIGNIN_WWW);
+  redirectUrls.signOut.push(import.meta.env.VITE_REDIRECT_SIGNOUT_WWW);
+}
+
 Amplify.configure({
   Auth: {
     Cognito: {
@@ -10,14 +20,8 @@ Amplify.configure({
         oauth: {
           domain: import.meta.env.VITE_COGNITO_DOMAIN,
           scopes: ['email', 'profile', 'openid'],
-          redirectSignIn: [
-            import.meta.env.VITE_REDIRECT_SIGNIN,
-            import.meta.env.VITE_REDIRECT_SIGNIN_WWW
-          ],
-          redirectSignOut: [
-            import.meta.env.VITE_REDIRECT_SIGNOUT,
-            import.meta.env.VITE_REDIRECT_SIGNOUT_WWW
-          ],
+          redirectSignIn: redirectUrls.signIn.filter(Boolean),
+          redirectSignOut: redirectUrls.signOut.filter(Boolean),
           responseType: 'code',
           providers: ['Google']
         },
