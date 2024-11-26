@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ExamAPI } from '../../api/exam/examAPI.js';
-import { ROLES } from '../../constants/auth';
-import { RoleBasedComponent } from '../../auth/RoleBasedComponent';
+import { ExamAPI } from '../../../api/exam/examAPI.js';
+import { ROLES } from '../../../constants/auth.js';
+import { RoleBasedComponent } from '../../../auth/RoleBasedComponent.jsx';
 
 export const ExamGradingList = () => {
   const { courseId, examId } = useParams();

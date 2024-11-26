@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ChevronUp } from 'lucide-react';
-import { useAuth } from '../../auth/AuthContext';
-import { ROLES } from '../../constants/auth';
-import apiClient from "../../api/axios.js";
+import { useAuth } from '../../../auth/AuthContext.jsx';
+import { ROLES } from '../../../constants/auth.js';
+import apiClient from "../../../api/axios.js";
 
 const StudentExamResultContent = () => {
   const { courseId, examId } = useParams();

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ExamAPI } from '../../api/exam/examAPI.js';
+import { ExamAPI } from '../../../api/exam/examAPI.js';
 
 export const ExamGradingForm = () => {
   const { courseId, examId, submissionId } = useParams();

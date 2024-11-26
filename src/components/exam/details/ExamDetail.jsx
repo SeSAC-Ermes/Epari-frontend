@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { BookOpen, Calendar, ChevronUp, Clock, GraduationCap, User, Users } from 'lucide-react';
-import { ExamAPI } from '../../api/exam/examAPI.js';
-import { ROLES } from '../../constants/auth';
-import { RoleBasedComponent } from '../../auth/RoleBasedComponent';
+import { ExamAPI } from '../../../api/exam/examAPI.js';
+import { ROLES } from '../../../constants/auth.js';
+import { RoleBasedComponent } from '../../../auth/RoleBasedComponent.jsx';
 
 const ExamDetail = () => {
   const {courseId, examId} = useParams();
