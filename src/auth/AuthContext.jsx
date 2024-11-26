@@ -12,7 +12,6 @@ export const AuthProvider = ({ children }) => {
   const [userGroups, setUserGroups] = useState([]);
   const [isGoogleUser, setIsGoogleUser] = useState(false);
 
-  // hasRole과 hasAnyRole 함수를 먼저 정의
   const hasRole = (requiredRole) => {
     return userGroups.includes(requiredRole);
   };
@@ -24,24 +23,29 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        const currentUser = await getCurrentUser();
+        // 먼저 세션을 확인
         const session = await fetchAuthSession();
 
-        const groups = session.tokens.accessToken.payload['cognito:groups'] || [];
-        // identities 필드를 확인하여 Google 사용자 여부 확인
-        const identities = session.tokens.idToken.payload['identities'] || [];
-        const isGoogle = identities.some(identity => identity.providerName === 'Google');
+        if (session?.tokens) {  // 세션이 있는 경우에만 getCurrentUser 호출
+          const currentUser = await getCurrentUser();
+          const groups = session.tokens.accessToken.payload['cognito:groups'] || [];
+          const identities = session.tokens.idToken.payload['identities'] || [];
+          const isGoogle = identities.some(identity => identity.providerName === 'Google');
 
-        // 디버깅을 위한 로그 추가
-        console.log('Session Tokens:', session.tokens);
-        console.log('ID Token Payload:', session.tokens.idToken.payload);
-        console.log('Is Google User:', isGoogle);
-
-        setUser(currentUser);
-        setUserGroups(groups);
-        setIsGoogleUser(isGoogle);
+          setUser(currentUser);
+          setUserGroups(groups);
+          setIsGoogleUser(isGoogle);
+        } else {
+          // 세션이 없는 경우
+          setUser(null);
+          setUserGroups([]);
+          setIsGoogleUser(false);
+        }
       } catch (error) {
-        console.error('Auth Error:', error);
+        if (error.name !== 'UserUnAuthenticatedException') {
+          console.error('Auth Error:', error);
+        }
+        // 에러 발생시 초기화
         setUser(null);
         setUserGroups([]);
         setIsGoogleUser(false);
