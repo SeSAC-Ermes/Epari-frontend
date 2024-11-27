@@ -71,9 +71,6 @@ export const AssignmentAPI = {
     try {
       const formData = new FormData();
 
-      // 데이터 로깅 추가
-      console.log('Updating assignment with data:', assignmentData);
-
       formData.append('title', assignmentData.title);
       formData.append('description', assignmentData.description);
 
@@ -81,19 +78,12 @@ export const AssignmentAPI = {
       date.setHours(23, 59, 59, 0);
       const formattedDate = date.toISOString().split('.')[0];
 
-      console.log('Formatted date:', formattedDate);
       formData.append('deadline', formattedDate);
 
       if (assignmentData.files && assignmentData.files.length > 0) {
         assignmentData.files.forEach((file) => {
-          console.log('Appending file:', file.name);
           formData.append('files', file);
         });
-      }
-
-      // FormData 내용 확인
-      for (let pair of formData.entries()) {
-        console.log(pair[0] + ': ' + pair[1]);
       }
 
       const response = await apiClient.put(
