@@ -102,7 +102,7 @@ const CourseFileArchiveContent = () => {
     const handleScroll = () => {
       if (
           window.innerHeight + document.documentElement.scrollTop
-          === document.documentElement.offsetHeight
+          >= document.documentElement.offsetHeight - 100
       ) {
         if (hasMore && !loading) {
           fetchFiles(false);
