@@ -172,9 +172,10 @@ const CourseFileContent = () => {
 
   useEffect(() => {
     const handleScroll = () => {
+      // 현재 스크롤 위치가 문서 전체 높이의 90% 이상일 때 추가 데이터를 로드
       if (
           window.innerHeight + document.documentElement.scrollTop
-          === document.documentElement.offsetHeight
+          >= document.documentElement.offsetHeight - 100  // 100px의 여유를 둠
       ) {
         if (hasMore && !loading) {
           fetchCourseFiles(false);
@@ -259,8 +260,11 @@ const CourseFileContent = () => {
 
           {/* 파일 목록 */}
           <div className="space-y-4">
-            {filteredData.map((file) => (
-                <div key={file.id} className="border rounded-lg">
+            {filteredData.map((file, index) => (
+                <div
+                    key={`${file.id}-${index}`}
+                    className="border rounded-lg"
+                >
                   <div className="grid grid-cols-5 p-4 hover:bg-gray-50">
                     <div
                         className="col-span-4 grid grid-cols-4 cursor-pointer"
