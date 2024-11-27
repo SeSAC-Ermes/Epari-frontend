@@ -4,6 +4,7 @@ import { NoticeApi } from '../../api/notice/NoticeApi';
 import { Loader2, Upload, X } from 'lucide-react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import { quillFormats, quillModules } from "../common/QuillConfig.js";
 
 const NoticeEditContent = () => {
   const { noticeId, courseId } = useParams();
@@ -17,6 +18,8 @@ const NoticeEditContent = () => {
   });
   const [existingFiles, setExistingFiles] = useState([]);
   const [newFiles, setNewFiles] = useState([]);
+  const [deleteFileIds, setDeleteFileIds] = useState([]); // 삭제할 파일 ID 목록 추가
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchNotice = async () => {
@@ -31,14 +34,13 @@ const NoticeEditContent = () => {
         setLoading(false);
       } catch (error) {
         console.error('Notice fetch failed:', error);
-        alert('공지사항을 불러오는데 실패했습니다.');
+        setError('공지사항을 불러오는데 실패했습니다.');
         navigate(-1);
       }
     };
 
     fetchNotice();
   }, [noticeId, navigate]);
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -57,9 +59,9 @@ const NoticeEditContent = () => {
         formDataToSend.append('type', 'GLOBAL');
       }
 
-      // 기존 파일 ID들 추가
-      existingFiles.forEach(file => {
-        formDataToSend.append('existingFileIds', file.id);
+      // 삭제할 파일 ID 목록 추가
+      deleteFileIds.forEach(fileId => {
+        formDataToSend.append('deleteFileIds', fileId);
       });
 
       // 새로운 파일들 추가
@@ -82,11 +84,7 @@ const NoticeEditContent = () => {
       }
     } catch (error) {
       console.error('Notice update failed:', error);
-      if (error.response?.data?.message) {
-        alert(`공지사항 수정 실패: ${error.response.data.message}`);
-      } else {
-        alert('공지사항 수정에 실패했습니다.');
-      }
+      setError(error.response?.data?.message || '공지사항 수정에 실패했습니다.');
     } finally {
       setSubmitting(false);
     }
@@ -99,6 +97,7 @@ const NoticeEditContent = () => {
 
   const removeExistingFile = (fileId) => {
     setExistingFiles(prev => prev.filter(file => file.id !== fileId));
+    setDeleteFileIds(prev => [...prev, fileId]); // 삭제할 파일 ID 목록에 추가
   };
 
   const removeNewFile = (fileName) => {
@@ -109,6 +108,14 @@ const NoticeEditContent = () => {
     return (
         <div className="flex items-center justify-center min-h-screen">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
+        </div>
+    );
+  }
+
+  if (error) {
+    return (
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-red-500">{error}</div>
         </div>
     );
   }
@@ -129,8 +136,11 @@ const NoticeEditContent = () => {
 
           <div className="mb-4">
             <ReactQuill
+                theme="snow"
                 value={formData.content}
                 onChange={(content) => setFormData(prev => ({ ...prev, content }))}
+                modules={quillModules}
+                formats={quillFormats}
                 className="h-64 mb-12"
             />
           </div>
@@ -152,6 +162,7 @@ const NoticeEditContent = () => {
             </div>
 
             <ul className="space-y-2">
+              {/* 기존 파일 목록 */}
               {existingFiles.map((file) => (
                   <li key={file.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
                     <span className="text-sm">{file.originalFileName}</span>
@@ -164,6 +175,7 @@ const NoticeEditContent = () => {
                     </button>
                   </li>
               ))}
+              {/* 새로 추가된 파일 목록 */}
               {newFiles.map((file) => (
                   <li key={file.name} className="flex items-center justify-between p-2 bg-gray-50 rounded">
                     <span className="text-sm">{file.name}</span>

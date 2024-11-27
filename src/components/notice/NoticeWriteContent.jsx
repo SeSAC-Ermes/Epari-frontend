@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';  // useRef 추가
 import { X } from 'lucide-react';
 import ReactQuill from 'react-quill';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -13,6 +13,7 @@ const NoticeWriteContent = () => {
   const navigate = useNavigate();
   const { courseId } = useParams();
   const { user, userGroups } = useAuth();
+  const quillRef = useRef(null);  // Quill 에디터 ref 추가
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -21,6 +22,23 @@ const NoticeWriteContent = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [instructorId, setInstructorId] = useState(null);
+
+  // 이미지 업로드 핸들러 추가
+  const handleImageUpload = async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append('files', file);
+
+      const response = await NoticeApi.uploadImage(formData);
+
+      const editor = quillRef.current.getEditor();
+      const range = editor.getSelection();
+      editor.insertEmbed(range.index, 'image', response.fileUrl);
+    } catch (error) {
+      console.error('이미지 업로드 실패:', error);
+      alert('이미지 업로드에 실패했습니다.');
+    }
+  };
 
   useEffect(() => {
     if (!courseId) {
@@ -50,6 +68,41 @@ const NoticeWriteContent = () => {
       fetchInstructorId();
     }
   }, [user, courseId, navigate]);
+
+  // Quill 에디터 이미지 핸들러 설정
+  useEffect(() => {
+    if (quillRef.current) {
+      const editor = quillRef.current.getEditor();
+
+      editor.getModule('toolbar').addHandler('image', () => {
+        const input = document.createElement('input');
+        input.setAttribute('type', 'file');
+        input.setAttribute('accept', 'image/*');
+        input.click();
+
+        input.onchange = async () => {
+          const file = input.files[0];
+
+          // 이미지 파일 검증
+          if (!file.type.startsWith('image/')) {
+            alert('이미지 파일만 업로드 가능합니다.');
+            return;
+          }
+
+          // 파일 크기 제한 (5MB)
+          if (file.size > 5 * 1024 * 1024) {
+            alert('이미지 크기는 5MB를 초과할 수 없습니다.');
+            return;
+          }
+
+          if (file) {
+            await handleImageUpload(file);
+          }
+        };
+      });
+    }
+  }, []);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -130,6 +183,7 @@ const NoticeWriteContent = () => {
               <label className="block text-sm font-medium text-gray-700">내용</label>
               <div className="border border-gray-300 rounded-lg" style={{ height: '400px' }}>
                 <ReactQuill
+                    ref={quillRef}  // ref 추가
                     theme="snow"
                     value={description}
                     onChange={setDescription}
