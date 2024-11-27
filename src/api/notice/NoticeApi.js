@@ -105,12 +105,48 @@ export const NoticeApi = {
     }
   },
 
+
+  // 이미지 업로드용 메서드 추가
+  async uploadImage(formData) {
+    try {
+      console.log('API 요청 시작');
+      const response = await apiClient.post('/api/notices/upload-image', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }
+      });
+      console.log('API 응답:', response);
+      return response.data;
+    } catch (error) {
+      console.error('Image upload error:', error);
+      throw error;
+    }
+  },
+
+
   // 파일 다운로드
-  downloadFile: async (noticeId, fileId) => {
+  // NoticeApi.js
+  downloadFile: async (noticeId, fileId, fileName) => {
     try {
       const response = await apiClient.get(`/api/notices/${noticeId}/files/${fileId}/download`, {
-        responseType: 'blob'
+        responseType: 'blob'  // 중요: responseType을 'blob'으로 설정
       });
+
+      // Blob URL 생성
+      const blob = new Blob([response.data]);
+      const url = window.URL.createObjectURL(blob);
+
+      // 임시 링크 생성 및 클릭
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName; // 서버에서 전송된 파일명 사용
+      document.body.appendChild(link);
+      link.click();
+
+      // cleanup
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
       return response.data;
     } catch (error) {
       console.error('파일 다운로드 실패:', error);
@@ -118,5 +154,6 @@ export const NoticeApi = {
     }
   },
 };
+
 
 export default NoticeApi;

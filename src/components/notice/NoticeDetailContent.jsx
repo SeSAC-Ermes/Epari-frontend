@@ -3,7 +3,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { NoticeApi } from '../../api/notice/NoticeApi';
 import { Download, FileText, PenSquare, Trash2 } from 'lucide-react';
 import { RoleBasedComponent } from "../../auth/RoleBasedComponent.jsx";
-import { downloadFileFromUrl } from '../../utils/FileDownloadUtils';
 
 const NoticeDetailContent = () => {
   const { noticeId, courseId } = useParams();
@@ -80,21 +79,14 @@ const NoticeDetailContent = () => {
     }
   };
 
+  // NoticeDetailContent.jsx의 handleFileDownload 함수 수정
+  // NoticeDetailContent.jsx
   const handleFileDownload = async (fileId, fileName) => {
     try {
       setDownloadingFiles(prev => new Set([...prev, fileId]));
 
-      // 이미지 파일인 경우 새 탭에서 열기
-      if (isImageFile(fileName)) {
-        window.open(`/api/notices/${noticeId}/files/${fileId}/download`);
-        return;
-      }
+      await NoticeApi.downloadFile(noticeId, fileId, fileName);
 
-      // 일반 파일 다운로드
-      await downloadFileFromUrl(
-          `/api/notices/${noticeId}/files/${fileId}/download`,
-          fileName
-      );
     } catch (error) {
       console.error('파일 다운로드 중 오류 발생:', error);
       alert('파일 다운로드에 실패했습니다.');
@@ -106,6 +98,7 @@ const NoticeDetailContent = () => {
       });
     }
   };
+
 
   if (loading) {
     return (
@@ -216,7 +209,8 @@ const NoticeDetailContent = () => {
                               disabled={downloadingFiles.has(file.id)}
                           >
                             {downloadingFiles.has(file.id) ? (
-                                <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-500 border-t-transparent"/>
+                                <div
+                                    className="animate-spin rounded-full h-4 w-4 border-2 border-blue-500 border-t-transparent"/>
                             ) : (
                                 <Download size={16}/>
                             )}
