@@ -201,9 +201,9 @@ const FileArchiveList = ({ files, onDownload }) => {
 
 
           <div className="space-y-4">
-            {filteredFiles.map((file) => (
-                <div key={file.id} className="border rounded-lg">
-                  <div className="flex items-center p-4">
+            {filteredFiles.map((file, index) => (
+                <div key={`file-${file.id}-${index}`} className="border rounded-lg">
+                <div className="flex items-center p-4">
                     <div className="flex-1 grid grid-cols-4 items-center">
                       <div className="text-sm text-gray-600">{file.createdAt}</div>
                       <div className="col-span-3">
@@ -229,9 +229,9 @@ const FileArchiveList = ({ files, onDownload }) => {
 
                   <div className="px-4 pb-4 border-t border-gray-200">
                     <div className="mt-4 space-y-2">
-                      {file.files.map((attachment) => (
+                      {file.files.map((attachment, attachmentIndex) => (  // attachmentIndex 추가
                           <div
-                              key={attachment.id}
+                              key={`attachment-${file.id}-${attachment.id}-${attachmentIndex}`}  // key 값을 더 고유하게 수정
                               className="flex items-center p-2 bg-gray-50 rounded-lg"
                           >
                             <div className="flex items-center gap-2 flex-1">

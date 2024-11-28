@@ -22,9 +22,13 @@ export const CourseFileAPI = {
   },
 
   // 강의 자료 목록 조회
-  getCourseFiles: async (courseId) => {
+  getCourseFiles: async (courseId, cursorId, cursorDate) => {
     try {
-      const response = await apiClient.get(`/api/courses/${courseId}/contents`);
+      let url = `/api/courses/${courseId}/contents`;
+      if (cursorId && cursorDate) {
+        url += `?cursorId=${cursorId}&cursorDate=${cursorDate}`;
+      }
+      const response = await apiClient.get(url);
       return response.data;
     } catch (error) {
       console.error('Error fetching course files:', error);
@@ -38,6 +42,25 @@ export const CourseFileAPI = {
       await apiClient.delete(`/api/courses/${courseId}/contents/${contentId}`);
     } catch (error) {
       console.error('Error deleting course file:', error);
+      throw error;
+    }
+  },
+
+  // 강의 자료 검색 (커서 기반 페이징)
+  searchCourseFiles: async (courseId, searchParams, cursorId, cursorDate) => {
+    try {
+      let url = `/api/courses/${courseId}/contents/search`;
+      const params = new URLSearchParams();
+
+      if (searchParams.title) params.append('title', searchParams.title);
+      if (searchParams.content) params.append('content', searchParams.content);
+      if (cursorId) params.append('cursorId', cursorId);
+      if (cursorDate) params.append('cursorDate', cursorDate);
+
+      const response = await apiClient.get(`${url}?${params.toString()}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error searching course files:', error);
       throw error;
     }
   },

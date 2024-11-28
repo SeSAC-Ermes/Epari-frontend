@@ -3,164 +3,28 @@ import { ArrowUp, ChevronDown, ChevronUp, FileText, Pencil, Trash2 } from 'lucid
 import { useNavigate, useParams } from 'react-router-dom';
 import { CourseFileAPI } from '../../../api/course/courseFileAPI.js';
 import FileDownloadList from './FileDownloadList.jsx';
-import ReactQuill from 'react-quill';
-import FileUpload from "../../common/FileUpload.jsx";
-import { quillFormats, quillModules } from '../../common/QuillConfig.js';
+import CourseFileEditForm from './CourseFileEditForm.jsx';
 import 'react-quill/dist/quill.snow.css';
 
 /**
- *  학습 활동 페이지 내용
+ * 학습 활동 페이지 내용
  */
 
-const CourseFileEditForm = ({
-                              courseId,
-                              file,
-                              onSubmit,
-                              onCancel,
-                              onRemoveFile,
-                              isSubmitting
-                            }) => {
-  const [title, setTitle] = useState(file.title);
-  const [content, setContent] = useState(file.content);
-  const [newFiles, setNewFiles] = useState([]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!title.trim() || !content.trim()) {
-      alert('제목과 내용을 모두 입력해주세요.');
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('title', title);
-    formData.append('content', content);
-
-    if (newFiles.length > 0) {
-      newFiles.forEach(file => {
-        formData.append('files', file);
-      });
-    }
-
-    onSubmit(formData);
-  };
-
-  return (
-      <div className="p-6">
-        <form onSubmit={handleSubmit} className="space-y-8">
-          <div className="flex items-start justify-between gap-4">
-            <div className="w-2/3">
-              <label className="block text-sm font-medium text-gray-700">제목</label>
-              <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
-                  required
-              />
-            </div>
-            <div className="flex items-center gap-2 mt-7">
-              <button
-                  type="button"
-                  onClick={onCancel}
-                  className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
-                  disabled={isSubmitting}
-              >
-                취소
-              </button>
-              <button
-                  type="submit"
-                  className={`px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 
-                ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  disabled={isSubmitting}
-              >
-                {isSubmitting ? '수정 중...' : '수정 완료'}
-              </button>
-            </div>
-          </div>
-
-          <div className="space-y-2" style={{ marginBottom: '80px' }}>
-            <label className="block text-sm font-medium text-gray-700">내용</label>
-            <div className="rounded-lg">
-              <ReactQuill
-                  theme="snow"
-                  value={content}
-                  onChange={setContent}
-                  modules={quillModules}
-                  formats={quillFormats}
-                  className="h-[200px]"
-              />
-            </div>
-          </div>
-
-          {file.files?.length > 0 && (
-              <div className="space-y-2">
-                <div className="border rounded-lg p-4 space-y-4">
-                  <label className="block text-sm font-medium text-gray-700">
-                    기존 첨부파일
-                  </label>
-                  <FileDownloadList
-                      files={file.files}
-                      courseId={courseId}
-                      contentId={file.id}
-                      onDelete={onRemoveFile}
-                      isEditMode={true}
-                  />
-                </div>
-              </div>
-          )}
-
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              새 파일 첨부
-            </label>
-            <FileUpload onFilesChange={files => setNewFiles(files)}/>
-          </div>
-        </form>
-      </div>
-  );
-};
-
-// 메인 컴포넌트
 const CourseFileContent = () => {
   const navigate = useNavigate();
   const { courseId } = useParams();
   const [searchTerm, setSearchTerm] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [fileData, setFileData] = useState([]);
   const [expandedId, setExpandedId] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [isInstructor, setIsInstructor] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const fetchCourseFiles = async () => {
-    if (!courseId) {
-      setError('강의 ID가 필요합니다.');
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const response = await CourseFileAPI.getCourseFiles(courseId);
-      setFileData(response);
-    } catch (err) {
-      console.error('Error fetching course files:', err);
-      setError('강의 자료를 불러오는데 실패했습니다.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    const checkInstructorStatus = () => {
-      const instructorStatus = getIsInstructorFromToken();
-      setIsInstructor(instructorStatus);
-    };
-
-    fetchCourseFiles();
-    checkInstructorStatus();
-  }, [courseId]);
+  const [cursorId, setCursorId] = useState(null);
+  const [cursorDate, setCursorDate] = useState(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   const getIsInstructorFromToken = () => {
     const token = localStorage.getItem('token');
@@ -247,20 +111,100 @@ const CourseFileContent = () => {
     }
   };
 
-  const filteredData = fileData.filter(file =>
+  const fetchCourseFiles = async (isNewSearch = false) => {
+    if (!courseId) {
+      setError('강의 ID가 필요합니다.');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      let response;
+
+      const currentCursorId = isNewSearch ? null : cursorId;
+      const currentCursorDate = isNewSearch ? null : cursorDate;
+
+      if (searchTerm) {
+        response = await CourseFileAPI.searchCourseFiles(
+            courseId,
+            { title: searchTerm, content: searchTerm },
+            currentCursorId,
+            currentCursorDate
+        );
+      } else {
+        response = await CourseFileAPI.getCourseFiles(
+            courseId,
+            currentCursorId,
+            currentCursorDate
+        );
+      }
+
+      // response.contents가 있으면 그것을 사용하고, 없으면 response 자체를 배열로 처리
+      const contents = response.contents || response || [];
+
+      setHasMore(response.hasNext ?? false);
+
+      if (response.cursor) {
+        setCursorId(response.cursor.id);
+        setCursorDate(response.cursor.date);
+      }
+
+      setFileData(prevData => isNewSearch ? contents : [...prevData, ...contents]);
+    } catch (err) {
+      console.error('Error fetching course files:', err);
+      setError('강의 자료를 불러오는데 실패했습니다.');
+    } finally {
+      setLoading(false);
+      setInitialLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setCursorId(null);
+      setCursorDate(null);
+      setHasMore(true);
+      fetchCourseFiles(true);
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // 현재 스크롤 위치가 문서 전체 높이의 90% 이상일 때 추가 데이터를 로드
+      if (
+          window.innerHeight + document.documentElement.scrollTop
+          >= document.documentElement.offsetHeight - 100  // 100px의 여유를 둠
+      ) {
+        if (hasMore && !loading) {
+          fetchCourseFiles(false);
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [hasMore, loading, cursorId, cursorDate]);
+
+  useEffect(() => {
+    const checkInstructorStatus = () => {
+      const instructorStatus = getIsInstructorFromToken();
+      setIsInstructor(instructorStatus);
+    };
+
+    checkInstructorStatus();
+    fetchCourseFiles(true);
+  }, [courseId]);
+
+  // 검색 필터링
+  const filteredData = Array.isArray(fileData) ? fileData.filter(file =>
       file.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       file.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
       file.instructor?.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  ) : [];
 
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
-  };
-
-  if (loading) {
+  if (initialLoading) {
     return (
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-xl">강의 자료를 불러오는 중...</div>
@@ -268,7 +212,7 @@ const CourseFileContent = () => {
     );
   }
 
-  if (error) {
+  if (error && fileData.length === 0) {
     return (
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-xl text-red-500">{error}</div>
@@ -302,6 +246,7 @@ const CourseFileContent = () => {
               )}
             </div>
           </div>
+
           {/* 테이블 헤더 */}
           <div className="border rounded-lg mb-4">
             <div className="grid grid-cols-5 p-4 bg-gray-50 font-medium text-gray-600">
@@ -315,9 +260,11 @@ const CourseFileContent = () => {
 
           {/* 파일 목록 */}
           <div className="space-y-4">
-            {filteredData.map((file) => (
-                <div key={file.id} className="border rounded-lg">
-                  {/* 파일 항목 헤더 */}
+            {filteredData.map((file, index) => (
+                <div
+                    key={`${file.id}-${index}`}
+                    className="border rounded-lg"
+                >
                   <div className="grid grid-cols-5 p-4 hover:bg-gray-50">
                     <div
                         className="col-span-4 grid grid-cols-4 cursor-pointer"
@@ -366,7 +313,10 @@ const CourseFileContent = () => {
                         {editingId === file.id ? (
                             <CourseFileEditForm
                                 courseId={courseId}
-                                file={file}
+                                contentId={file.id}
+                                initialTitle={file.title}
+                                initialContent={file.content}
+                                existingFiles={file.files || []}
                                 onSubmit={(formData) => handleEditSubmit(file.id, formData)}
                                 onCancel={() => setEditingId(null)}
                                 onRemoveFile={(fileId) => handleRemoveExistingFile(fileId, file.id)}
@@ -394,25 +344,30 @@ const CourseFileContent = () => {
                   )}
                 </div>
             ))}
+
+            {loading && (
+                <div className="text-center py-4">
+                  <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
+                </div>
+            )}
           </div>
 
           {/* 빈 상태 메시지 */}
-          {filteredData.length === 0 && (
+          {fileData.length === 0 && !loading && (
               <div className="text-center py-8 text-gray-500">
                 등록된 강의 자료가 없습니다.
               </div>
           )}
         </div>
 
-        {/* ScrollToTop 버튼 추가 */}
+        {/* ScrollToTop 버튼 */}
         <button
-            onClick={scrollToTop}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             className="fixed bottom-8 right-8 p-3 bg-green-500 text-white rounded-full shadow-lg hover:bg-green-600 transition-all duration-300 z-[9999]"
             aria-label="페이지 최상단으로 이동"
         >
-          <ArrowUp size={24} />
+          <ArrowUp size={24}/>
         </button>
-
       </main>
   );
 };
