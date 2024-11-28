@@ -155,7 +155,22 @@ export const CourseFileAPI = {
       console.error('Error fetching today files:', error);
       throw error;
     }
-  }
+  },
+
+  /**
+   * offset 기반 페이지네이션 강의 자료 조회 api
+   */
+  getCourseFilesWithOffset: async (courseId, page = 0, size = 10, sortBy = 'date', direction = 'desc') => {
+    try {
+      const response = await apiClient.get(
+          `/api/courses/${courseId}/contents/offset?page=${page}&size=${size}&sortBy=${sortBy}&direction=${direction}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching course files with offset:', error);
+      throw error;
+    }
+  },
 };
 
 
