@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchUserAttributes, signOut } from 'aws-amplify/auth';
+import { fetchUserAttributes, signOut, fetchAuthSession } from 'aws-amplify/auth';
+import { useAuth } from '../../auth/AuthContext';
 import Logo from '../../assets/epariLogo.jpg';
 
 /**
@@ -9,6 +10,7 @@ import Logo from '../../assets/epariLogo.jpg';
  */
 const TopBar = () => {
   const navigate = useNavigate();
+  const { isGoogleUser } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [userName, setUserName] = useState('');
   const [profileImage, setProfileImage] = useState(null);
@@ -16,16 +18,26 @@ const TopBar = () => {
   useEffect(() => {
     const getUserInfo = async () => {
       try {
-        const userAttributes = await fetchUserAttributes();
-        setUserName(userAttributes.name);
-        setProfileImage(userAttributes['custom:profile_image']);
+        if (isGoogleUser) {
+          // Google 사용자의 경우 세션에서 정보 가져오기
+          const session = await fetchAuthSession();
+          const idToken = session.tokens.idToken.payload;
+
+          setUserName(idToken.name || '');
+          setProfileImage(idToken.picture || null);
+        } else {
+          // 일반 사용자의 경우 기존 방식 유지
+          const userAttributes = await fetchUserAttributes();
+          setUserName(userAttributes.name);
+          setProfileImage(userAttributes['custom:profile_image']);
+        }
       } catch (err) {
         console.error('Error fetching user info:', err);
       }
     };
 
     getUserInfo();
-  }, []);
+  }, [isGoogleUser]);
 
   const handleLogout = async () => {
     try {
@@ -37,6 +49,30 @@ const TopBar = () => {
     }
   };
 
+  // 프로필 이미지 컴포넌트
+  const ProfileImage = ({ src, name }) => {
+    const [imageError, setImageError] = useState(false);
+
+    if (!src || imageError) {
+      return (
+          <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+          <span className="text-lg font-semibold">
+            {name ? name[0].toUpperCase() : ''}
+          </span>
+          </div>
+      );
+    }
+
+    return (
+        <img
+            src={src}
+            alt="프로필"
+            className="w-full h-full object-cover"
+            onError={() => setImageError(true)}
+        />
+    );
+  };
+
   return (
       <header className="fixed top-0 left-0 right-0 bg-white shadow-sm z-50">
         <div className="max-w-full px-10 py-4 flex justify-between items-center">
@@ -44,7 +80,6 @@ const TopBar = () => {
               className="flex items-center gap-2 cursor-pointer"
               onClick={() => navigate('/')}
           >
-            
             <span className="text-xl font-semibold">SeSAC</span>
             <img
                 src={Logo}
@@ -58,19 +93,7 @@ const TopBar = () => {
                 className="w-10 h-10 rounded-full overflow-hidden"
                 onMouseEnter={() => setIsDropdownOpen(true)}
             >
-              {profileImage ? (
-                  <img
-                      src={profileImage}
-                      alt="프로필"
-                      className="w-full h-full object-cover"
-                  />
-              ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
-                <span className="text-lg font-semibold">
-                  {userName ? userName[0] : ''}
-                </span>
-                  </div>
-              )}
+              <ProfileImage src={profileImage} name={userName}/>
             </button>
 
             {/* Dropdown Menu */}

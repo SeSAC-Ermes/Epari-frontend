@@ -1,10 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { fetchAuthSession, getCurrentUser, fetchUserAttributes } from 'aws-amplify/auth';
+import { useAuth } from '../../auth/AuthContext';
 import axios from '../../api/axios.js';
 
-const UserProfile = ({ userInfo, setUserInfo, onProfileUpdate }) => {
+/**
+ * 사용자의 프로필(이름, 이메일, 프로필 사진)을 관리하는 컴포넌트
+ * 프로필 이미지 변경 및 삭제, 비밀번호 변경 버튼 포함
+ */
+const UserProfile = () => {
   const [uploading, setUploading] = useState(false);
   const navigate = useNavigate();
+  const { isGoogleUser } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [userInfo, setUserInfo] = useState({
+    name: "",
+    email: "",
+    profileImage: null
+  });
+
+  const fetchUserInfo = async () => {
+    try {
+      const session = await fetchAuthSession();
+      const idToken = session.tokens.idToken.payload;
+
+      if (isGoogleUser) {
+        setUserInfo({
+          name: idToken.name || '',
+          email: idToken.email || '',
+          profileImage: idToken.picture || null  // Google 프로필 이미지
+        });
+      } else {
+        const currentUser = await getCurrentUser();
+        const userAttributes = await fetchUserAttributes();
+
+        setUserInfo({
+          name: userAttributes.name || currentUser.username,
+          email: userAttributes.email,
+          profileImage: userAttributes['custom:profile_image']
+        });
+      }
+      setLoading(false);
+    } catch (err) {
+      console.error('Error fetching user info:', err);
+      setLoading(false);
+    }
+  };
 
   const handleImageUpload = async (event) => {
     const file = event.target.files[0];
@@ -37,7 +78,7 @@ const UserProfile = ({ userInfo, setUserInfo, onProfileUpdate }) => {
         profileImage: response.data
       }));
 
-      await onProfileUpdate();
+      await fetchUserInfo();  // 프로필 정보 새로고침
 
     } catch (error) {
       console.error('Profile image upload failed:', error);
@@ -58,7 +99,7 @@ const UserProfile = ({ userInfo, setUserInfo, onProfileUpdate }) => {
         profileImage: null
       }));
 
-      await onProfileUpdate();
+      await fetchUserInfo();  // 프로필 정보 새로고침
 
     } catch (error) {
       console.error('Profile image deletion failed:', error);
@@ -66,72 +107,96 @@ const UserProfile = ({ userInfo, setUserInfo, onProfileUpdate }) => {
     }
   };
 
+  useEffect(() => {
+    fetchUserInfo();
+  }, [isGoogleUser]);
+
+  // 프로필 이미지 컴포넌트
+  const ProfileImage = ({ userInfo }) => {
+    const [imageError, setImageError] = useState(false);
+
+    if (!userInfo.profileImage || imageError) {
+      return (
+          <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+          <span className="text-4xl font-semibold">
+            {userInfo.name ? userInfo.name[0].toUpperCase() : '?'}
+          </span>
+          </div>
+      );
+    }
+
+    return (
+        <img
+            src={userInfo.profileImage}
+            alt={`${userInfo.name}'s profile`}
+            className="w-full h-full object-cover"
+            onError={() => setImageError(true)}
+        />
+    );
+  };
+
+  if (loading) {
+    return (
+        <div className="flex justify-center items-center min-h-32">
+          <div className="text-gray-500">Loading...</div>
+        </div>
+    );
+  }
+
   return (
       <div className="w-full bg-white rounded-lg px-12">
-        {/* Page Title */}
         <div className="max-w-7xl mx-auto px-8 pt-8 pb-6">
         </div>
 
-        {/* Profile Section */}
         <div className="max-w-7xl mx-auto px-8 pb-12 border-b">
           <div className="flex items-start gap-12">
-            {/* Profile Image Section */}
             <div className="space-y-6">
               <div className="w-32 h-32 rounded-full bg-gray-100 overflow-hidden ring-2 ring-offset-2 ring-gray-200">
-                {userInfo.profileImage ? (
-                    <img
-                        src={userInfo.profileImage}
-                        alt="Profile"
-                        className="w-full h-full object-cover"
-                    />
-                ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
-                      <span className="text-4xl font-semibold">{userInfo.name[0]}</span>
-                    </div>
-                )}
+                <ProfileImage userInfo={userInfo}/>
               </div>
 
-              {/* Image Buttons */}
-              <div className="flex gap-4">
-                <label>
-                  <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={handleImageUpload}
-                      disabled={uploading}
-                  />
-                  <span className="text-sm text-gray-600 hover:underline cursor-pointer">
+              {!isGoogleUser && (
+                  <div className="flex gap-4">
+                    <label>
+                      <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={handleImageUpload}
+                          disabled={uploading}
+                      />
+                      <span className="text-sm text-gray-600 hover:underline cursor-pointer">
                     이미지 변경
                   </span>
-                </label>
+                    </label>
 
-                <button
-                    onClick={handleImageDelete}
-                    disabled={!userInfo.profileImage}
-                    className={`text-sm ${userInfo.profileImage ? 'text-rose-500 hover:underline' : 'text-gray-400 cursor-not-allowed'}`}
-                >
-                  삭제
-                </button>
-              </div>
+                    <button
+                        onClick={handleImageDelete}
+                        disabled={!userInfo.profileImage}
+                        className={`text-sm ${userInfo.profileImage ? 'text-rose-500 hover:underline' : 'text-gray-400 cursor-not-allowed'}`}
+                    >
+                      삭제
+                    </button>
+                  </div>
+              )}
             </div>
 
-            {/* User Info Section */}
             <div className="flex-1 space-y-6 pt-2">
               <div>
                 <h2 className="text-xl font-semibold text-gray-900">{userInfo.name}</h2>
                 <p className="text-lg text-gray-500 mt-2">{userInfo.email}</p>
               </div>
 
-              {/* Security Section */}
-              <div className="pt-2">
-                <button
-                    onClick={() => navigate('/mypage/change-password')}
-                    className="text-sm text-blue-600 hover:text-blue-800 underline"
-                >
-                  비밀번호 변경
-                </button>
-              </div>
+              {!isGoogleUser && (
+                  <div className="pt-2">
+                    <button
+                        onClick={() => navigate('/mypage/change-password')}
+                        className="text-sm text-blue-600 hover:text-blue-800 underline"
+                    >
+                      비밀번호 변경
+                    </button>
+                  </div>
+              )}
             </div>
           </div>
         </div>

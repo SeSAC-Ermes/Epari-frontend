@@ -10,31 +10,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [userGroups, setUserGroups] = useState([]);
-
-  useEffect(() => {
-    const initializeAuth = async () => {
-      try {
-        const currentUser = await getCurrentUser();
-        const session = await fetchAuthSession();
-
-        // Cognito 그룹 정보 추출
-        const groups = session.tokens.accessToken.payload['cognito:groups'] || [];
-
-        setUser(currentUser);
-        setUserGroups(groups);
-      } catch (error) {
-        if (error.name !== 'UserUnAuthenticatedException') {
-          console.error('Unexpected auth error:', error);
-        }
-        setUser(null);
-        setUserGroups([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    initializeAuth();
-  }, []);
+  const [isGoogleUser, setIsGoogleUser] = useState(false);
 
   const hasRole = (requiredRole) => {
     return userGroups.includes(requiredRole);
@@ -44,9 +20,44 @@ export const AuthProvider = ({ children }) => {
     return requiredRoles.some(role => userGroups.includes(role));
   };
 
-  if (loading) {
+  useEffect(() => {
+    const initializeAuth = async () => {
+      try {
+        // 먼저 세션을 확인
+        const session = await fetchAuthSession();
 
-    // 로딩 중일 때 표시할 내용
+        if (session?.tokens) {  // 세션이 있는 경우에만 getCurrentUser 호출
+          const currentUser = await getCurrentUser();
+          const groups = session.tokens.accessToken.payload['cognito:groups'] || [];
+          const identities = session.tokens.idToken.payload['identities'] || [];
+          const isGoogle = identities.some(identity => identity.providerName === 'Google');
+
+          setUser(currentUser);
+          setUserGroups(groups);
+          setIsGoogleUser(isGoogle);
+        } else {
+          // 세션이 없는 경우
+          setUser(null);
+          setUserGroups([]);
+          setIsGoogleUser(false);
+        }
+      } catch (error) {
+        if (error.name !== 'UserUnAuthenticatedException') {
+          console.error('Auth Error:', error);
+        }
+        // 에러 발생시 초기화
+        setUser(null);
+        setUserGroups([]);
+        setIsGoogleUser(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initializeAuth();
+  }, []);
+
+  if (loading) {
     return (
         <div className="min-h-screen flex items-center justify-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
@@ -54,8 +65,17 @@ export const AuthProvider = ({ children }) => {
     );
   }
 
+  const value = {
+    user,
+    loading,
+    userGroups,
+    hasRole,
+    hasAnyRole,
+    isGoogleUser
+  };
+
   return (
-      <AuthContext.Provider value={{ user, loading, userGroups, hasRole, hasAnyRole }}>
+      <AuthContext.Provider value={value}>
         {children}
       </AuthContext.Provider>
   );
