@@ -7,6 +7,8 @@ import courseAPI from "../../api/course/courseAPI.js";
 import { calculateDday, formatDate, getAssignmentStatus } from "../../utils/DateUtils.js";
 import { useAssignmentActions, useAssignmentState, useAuth, useFileHandling } from './hooks/useAssignment';
 import { SubmissionApi } from "../../api/assignment/SubmissionApi.js";
+import { RoleBasedComponent } from "../../auth/RoleBasedComponent.jsx";
+import { ROLES } from "../../constants/auth.js";
 
 const AssignmentDetail = () => {
   const { courseId } = useParams();
@@ -138,20 +140,19 @@ const AssignmentDetail = () => {
                     className="w-64 pl-10 pr-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
               </div>
-              {state.isInstructor && (
+              <RoleBasedComponent requiredRoles={[ROLES.INSTRUCTOR]}>
                   <button
                       onClick={handleCreateClick}
                       className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg text-sm font-medium hover:bg-green-600 transition-colors"
                   >
                     출제하기
                   </button>
-              )}
+              </RoleBasedComponent>
             </div>
           </div>
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
             <table className="w-full">
-              {state.isInstructor ? (
-                  <>
+              <RoleBasedComponent requiredRoles={[ROLES.INSTRUCTOR]}>
                     <thead className="bg-gray-50 border-b border-gray-200">
                       <tr>
                         <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">No.</th>
@@ -373,9 +374,8 @@ const AssignmentDetail = () => {
                           </React.Fragment>
                       ))}
                     </tbody>
-                  </>
-              ) : (
-                  <>
+              </RoleBasedComponent>
+              <RoleBasedComponent requiredRoles={[ROLES.STUDENT]}>
                     <thead className="bg-gray-50 border-b border-gray-200">
                       <tr>
                         <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">No.</th>
@@ -427,8 +427,7 @@ const AssignmentDetail = () => {
                           </tr>
                       ))}
                     </tbody>
-                  </>
-              )}
+              </RoleBasedComponent>
             </table>
 
             {filteredAssignments.length === 0 && (

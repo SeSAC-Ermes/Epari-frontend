@@ -12,7 +12,7 @@ export const SubmissionApi = {
     try {
       const response = await apiClient.post(
           `/api/courses/${courseId}/assignments/${assignmentId}/submissions`,
-          formData,  // 이미 생성된 FormData를 직접 사용
+          formData,
           {
             headers: {
               'Content-Type': 'multipart/form-data',
@@ -30,11 +30,9 @@ export const SubmissionApi = {
   // 제출 수정
   updateSubmission: async (courseId, assignmentId, submissionId, submissionData) => {
     try {
-      // FormData 생성
       const formData = new FormData();
       formData.append('description', submissionData.description || '');
 
-      // 파일들 추가
       if (submissionData.files && submissionData.files.length > 0) {
         submissionData.files.forEach(file => {
           formData.append('files', file);
@@ -87,7 +85,7 @@ export const SubmissionApi = {
     try {
       const response = await apiClient.put(
           `/api/courses/${courseId}/assignments/${assignmentId}/submissions/${submissionId}/grade`,
-          gradeData  // { grade: 'PASS' | 'NONE_PASS', feedback: string }
+          gradeData
       );
       return response.data;
     } catch (error) {
@@ -98,12 +96,10 @@ export const SubmissionApi = {
 
   downloadSubmissionFile: async (courseId, assignmentId, submissionId, fileId, fileName) => {
     try {
-      // presigned URL을 받아옵니다
       const { data: presignedUrl } = await apiClient.get(
           `/api/courses/${courseId}/assignments/${assignmentId}/submissions/${submissionId}/files/${fileId}/download`
       );
 
-      // downloadFileFromUrl 유틸리티를 사용하여 다운로드
       await downloadFileFromUrl(presignedUrl, fileName);
     } catch (error) {
       console.error('Download error:', error);
