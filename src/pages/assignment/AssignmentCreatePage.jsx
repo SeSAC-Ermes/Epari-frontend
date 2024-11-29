@@ -7,6 +7,11 @@ import FileUpload from "../../components/common/FileUpload.jsx";
 import { AssignmentAPI } from "../../api/assignment/AssignmentApi.js";
 import TopBar from "../../components/layout/TopBar.jsx";
 import courseAPI from "../../api/course/courseAPI.js";
+import { withPageAuth } from "../../auth/WithAuth.jsx";
+
+/**
+ * 과제 출제하는 페이지입니다.
+ */
 
 const AssignmentCreatePage = () => {
   const navigate = useNavigate();
@@ -21,10 +26,6 @@ const AssignmentCreatePage = () => {
   const [files, setFiles] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
-
-  /**
-   * 과제 출제하는 페이지입니다.
-   */
 
   useEffect(() => {
     const fetchCourseInfo = async () => {
@@ -210,4 +211,4 @@ const AssignmentCreatePage = () => {
   );
 };
 
-export default AssignmentCreatePage;
+export default withPageAuth(AssignmentCreatePage, 'ASSIGNMENT_CREATION');
