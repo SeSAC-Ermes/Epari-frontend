@@ -24,7 +24,7 @@ const TopBar = () => {
           const idToken = session.tokens.idToken.payload;
 
           setUserName(idToken.name || '');
-          setProfileImage(idToken.picture || null);
+          setProfileImage(idToken['custom:profile_image'] || null);
         } else {
           // 일반 사용자의 경우 기존 방식 유지
           const userAttributes = await fetchUserAttributes();

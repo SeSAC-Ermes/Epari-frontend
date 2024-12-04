@@ -28,7 +28,7 @@ const UserProfile = () => {
         setUserInfo({
           name: idToken.name || '',
           email: idToken.email || '',
-          profileImage: idToken.picture || null  // Google 프로필 이미지
+          profileImage: idToken['custom:profile_image'] || null
         });
       } else {
         const currentUser = await getCurrentUser();

@@ -96,7 +96,7 @@ const CourseDetailContent = () => {
           instructor: {
             name: response.instructor?.name || '강사 정보가 없습니다.',
             email: response.instructor?.email || 'Email 정보가 없습니다.',
-            phoneNumber: response.instructor?.phoneNumber || response.instructor?.phone || '전화번호 정보가 없습니다.'
+            profileFileUrl: response.instructor?.profileImage?.fileUrl
           }
         };
         setCourseInfo(formattedCourseInfo);
