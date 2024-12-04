@@ -10,22 +10,23 @@ import Logo from '../../assets/epariLogo.jpg';
  */
 const TopBar = () => {
   const navigate = useNavigate();
-  const { isGoogleUser, profileImage } = useAuth();
+  const { isGoogleUser, profileImage: contextProfileImage } = useAuth();  // AuthContext의 profileImage 추가
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [userName, setUserName] = useState('');
+  const [profileImage, setProfileImage] = useState(null);
 
   useEffect(() => {
     const getUserInfo = async () => {
       try {
         if (isGoogleUser) {
-          // Google 사용자의 경우 세션에서 정보 가져오기
           const session = await fetchAuthSession();
           const idToken = session.tokens.idToken.payload;
           setUserName(idToken.name || '');
+          setProfileImage(idToken['custom:profile_image'] || null);
         } else {
-          // 일반 사용자의 경우 기존 방식 유지
           const userAttributes = await fetchUserAttributes();
           setUserName(userAttributes.name);
+          setProfileImage(userAttributes['custom:profile_image'] || null);
         }
       } catch (err) {
         console.error('Error fetching user info:', err);
@@ -33,7 +34,7 @@ const TopBar = () => {
     };
 
     getUserInfo();
-  }, [isGoogleUser]);
+  }, [isGoogleUser, contextProfileImage]);  // contextProfileImage 의존성 추가
 
   const handleLogout = async () => {
     try {
