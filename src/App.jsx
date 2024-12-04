@@ -39,6 +39,7 @@ import NoticeWritePage from "./pages/notice/NoticeWritePage.jsx";
 import NoticeListPage from "./pages/notice/NoticeListPage.jsx";
 import NoticeDetailPage from "./pages/notice/NoticeDetailPage.jsx";
 import NoticeEditContent from "./components/notice/NoticeEditContent.jsx";
+import CourseFileOffsetContent from "./components/course/file/CourseFileOffsetContent.jsx";
 
 function App() {
   return (
@@ -122,6 +123,8 @@ function App() {
               {/* 강의 관리 */}
               <Route path="curriculum" element={<CurriculumPage/>}/>
               <Route path="activities" element={<CourseFilePage/>}/>
+              {/* 오프셋 기반 페이지네이션 라우트 추가 */}
+              <Route path="offset" element={<CourseFileOffsetContent/>}/>
 
               {/* 강사 전용 */}
               <Route path="attendance" element={<AttendanceManagementPage/>}/>

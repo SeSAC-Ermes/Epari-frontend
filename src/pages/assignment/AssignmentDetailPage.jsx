@@ -10,6 +10,7 @@ import FileUpload from '../../components/common/FileUpload';
 import { SubmissionFileApi } from "../../api/assignment/SubmissionFileApi.js";
 import { useSubmission } from "../../components/assignment/hooks/useSubmission.js";
 import 'react-quill/dist/quill.snow.css';
+import { withPageAuth } from "../../auth/WithAuth.jsx";
 
 const AssignmentDetailPage = () => {
   const { courseId, assignmentId } = useParams();
@@ -278,4 +279,4 @@ const AssignmentDetailPage = () => {
   );
 };
 
-export default AssignmentDetailPage;
+export default withPageAuth(AssignmentDetailPage, 'ASSIGNMENT_DETAIL');
