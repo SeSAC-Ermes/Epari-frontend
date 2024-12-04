@@ -20,7 +20,27 @@ const GoogleLoginButton = () => {
           console.log('Auth Session:', session);
 
           const token = session.tokens.accessToken.toString();
+          const idToken = session.tokens.idToken.payload;
+
           localStorage.setItem('token', token);
+
+          // Google 사용자 프로필 이미지 업데이트
+          const isGoogleUser = Array.isArray(idToken.identities) &&
+              idToken.identities.some(identity => {
+                console.log('Identity object:', identity);
+                return identity.providerName === "Google";
+              });
+
+          if (isGoogleUser && idToken['custom:profile_image']) {
+            try {
+              await axios.post('/api/auth/google-profile', {
+                email: idToken.email,
+                imageUrl: idToken['custom:profile_image']
+              });
+            } catch (error) {
+              console.error('Failed to update Google profile image:', error);
+            }
+          }
 
           // 토큰에서 그룹 정보 직접 확인
           const groups = session.tokens.accessToken.payload['cognito:groups'] || [];
