@@ -35,9 +35,7 @@ export const AuthProvider = ({ children }) => {
           const groups = session.tokens.accessToken.payload['cognito:groups'] || [];
           const identities = session.tokens.idToken.payload['identities'] || [];
           const isGoogle = identities.some(identity => identity.providerName === 'Google');
-          const profileImageUrl = isGoogle
-              ? session.tokens.idToken.payload['custom:profile_image']
-              : session.tokens.idToken.payload['custom:profile_image'];
+          const profileImageUrl = session.tokens.idToken.payload['custom:profile_image'];
 
           setUser(currentUser);
           setUserGroups(groups);
