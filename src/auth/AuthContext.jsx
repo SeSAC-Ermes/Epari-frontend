@@ -11,6 +11,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [userGroups, setUserGroups] = useState([]);
   const [isGoogleUser, setIsGoogleUser] = useState(false);
+  const [profileImage, setProfileImage] = useState(null);
 
   const hasRole = (requiredRole) => {
     return userGroups.includes(requiredRole);
@@ -20,35 +21,42 @@ export const AuthProvider = ({ children }) => {
     return requiredRoles.some(role => userGroups.includes(role));
   };
 
+  const updateProfileImage = async (newImageUrl) => {
+    setProfileImage(newImageUrl);
+  };
+
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        // 먼저 세션을 확인
         const session = await fetchAuthSession();
 
-        if (session?.tokens) {  // 세션이 있는 경우에만 getCurrentUser 호출
+        if (session?.tokens) {
           const currentUser = await getCurrentUser();
           const groups = session.tokens.accessToken.payload['cognito:groups'] || [];
           const identities = session.tokens.idToken.payload['identities'] || [];
           const isGoogle = identities.some(identity => identity.providerName === 'Google');
+          const profileImageUrl = isGoogle
+              ? session.tokens.idToken.payload['custom:profile_image']
+              : session.tokens.idToken.payload['custom:profile_image'];
 
           setUser(currentUser);
           setUserGroups(groups);
           setIsGoogleUser(isGoogle);
+          setProfileImage(profileImageUrl);
         } else {
-          // 세션이 없는 경우
           setUser(null);
           setUserGroups([]);
           setIsGoogleUser(false);
+          setProfileImage(null);
         }
       } catch (error) {
         if (error.name !== 'UserUnAuthenticatedException') {
           console.error('Auth Error:', error);
         }
-        // 에러 발생시 초기화
         setUser(null);
         setUserGroups([]);
         setIsGoogleUser(false);
+        setProfileImage(null);
       } finally {
         setLoading(false);
       }
@@ -71,7 +79,9 @@ export const AuthProvider = ({ children }) => {
     userGroups,
     hasRole,
     hasAnyRole,
-    isGoogleUser
+    isGoogleUser,
+    profileImage,
+    updateProfileImage
   };
 
   return (
