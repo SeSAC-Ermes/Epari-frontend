@@ -19,11 +19,22 @@ const InstructorCard = ({ instructor }) => {
       <div className="bg-white rounded-lg p-6 h-[204px]">
         <div className="flex items-start gap-6">
           <div className="w-16 h-16 rounded-full bg-gray-200 overflow-hidden flex-shrink-0">
-            <img
-                src="/api/placeholder/64/64"
-                alt="강사 프로필"
-                className="w-full h-full object-cover"
-            />
+            {instructor?.profileFileUrl ? (
+                <img
+                    src={instructor.profileFileUrl}
+                    alt="강사 프로필"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.src = "/api/placeholder/64/64";
+                    }}
+                />
+            ) : (
+                <div className="w-full h-full flex items-center justify-center">
+              <span className="text-xl font-semibold text-gray-400">
+                {instructor.name[0].toUpperCase()}
+              </span>
+                </div>
+            )}
           </div>
           <div className="space-y-2">
             <div className="flex items-center gap-2">
