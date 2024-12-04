@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 /**
  * 강의 공지사항/Q&A 섹션 컴포넌트
@@ -7,10 +8,17 @@ import React from 'react';
  * - 전체보기 기능을 통해 상세 페이지로 이동 가능
  */
 
-const NoticeQnaSection = ({ activeTab, setActiveTab, notices, qnas, onNavigate }) => {
+const NoticeQnaSection = ({ activeTab, setActiveTab, notices, qnas, onNavigate, courseId }) => {
+  const navigate = useNavigate();
+
   const handleViewAll = () => {
-    onNavigate(activeTab); // 'notice' 또는 'qna'로 전달
+    onNavigate(activeTab);
   };
+
+  const handleNoticeClick = (noticeId) => {
+    navigate(`/courses/${courseId}/notices/${noticeId}`);
+  };
+
   return (
       <div className="bg-white rounded-lg p-6 mb-6">
         <div className="flex gap-6 mb-6 border-b">
@@ -60,7 +68,11 @@ const NoticeQnaSection = ({ activeTab, setActiveTab, notices, qnas, onNavigate }
           <tbody>
           {activeTab === 'notice'
               ? notices.map(notice => (
-                  <tr key={notice.id} className="border-b hover:bg-gray-50">
+                  <tr
+                      key={notice.id}
+                      className="border-b hover:bg-gray-50 cursor-pointer"
+                      onClick={() => handleNoticeClick(notice.id)}
+                  >
                     <td className="py-2 text-sm">{notice.id}</td>
                     <td className="py-2 text-sm">{notice.title}</td>
                     <td className="py-2 text-sm">{notice.writer}</td>
