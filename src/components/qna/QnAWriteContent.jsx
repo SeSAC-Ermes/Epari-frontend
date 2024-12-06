@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { User } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../../auth/AuthContext';
+import { fetchAuthSession, getCurrentUser, fetchUserAttributes } from 'aws-amplify/auth';
 
 const QnAWriteContent = ({
                            onTitleChange,
@@ -12,9 +14,64 @@ const QnAWriteContent = ({
   const imageFileInputRef = useRef();
   const attachmentFileInputRef = useRef();
   const [contentBlocks, setContentBlocks] = useState([{ type: 'text', content: '' }]);
-  const [profileImage, setProfileImage] = useState(null);
   const [attachments, setAttachments] = useState([]);
-  const [uploadedImageNames, setUploadedImageNames] = useState(new Set()); // 이미지 파일명 추적
+  const [uploadedImageNames, setUploadedImageNames] = useState(new Set());
+
+  // User profile state
+  const { isGoogleUser } = useAuth();
+  const [userInfo, setUserInfo] = useState({
+    name: "",
+    profileImage: null
+  });
+
+  const fetchUserInfo = async () => {
+    try {
+      const session = await fetchAuthSession();
+      const idToken = session.tokens.idToken.payload;
+
+      if (isGoogleUser) {
+        setUserInfo({
+          name: idToken.name || '',
+          profileImage: idToken['custom:profile_image'] || null
+        });
+      } else {
+        const currentUser = await getCurrentUser();
+        const userAttributes = await fetchUserAttributes();
+
+        setUserInfo({
+          name: userAttributes.name || currentUser.username,
+          profileImage: userAttributes['custom:profile_image']
+        });
+      }
+    } catch (err) {
+      console.error('Error fetching user info:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserInfo();
+  }, [isGoogleUser]);
+
+  const ProfileImage = ({ userInfo }) => {
+    const [imageError, setImageError] = useState(false);
+
+    if (!userInfo.profileImage || imageError) {
+      return (
+          <div className="w-full h-full flex items-center justify-center bg-gray-100">
+            <User className="w-8 h-8 text-gray-400"/>
+          </div>
+      );
+    }
+
+    return (
+        <img
+            src={userInfo.profileImage}
+            alt="Profile"
+            className="w-full h-full object-cover"
+            onError={() => setImageError(true)}
+        />
+    );
+  };
 
   const handleComplete = () => {
     navigate(`/courses/${courseId}/qna`);
@@ -46,7 +103,6 @@ const QnAWriteContent = ({
 
     files.forEach(file => {
       if (file.type.startsWith('image/')) {
-        // 이미 업로드된 이미지인지 확인
         if (!uploadedImageNames.has(file.name)) {
           const reader = new FileReader();
           reader.onloadend = () => {
@@ -57,7 +113,6 @@ const QnAWriteContent = ({
               name: file.name
             }, { type: 'text', content: '' }]);
 
-            // 업로드된 이미지 파일명 추가
             setUploadedImageNames(prev => new Set([...prev, file.name]));
           };
           reader.readAsDataURL(file);
@@ -79,7 +134,6 @@ const QnAWriteContent = ({
     const files = Array.from(event.target.files);
 
     files.forEach(file => {
-      // 이미 존재하는 파일인지 확인
       const isExisting = attachments.some(att => att.name === file.name);
 
       if (!isExisting) {
@@ -101,7 +155,6 @@ const QnAWriteContent = ({
   const handleImageRemove = (index) => {
     setContentBlocks(prev => {
       const newBlocks = [...prev];
-      // 삭제된 이미지의 파일명을 uploadedImageNames에서 제거
       const removedBlock = newBlocks[index];
       if (removedBlock.type === 'image') {
         setUploadedImageNames(prev => {
@@ -133,18 +186,6 @@ const QnAWriteContent = ({
     onContentChange(fullContent);
   };
 
-  const handleProfileImageChange = (event) => {
-    const file = event.target.files[0];
-    if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfileImage(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-    event.target.value = '';
-  };
-
   return (
       <div className="p-6 max-w-7xl mx-auto min-h-screen">
         <h1 className="text-2xl font-bold mb-8">Q&A 작성 화면</h1>
@@ -172,21 +213,8 @@ const QnAWriteContent = ({
 
           <div className="border border-gray-200 rounded-lg min-h-[calc(100vh-16rem)] bg-white overflow-hidden">
             <div className="flex justify-between items-center p-2 border-b bg-white">
-              <div
-                  className="relative w-12 h-12 rounded-full border border-gray-300 overflow-hidden bg-gray-50 cursor-pointer"
-                  onClick={() => document.getElementById('profile-image-input').click()}
-              >
-                {profileImage ? (
-                    <img
-                        src={profileImage}
-                        alt="Profile"
-                        className="w-full h-full object-cover"
-                    />
-                ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                      <User className="w-8 h-8 text-gray-400"/>
-                    </div>
-                )}
+              <div className="relative w-12 h-12 rounded-full border border-gray-300 overflow-hidden bg-gray-50">
+                <ProfileImage userInfo={userInfo}/>
               </div>
               <div className="flex space-x-1">
                 <button
@@ -243,7 +271,6 @@ const QnAWriteContent = ({
             </div>
 
             <div className="p-6 bg-white">
-              {/* 첨부파일 목록 */}
               {attachments.length > 0 && (
                   <div className="mb-4 space-y-2">
                     {attachments.map((file) => (
@@ -265,7 +292,6 @@ const QnAWriteContent = ({
                   </div>
               )}
 
-              {/* 텍스트 에디터 및 이미지 영역 */}
               <div className="space-y-4">
                 {contentBlocks.map((block, index) => (
                     <div key={block.type === 'image' ? block.id : index} className="w-full">
@@ -323,13 +349,6 @@ const QnAWriteContent = ({
             ref={attachmentFileInputRef}
             className="hidden"
             onChange={handleAttachmentFileChange}
-        />
-        <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            id="profile-image-input"
-            onChange={handleProfileImageChange}
         />
       </div>
   );
