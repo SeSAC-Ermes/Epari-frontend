@@ -5,6 +5,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext';
 import { fetchAuthSession, getCurrentUser, fetchUserAttributes } from 'aws-amplify/auth';
 
+/**
+ * Q&A 작성 컴포넌트
+ * @param {function} onTitleChange - 제목 변경 시 호출되는 콜백 함수
+ * @param {function} onContentChange - 내용 변경 시 호출되는 콜백 함수
+ */
 const QnAWriteContent = ({
                            onTitleChange,
                            onContentChange
@@ -16,6 +21,20 @@ const QnAWriteContent = ({
   const [contentBlocks, setContentBlocks] = useState([{ type: 'text', content: '' }]);
   const [attachments, setAttachments] = useState([]);
   const [uploadedImageNames, setUploadedImageNames] = useState(new Set());
+
+  // 카테고리 관련 상태
+  const [category, setCategory] = useState('BACK-END');
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+
+  // 카테고리별 스타일 정의
+  const categoryStyles = {
+    'BACK-END': 'bg-green-100 text-green-600',
+    'FRONT-END': 'bg-orange-100 text-orange-600',
+    'DATABASE': 'bg-blue-100 text-blue-600',
+    'INFRA': 'bg-purple-100 text-purple-600',
+    'SECURITY': 'bg-red-100 text-red-600',
+    'ETC': 'bg-gray-100 text-gray-600'
+  };
 
   // User profile state
   const { isGoogleUser } = useAuth();
@@ -52,6 +71,18 @@ const QnAWriteContent = ({
     fetchUserInfo();
   }, [isGoogleUser]);
 
+  // 드롭다운 외부 클릭 시 닫기
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showCategoryDropdown && !event.target.closest('.category-dropdown')) {
+        setShowCategoryDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showCategoryDropdown]);
+
   const ProfileImage = ({ userInfo }) => {
     const [imageError, setImageError] = useState(false);
 
@@ -71,6 +102,15 @@ const QnAWriteContent = ({
             onError={() => setImageError(true)}
         />
     );
+  };
+
+  const handleCategoryClick = () => {
+    setShowCategoryDropdown(!showCategoryDropdown);
+  };
+
+  const handleCategorySelect = (selectedCategory) => {
+    setCategory(selectedCategory);
+    setShowCategoryDropdown(false);
   };
 
   const handleComplete = () => {
@@ -193,12 +233,35 @@ const QnAWriteContent = ({
         <div className="space-y-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex-1 flex flex-col md:flex-row md:items-center gap-4">
-            <span className="inline-flex px-3 py-1 text-sm bg-green-100 text-green-600 rounded-full whitespace-nowrap">
-              BACK-END
-            </span>
+              <div className="relative category-dropdown">
+                <span
+                    onClick={handleCategoryClick}
+                    className={`inline-flex px-3 py-1 text-sm rounded-full whitespace-nowrap cursor-pointer min-w-[120px] justify-center ${categoryStyles[category]}`}
+                >
+    {category}
+  </span>
+
+                {showCategoryDropdown && (
+                    <div className="absolute mt-1 w-[120px] bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                      {Object.keys(categoryStyles).map((categoryName) => (
+                          <div
+                              key={categoryName}
+                              className="px-3 py-2 hover:bg-gray-50 cursor-pointer"
+                              onClick={() => handleCategorySelect(categoryName)}
+                          >
+          <span
+              className={`inline-flex px-2 py-1 text-sm rounded-full w-full justify-center ${categoryStyles[categoryName]}`}>
+            {categoryName}
+          </span>
+                          </div>
+                      ))}
+                    </div>
+                )}
+              </div>
+
               <input
                   type="text"
-                  placeholder="AWS 인프라 구축 관련 질문"
+                  placeholder="제목을 입력해주세요"
                   className="flex-1 min-w-0 px-4 py-2 border-b border-gray-200 focus:outline-none focus:border-gray-400"
                   onChange={(e) => onTitleChange(e.target.value)}
               />
@@ -360,10 +423,8 @@ QnAWriteContent.propTypes = {
 };
 
 QnAWriteContent.defaultProps = {
-  onTitleChange: () => {
-  },
-  onContentChange: () => {
-  }
+  onTitleChange: () => {},
+  onContentChange: () => {}
 };
 
 export default QnAWriteContent;
