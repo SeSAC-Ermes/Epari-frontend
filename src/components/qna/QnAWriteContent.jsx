@@ -423,8 +423,10 @@ QnAWriteContent.propTypes = {
 };
 
 QnAWriteContent.defaultProps = {
-  onTitleChange: () => {},
-  onContentChange: () => {}
+  onTitleChange: () => {
+  },
+  onContentChange: () => {
+  }
 };
 
 export default QnAWriteContent;
