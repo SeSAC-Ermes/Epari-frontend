@@ -1,9 +1,9 @@
 import React from 'react';
-import QnAContent from '../../components/qna/QnAContent.jsx';
+import QnAListContent from '../../components/qna/QnAListContent.jsx';
 
 const QnAListPage = () => {
   return (
-      <QnAContent/>
+      <QnAListContent/>
   );
 };
 
