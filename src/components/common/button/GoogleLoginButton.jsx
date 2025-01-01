@@ -23,18 +23,27 @@ const GoogleLoginButton = () => {
   const handleAuthRedirect = async () => {
     try {
       const session = await fetchAuthSession();
-      console.log('Auth Session:', session);
-
       const token = session.tokens.accessToken.toString();
       localStorage.setItem('token', token);
 
-      const { groups, email } = getSessionInfo(session);
-      await handleUserNavigation(session, groups, email);
+      const { groups } = getSessionInfo(session);
+
+      if (groups.some(group => ['INSTRUCTOR', 'STUDENT'].includes(group))) {
+        await updateGoogleProfile(session);
+        navigate('/courses');
+        return;
+      }
+
+      if (groups.includes('PENDING_ROLES')) {
+        navigate('/pending-approval');
+        return;
+      }
+
+      navigate('/pending-approval');
     } catch (error) {
-      console.error('Error during login process:', error.response?.data || error);
+      console.error('Error during login process:', error);
       await signOut();
       navigate('/signin');
-    } finally {
     }
   };
 
