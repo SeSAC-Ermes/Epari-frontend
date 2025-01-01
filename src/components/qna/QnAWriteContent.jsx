@@ -2,7 +2,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { User } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../../auth/AuthContext';
+import { fetchAuthSession, getCurrentUser, fetchUserAttributes } from 'aws-amplify/auth';
 
+/**
+ * Q&A 작성 컴포넌트
+ * @param {function} onTitleChange - 제목 변경 시 호출되는 콜백 함수
+ * @param {function} onContentChange - 내용 변경 시 호출되는 콜백 함수
+ */
 const QnAWriteContent = ({
                            onTitleChange,
                            onContentChange
@@ -12,9 +19,99 @@ const QnAWriteContent = ({
   const imageFileInputRef = useRef();
   const attachmentFileInputRef = useRef();
   const [contentBlocks, setContentBlocks] = useState([{ type: 'text', content: '' }]);
-  const [profileImage, setProfileImage] = useState(null);
   const [attachments, setAttachments] = useState([]);
-  const [uploadedImageNames, setUploadedImageNames] = useState(new Set()); // 이미지 파일명 추적
+  const [uploadedImageNames, setUploadedImageNames] = useState(new Set());
+
+  // 카테고리 관련 상태
+  const [category, setCategory] = useState('BACK-END');
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+
+  // 카테고리별 스타일 정의
+  const categoryStyles = {
+    'BACK-END': 'bg-green-100 text-green-600',
+    'FRONT-END': 'bg-orange-100 text-orange-600',
+    'DATABASE': 'bg-blue-100 text-blue-600',
+    'INFRA': 'bg-purple-100 text-purple-600',
+    'SECURITY': 'bg-red-100 text-red-600',
+    'ETC': 'bg-gray-100 text-gray-600'
+  };
+
+  // User profile state
+  const { isGoogleUser } = useAuth();
+  const [userInfo, setUserInfo] = useState({
+    name: "",
+    profileImage: null
+  });
+
+  const fetchUserInfo = async () => {
+    try {
+      const session = await fetchAuthSession();
+      const idToken = session.tokens.idToken.payload;
+
+      if (isGoogleUser) {
+        setUserInfo({
+          name: idToken.name || '',
+          profileImage: idToken['custom:profile_image'] || null
+        });
+      } else {
+        const currentUser = await getCurrentUser();
+        const userAttributes = await fetchUserAttributes();
+
+        setUserInfo({
+          name: userAttributes.name || currentUser.username,
+          profileImage: userAttributes['custom:profile_image']
+        });
+      }
+    } catch (err) {
+      console.error('Error fetching user info:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserInfo();
+  }, [isGoogleUser]);
+
+  // 드롭다운 외부 클릭 시 닫기
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showCategoryDropdown && !event.target.closest('.category-dropdown')) {
+        setShowCategoryDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showCategoryDropdown]);
+
+  const ProfileImage = ({ userInfo }) => {
+    const [imageError, setImageError] = useState(false);
+
+    if (!userInfo.profileImage || imageError) {
+      return (
+          <div className="w-full h-full flex items-center justify-center bg-gray-100">
+            <User className="w-8 h-8 text-gray-400"/>
+          </div>
+      );
+    }
+
+    return (
+        <img
+            src={userInfo.profileImage}
+            alt="Profile"
+            className="w-full h-full object-cover"
+            onError={() => setImageError(true)}
+        />
+    );
+  };
+
+  const handleCategoryClick = () => {
+    setShowCategoryDropdown(!showCategoryDropdown);
+  };
+
+  const handleCategorySelect = (selectedCategory) => {
+    setCategory(selectedCategory);
+    setShowCategoryDropdown(false);
+  };
 
   const handleComplete = () => {
     navigate(`/courses/${courseId}/qna`);
@@ -46,7 +143,6 @@ const QnAWriteContent = ({
 
     files.forEach(file => {
       if (file.type.startsWith('image/')) {
-        // 이미 업로드된 이미지인지 확인
         if (!uploadedImageNames.has(file.name)) {
           const reader = new FileReader();
           reader.onloadend = () => {
@@ -57,7 +153,6 @@ const QnAWriteContent = ({
               name: file.name
             }, { type: 'text', content: '' }]);
 
-            // 업로드된 이미지 파일명 추가
             setUploadedImageNames(prev => new Set([...prev, file.name]));
           };
           reader.readAsDataURL(file);
@@ -79,7 +174,6 @@ const QnAWriteContent = ({
     const files = Array.from(event.target.files);
 
     files.forEach(file => {
-      // 이미 존재하는 파일인지 확인
       const isExisting = attachments.some(att => att.name === file.name);
 
       if (!isExisting) {
@@ -101,7 +195,6 @@ const QnAWriteContent = ({
   const handleImageRemove = (index) => {
     setContentBlocks(prev => {
       const newBlocks = [...prev];
-      // 삭제된 이미지의 파일명을 uploadedImageNames에서 제거
       const removedBlock = newBlocks[index];
       if (removedBlock.type === 'image') {
         setUploadedImageNames(prev => {
@@ -133,18 +226,6 @@ const QnAWriteContent = ({
     onContentChange(fullContent);
   };
 
-  const handleProfileImageChange = (event) => {
-    const file = event.target.files[0];
-    if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfileImage(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-    event.target.value = '';
-  };
-
   return (
       <div className="p-6 max-w-7xl mx-auto min-h-screen">
         <h1 className="text-2xl font-bold mb-8">Q&A 작성 화면</h1>
@@ -152,12 +233,35 @@ const QnAWriteContent = ({
         <div className="space-y-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex-1 flex flex-col md:flex-row md:items-center gap-4">
-            <span className="inline-flex px-3 py-1 text-sm bg-green-100 text-green-600 rounded-full whitespace-nowrap">
-              BACK-END
-            </span>
+              <div className="relative category-dropdown">
+                <span
+                    onClick={handleCategoryClick}
+                    className={`inline-flex px-3 py-1 text-sm rounded-full whitespace-nowrap cursor-pointer min-w-[120px] justify-center ${categoryStyles[category]}`}
+                >
+    {category}
+  </span>
+
+                {showCategoryDropdown && (
+                    <div className="absolute mt-1 w-[120px] bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                      {Object.keys(categoryStyles).map((categoryName) => (
+                          <div
+                              key={categoryName}
+                              className="px-3 py-2 hover:bg-gray-50 cursor-pointer"
+                              onClick={() => handleCategorySelect(categoryName)}
+                          >
+          <span
+              className={`inline-flex px-2 py-1 text-sm rounded-full w-full justify-center ${categoryStyles[categoryName]}`}>
+            {categoryName}
+          </span>
+                          </div>
+                      ))}
+                    </div>
+                )}
+              </div>
+
               <input
                   type="text"
-                  placeholder="AWS 인프라 구축 관련 질문"
+                  placeholder="제목을 입력해주세요"
                   className="flex-1 min-w-0 px-4 py-2 border-b border-gray-200 focus:outline-none focus:border-gray-400"
                   onChange={(e) => onTitleChange(e.target.value)}
               />
@@ -172,21 +276,8 @@ const QnAWriteContent = ({
 
           <div className="border border-gray-200 rounded-lg min-h-[calc(100vh-16rem)] bg-white overflow-hidden">
             <div className="flex justify-between items-center p-2 border-b bg-white">
-              <div
-                  className="relative w-12 h-12 rounded-full border border-gray-300 overflow-hidden bg-gray-50 cursor-pointer"
-                  onClick={() => document.getElementById('profile-image-input').click()}
-              >
-                {profileImage ? (
-                    <img
-                        src={profileImage}
-                        alt="Profile"
-                        className="w-full h-full object-cover"
-                    />
-                ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                      <User className="w-8 h-8 text-gray-400"/>
-                    </div>
-                )}
+              <div className="relative w-12 h-12 rounded-full border border-gray-300 overflow-hidden bg-gray-50">
+                <ProfileImage userInfo={userInfo}/>
               </div>
               <div className="flex space-x-1">
                 <button
@@ -243,7 +334,6 @@ const QnAWriteContent = ({
             </div>
 
             <div className="p-6 bg-white">
-              {/* 첨부파일 목록 */}
               {attachments.length > 0 && (
                   <div className="mb-4 space-y-2">
                     {attachments.map((file) => (
@@ -265,7 +355,6 @@ const QnAWriteContent = ({
                   </div>
               )}
 
-              {/* 텍스트 에디터 및 이미지 영역 */}
               <div className="space-y-4">
                 {contentBlocks.map((block, index) => (
                     <div key={block.type === 'image' ? block.id : index} className="w-full">
@@ -323,13 +412,6 @@ const QnAWriteContent = ({
             ref={attachmentFileInputRef}
             className="hidden"
             onChange={handleAttachmentFileChange}
-        />
-        <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            id="profile-image-input"
-            onChange={handleProfileImageChange}
         />
       </div>
   );

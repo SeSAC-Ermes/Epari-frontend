@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';  // useRef 추가
+import React, { useState, useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import ReactQuill from 'react-quill';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -13,7 +13,7 @@ const NoticeWriteContent = () => {
   const navigate = useNavigate();
   const { courseId } = useParams();
   const { user, userGroups } = useAuth();
-  const quillRef = useRef(null);  // Quill 에디터 ref 추가
+  const quillRef = useRef(null);
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -23,7 +23,7 @@ const NoticeWriteContent = () => {
   const [error, setError] = useState(null);
   const [instructorId, setInstructorId] = useState(null);
 
-  // 이미지 업로드 핸들러 추가
+  // 이미지 업로드 핸들러
   const handleImageUpload = async (file) => {
     try {
       const formData = new FormData();
@@ -32,13 +32,50 @@ const NoticeWriteContent = () => {
       const response = await NoticeApi.uploadImage(formData);
 
       const editor = quillRef.current.getEditor();
-      const range = editor.getSelection();
+      const range = editor.getSelection() || { index: editor.getLength() };
       editor.insertEmbed(range.index, 'image', response.fileUrl);
     } catch (error) {
       console.error('이미지 업로드 실패:', error);
       alert('이미지 업로드에 실패했습니다.');
     }
   };
+
+  // 붙여넣기 이벤트 핸들러
+  const handlePaste = async (e) => {
+    const clipboard = e.clipboardData;
+    const items = clipboard?.items;
+
+    if (!items) return;
+
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+
+      if (item.type.indexOf('image') === 0) {
+        e.preventDefault(); // 이미지인 경우만 기본 동작 방지
+        const file = item.getAsFile();
+
+        if (file.size > 5 * 1024 * 1024) {
+          alert('이미지 크기는 5MB를 초과할 수 없습니다.');
+          return;
+        }
+
+        try {
+          const formData = new FormData();
+          formData.append('files', file);
+
+          const response = await NoticeApi.uploadImage(formData);
+
+          const editor = quillRef.current.getEditor();
+          const range = editor.getSelection() || { index: editor.getLength() };
+          editor.insertEmbed(range.index, 'image', response.fileUrl);
+        } catch (error) {
+          console.error('이미지 업로드 실패:', error);
+          alert('이미지 업로드에 실패했습니다.');
+        }
+      }
+    }
+  };
+
 
   useEffect(() => {
     if (!courseId) {
@@ -69,10 +106,13 @@ const NoticeWriteContent = () => {
     }
   }, [user, courseId, navigate]);
 
-  // Quill 에디터 이미지 핸들러 설정
+  // Quill 에디터 설정
   useEffect(() => {
     if (quillRef.current) {
       const editor = quillRef.current.getEditor();
+      const editorContainer = editor.root;
+
+      editorContainer.addEventListener('paste', handlePaste);
 
       editor.getModule('toolbar').addHandler('image', () => {
         const input = document.createElement('input');
@@ -83,13 +123,11 @@ const NoticeWriteContent = () => {
         input.onchange = async () => {
           const file = input.files[0];
 
-          // 이미지 파일 검증
           if (!file.type.startsWith('image/')) {
             alert('이미지 파일만 업로드 가능합니다.');
             return;
           }
 
-          // 파일 크기 제한 (5MB)
           if (file.size > 5 * 1024 * 1024) {
             alert('이미지 크기는 5MB를 초과할 수 없습니다.');
             return;
@@ -100,9 +138,12 @@ const NoticeWriteContent = () => {
           }
         };
       });
+
+      return () => {
+        editorContainer.removeEventListener('paste', handlePaste);
+      };
     }
   }, []);
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -121,39 +162,56 @@ const NoticeWriteContent = () => {
     try {
       setIsSubmitting(true);
 
-      const formData = new FormData();
-      formData.append('title', title);
-      formData.append('content', description);
-      formData.append('type', 'COURSE');
-      formData.append('courseId', courseId);
-      formData.append('instructorId', '1'); // 임시로 고정된 instructor ID 사용
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = description;
+      const images = tempDiv.getElementsByTagName('img');
+      for (let i = images.length - 1; i >= 0; i--) {
+        const img = images[i];
+        if (img.src.startsWith('data:image')) {
+          img.parentNode.removeChild(img);
+        }
+      }
+
+      const submitFormData = new FormData();
+      submitFormData.append('title', title);
+      submitFormData.append('content', tempDiv.innerHTML);
+      submitFormData.append('type', 'COURSE');
+      submitFormData.append('courseId', courseId);
+      submitFormData.append('instructorId', '1');
 
       if (files.length > 0) {
         files.forEach(file => {
-          formData.append('files', file);
+          submitFormData.append('files', file);
         });
       }
 
-      await NoticeApi.createNotice(formData);
+      console.log("=== FormData Contents ===");
+      for (let pair of submitFormData.entries()) {
+        console.log(pair[0] + ': ' + pair[1]);
+      }
+
+      await NoticeApi.createNotice(submitFormData);
       alert('공지사항이 성공적으로 등록되었습니다.');
       navigate(`/courses/${courseId}/notices`);
     } catch (err) {
       console.error('Upload Error:', err);
-      if (err.response?.data?.errors) {
-        const errorDetails = err.response.data.errors;
-        console.error('Validation Errors Details:', JSON.stringify(errorDetails, null, 2));
-        const errorMessage = errorDetails.map(error => error.defaultMessage || error.message).join('\n');
-        setError(errorMessage || '입력값이 올바르지 않습니다.');
+      if (err.response) {
+        console.error('Server Response:', {
+          data: err.response.data,
+          status: err.response.status,
+          headers: err.response.headers
+        });
       }
+      setError('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-
   const handleFilesChange = (newFiles) => {
     setFiles(newFiles);
   };
+
 
   return (
       <div className="flex-1 overflow-y-auto p-8">
@@ -183,7 +241,7 @@ const NoticeWriteContent = () => {
               <label className="block text-sm font-medium text-gray-700">내용</label>
               <div className="border border-gray-300 rounded-lg" style={{ height: '400px' }}>
                 <ReactQuill
-                    ref={quillRef}  // ref 추가
+                    ref={quillRef}
                     theme="snow"
                     value={description}
                     onChange={setDescription}
@@ -197,7 +255,7 @@ const NoticeWriteContent = () => {
 
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">파일 첨부</label>
-              <FileUpload onFilesChange={handleFilesChange}/>
+              <FileUpload onFilesChange={handleFilesChange} />
             </div>
 
             <div className="flex gap-4 justify-end pb-8">
@@ -229,7 +287,7 @@ const NoticeWriteContent = () => {
                         onClick={() => setShowModal(false)}
                         className="text-gray-500 hover:text-gray-700"
                     >
-                      <X size={20}/>
+                      <X size={20} />
                     </button>
                   </div>
                   <div className="space-y-4">

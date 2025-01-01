@@ -11,7 +11,7 @@ import axios from '../../api/axios.js';
 const UserProfile = () => {
   const [uploading, setUploading] = useState(false);
   const navigate = useNavigate();
-  const { isGoogleUser } = useAuth();
+  const { isGoogleUser, updateProfileImage } = useAuth();
   const [loading, setLoading] = useState(true);
   const [userInfo, setUserInfo] = useState({
     name: "",
@@ -28,7 +28,7 @@ const UserProfile = () => {
         setUserInfo({
           name: idToken.name || '',
           email: idToken.email || '',
-          profileImage: idToken.picture || null  // Google 프로필 이미지
+          profileImage: idToken['custom:profile_image'] || null
         });
       } else {
         const currentUser = await getCurrentUser();
@@ -78,6 +78,7 @@ const UserProfile = () => {
         profileImage: response.data
       }));
 
+      await updateProfileImage(response.data);
       await fetchUserInfo();  // 프로필 정보 새로고침
 
     } catch (error) {
@@ -99,6 +100,7 @@ const UserProfile = () => {
         profileImage: null
       }));
 
+      await updateProfileImage(null);
       await fetchUserInfo();  // 프로필 정보 새로고침
 
     } catch (error) {

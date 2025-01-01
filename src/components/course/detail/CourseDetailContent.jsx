@@ -58,14 +58,15 @@ const CourseDetailContent = () => {
   useEffect(() => {
     const fetchNotices = async () => {
       try {
-        const response = await NoticeApi.getGlobalNotices();
+        const response = await NoticeApi.getCourseNotices(courseId);  // 강의 공지사항을 불러오도록 수정
         const formattedNotices = response
-            .slice(0, 5) // 최대 5개까지만 표시
+            .slice(0, 5)
             .map(notice => ({
               id: notice.id,
               title: notice.title,
               writer: notice.instructorName,
-              date: new Date(notice.createdAt).toLocaleDateString()
+              date: new Date(notice.createdAt).toLocaleDateString(),
+              views: notice.viewCount
             }));
         setNotices(formattedNotices);
       } catch (error) {
@@ -73,10 +74,9 @@ const CourseDetailContent = () => {
       }
     };
 
-    if (activeTab === 'notice') {
-      fetchNotices();
-    }
-  }, [activeTab]);
+    fetchNotices();  // 조건문 없이 바로 실행
+  }, [courseId]);  // activeTab 대신 courseId를 dependency로 변경
+
 
   useEffect(() => {
     const fetchCourseDetails = async () => {
@@ -96,7 +96,7 @@ const CourseDetailContent = () => {
           instructor: {
             name: response.instructor?.name || '강사 정보가 없습니다.',
             email: response.instructor?.email || 'Email 정보가 없습니다.',
-            phoneNumber: response.instructor?.phoneNumber || response.instructor?.phone || '전화번호 정보가 없습니다.'
+            profileFileUrl: response.instructor?.profileImage?.fileUrl
           }
         };
         setCourseInfo(formattedCourseInfo);
@@ -114,7 +114,7 @@ const CourseDetailContent = () => {
   const handleNavigate = (path) => {
     switch (path) {
       case 'notice':
-        navigate(`/notices`);
+        navigate(`/courses/${courseId}/notices`);
         break;
       case 'qna':
         navigate(`/courses/${courseId}/qna`);
@@ -174,6 +174,7 @@ const CourseDetailContent = () => {
               notices={notices}
               qnas={qnas}
               onNavigate={handleNavigate}
+              courseId={courseId}
           />
         </div>
       </main>

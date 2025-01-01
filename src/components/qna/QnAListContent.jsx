@@ -1,8 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PenSquare, Search } from 'lucide-react';
+import { RoleBasedComponent } from "../../auth/RoleBasedComponent.jsx";
 
-const QnAContent = () => {
+const QnAListContent = () => {
   const navigate = useNavigate();
 
   const qnas = [
@@ -53,13 +54,15 @@ const QnAContent = () => {
                 />
               </div>
               {/* 글쓰기 버튼 */}
-              <button
-                  onClick={() => navigate(`write`)}
-                  className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
-              >
-                <PenSquare size={20}/>
-                글쓰기
-              </button>
+              <RoleBasedComponent requiredRoles={['STUDENT']}>
+                <button
+                    onClick={() => navigate(`write`)}
+                    className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
+                >
+                  <PenSquare size={20}/>
+                  글쓰기
+                </button>
+              </RoleBasedComponent>
             </div>
           </div>
 
@@ -102,4 +105,4 @@ const QnAContent = () => {
   );
 };
 
-export default QnAContent;
+export default QnAListContent;

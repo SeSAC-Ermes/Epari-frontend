@@ -36,7 +36,7 @@ const getIsInstructorFromToken = () => {
 
 const CourseListContent = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('notice');
+  const [activeTab, setActiveTab] = useState('courseNotice');
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
