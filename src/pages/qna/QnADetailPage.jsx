@@ -1,10 +1,10 @@
 import React from 'react';
-import QnAContent from '../../components/qna/QnAContent.jsx';
+import QnADetailContent from "../../components/qna/QnADetailContent.jsx";
 
-const QnAListPage = () => {
+const QnADetailPage = () => {
   return (
-      <QnAContent/>
+      <QnADetailContent/>
   );
 };
 
-export default QnAListPage;
+export default QnADetailPage;
