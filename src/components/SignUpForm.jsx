@@ -65,10 +65,21 @@ const SignUpForm = () => {
     }));
 
     if (name === 'email') {
+      const isValid = validateEmail(value);
+      const isGmail = value.toLowerCase().endsWith('@gmail.com');
+
       setValidation(prev => ({
         ...prev,
-        isEmailValid: validateEmail(value)
+        isEmailValid: isValid && !isGmail
       }));
+
+      if (isValid && isGmail) {
+        setError("구글 계정으로는 일반 회원가입이 불가능합니다. 구글 로그인을 이용해주세요.");
+      } else if (!isValid && value) {
+        setError("유효한 이메일 주소를 입력해주세요.");
+      } else {
+        setError("");
+      }
     } else if (name === 'name') {
       setValidation(prev => ({
         ...prev,
@@ -292,9 +303,6 @@ const SignUpForm = () => {
                   인증하기
                 </button>
               </div>
-              {!validation.isEmailValid && formData.email && (
-                  <p className="text-sm text-red-500">유효한 이메일 주소를 입력해주세요.</p>
-              )}
             </div>
 
             {/* Verification Code Field */}
