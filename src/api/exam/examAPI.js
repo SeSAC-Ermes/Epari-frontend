@@ -8,7 +8,9 @@ export const ExamAPI = {
   // 학생의 시험 결과 조회
   getCourseExamResults: async (courseId) => {
     try {
-      const response = await apiClient.get(`/api/courses/${courseId}/scores`);
+      const response = await apiClient.get(
+          `/api/courses/${courseId}/exams/scores`
+      );
       return response.data;
     } catch (error) {
       console.error('Error fetching exam results:', error);
@@ -194,10 +196,10 @@ export const ExamAPI = {
   },
 
   // 학생용 시험 결과 조회
-  getExamResult: async (courseId, examId) => {
+  getExamResult: async (courseId, examId, resultId) => {
     try {
       const response = await apiClient.get(
-          `/api/courses/${courseId}/exams/${examId}/submission/result`
+          `/api/courses/${courseId}/exams/${examId}/results/${resultId}`
       );
       return response.data;
     } catch (error) {
@@ -216,7 +218,7 @@ export const ExamAPI = {
   getExamResults: async (courseId, examId) => {
     try {
       const response = await apiClient.get(
-          `/api/courses/${courseId}/exams/${examId}/submission/results`
+          `/api/courses/${courseId}/exams/${examId}/results`
       );
       return response.data;
     } catch (error) {
