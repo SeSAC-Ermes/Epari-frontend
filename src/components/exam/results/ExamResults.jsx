@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { ChevronDown, ChevronUp, FileText } from 'lucide-react';
-import { useParams } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {ChevronDown, ChevronUp, FileText} from 'lucide-react';
+import {useParams} from 'react-router-dom';
 import apiClient from "../../../api/axios.js";
 
 const ExamResults = () => {
   const [expandedStudents, setExpandedStudents] = useState(new Set());
   const [examResults, setExamResults] = useState([]); // 빈 배열로 초기화
   const [loading, setLoading] = useState(true);
-  const { courseId, examId } = useParams();
+  const {courseId, examId} = useParams();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const resultsURL = `/api/courses/${courseId}/exams/${examId}/submission/results`;
+        const resultsURL = `/api/courses/${courseId}/exams/${examId}/results`;
 
         console.log('Requesting URL:', resultsURL); // URL 확인용
 
