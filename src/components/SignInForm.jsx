@@ -72,12 +72,23 @@ const SignInForm = () => {
     return true;
   };
 
+  // 구글 이메일 체크 함수 추가
+  const isGoogleEmail = (email) => {
+    return email.toLowerCase().endsWith('@gmail.com');
+  };
+
   // 로그인 폼 제출 처리
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
     if (!validateInputs()) {
+      return;
+    }
+
+    // 구글 이메일 체크를 먼저 수행
+    if (isGoogleEmail(email)) {
+      setError("구글 계정으로 가입하신 경우 구글 로그인을 이용해주세요.");
       return;
     }
 
@@ -192,11 +203,11 @@ const SignInForm = () => {
           <span className="text-3xl font-semibold">
             SeSAC
           </span>
-          <img
-              src={Logo}
-              alt="Epari Logo"
-              className="w-15 h-14 object-contain"
-          />
+            <img
+                src={Logo}
+                alt="Epari Logo"
+                className="w-15 h-14 object-contain"
+            />
           </div>
         </div>
 
