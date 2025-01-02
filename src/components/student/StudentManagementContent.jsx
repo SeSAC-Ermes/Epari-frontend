@@ -64,6 +64,7 @@ const StudentManagementContent = () => {
           id: stat.student.id,
           name: stat.student.name,
           email: stat.student.email,
+          profileFileUrl: stat.student.profileFileUrl,
           attendance: {
             present: stat.counts.presentCount,
             late: stat.counts.lateCount,

@@ -79,7 +79,6 @@ const NoticeDetailContent = () => {
     }
   };
 
-  // NoticeDetailContent.jsx의 handleFileDownload 함수 수정
   // NoticeDetailContent.jsx
   const handleFileDownload = async (fileId, fileName) => {
     try {
@@ -162,25 +161,25 @@ const NoticeDetailContent = () => {
             </div>
 
             {/* 이미지 미리보기 영역 */}
-            {notice.files?.some(file => isImageFile(file.originalFileName)) && (
-                <div className="mt-6 grid grid-cols-2 gap-4">
-                  {notice.files
-                      .filter(file => isImageFile(file.originalFileName))
-                      .map(file => (
-                          <div key={file.id} className="relative aspect-video bg-gray-100 rounded-lg overflow-hidden">
-                            <img
-                                src={`/api/notices/${noticeId}/files/${file.id}/download`}
-                                alt={file.originalFileName}
-                                className="w-full h-full object-contain"
-                                onError={(e) => {
-                                  console.error('Image loading error:', e);
-                                  e.target.style.display = 'none';
-                                }}
-                            />
-                          </div>
-                      ))}
-                </div>
-            )}
+            {/*{notice.files?.some(file => isImageFile(file.originalFileName)) && (*/}
+            {/*    <div className="mt-6 grid grid-cols-2 gap-4">*/}
+            {/*      {notice.files*/}
+            {/*          .filter(file => isImageFile(file.originalFileName))*/}
+            {/*          .map(file => (*/}
+            {/*              <div key={file.id} className="relative aspect-video bg-gray-100 rounded-lg overflow-hidden">*/}
+            {/*                <img*/}
+            {/*                    src={`/api/notices/${noticeId}/files/${file.id}/download`}*/}
+            {/*                    alt={file.originalFileName}*/}
+            {/*                    className="w-full h-full object-contain"*/}
+            {/*                    onError={(e) => {*/}
+            {/*                      console.error('Image loading error:', e);*/}
+            {/*                      e.target.style.display = 'none';*/}
+            {/*                    }}*/}
+            {/*                />*/}
+            {/*              </div>*/}
+            {/*          ))}*/}
+            {/*    </div>*/}
+            {/*)}*/}
 
             {/* 첨부파일 목록 */}
             {notice.files?.length > 0 && (

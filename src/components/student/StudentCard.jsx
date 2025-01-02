@@ -22,8 +22,21 @@ const StudentCard = ({ student, examResult, isExpanded, onToggle, courseId }) =>
             onClick={onToggle}
         >
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-              {student.name[0]}
+            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden">
+              {student.profileFileUrl ? (
+                  <img
+                      src={student.profileFileUrl}
+                      alt={`${student.name}의 프로필`}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.src = "/api/placeholder/64/64";
+                      }}
+                  />
+              ) : (
+                  <span className="text-gray-400 font-semibold">
+      {student.name[0].toUpperCase()}
+    </span>
+              )}
             </div>
             <div>
               <h3 className="font-medium">{student.name}</h3>
