@@ -11,76 +11,74 @@ const GoogleLoginButton = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const unsubscribe = Hub.listen("auth", async ({ payload }) => {
-      console.log('Auth Hub Event:', payload);
-
+    const unsubscribe = Hub.listen("auth", ({ payload }) => {
       if (payload.event === "signInWithRedirect") {
-        try {
-          const session = await fetchAuthSession();
-          console.log('Auth Session:', session);
-
-          const token = session.tokens.accessToken.toString();
-          const idToken = session.tokens.idToken.payload;
-
-          localStorage.setItem('token', token);
-
-          // Google 사용자 프로필 이미지 업데이트
-          const isGoogleUser = Array.isArray(idToken.identities) &&
-              idToken.identities.some(identity => {
-                console.log('Identity object:', identity);
-                return identity.providerName === "Google";
-              });
-
-          if (isGoogleUser && idToken['custom:profile_image']) {
-            try {
-              await axios.post('/api/auth/google-profile', {
-                email: idToken.email,
-                imageUrl: idToken['custom:profile_image']
-              });
-            } catch (error) {
-              console.error('Failed to update Google profile image:', error);
-            }
-          }
-
-          // 토큰에서 그룹 정보 직접 확인
-          const groups = session.tokens.accessToken.payload['cognito:groups'] || [];
-          console.log('User Groups:', groups);
-
-          // INSTRUCTOR나 STUDENT 그룹이 있으면 courses로 이동
-          if (groups.includes('INSTRUCTOR') || groups.includes('STUDENT')) {
-            navigate('/courses');
-          }
-          // PENDING_ROLES 그룹이면 pending-approval로 이동
-          else if (groups.includes('PENDING_ROLES')) {
-            navigate('/pending-approval');
-          }
-          // 그 외의 경우(ap-northeast-2_pD4FKh81Z_Google 그룹만 있는 경우)
-          else {
-            // 백엔드에 PENDING_ROLES 그룹 추가 요청
-            const email = session.tokens.accessToken.payload['email'];
-            console.log('Attempting to add user to PENDING_ROLES:', email);
-
-            const response = await axios.post('/api/auth/add-pending-role', { email });
-            console.log('Add pending role response:', response);
-
-            if (response.status === 200) {
-              // 성공적으로 그룹이 추가되면 페이지 이동
-              navigate('/pending-approval');
-            } else {
-              console.error('Failed to add PENDING_ROLES:', response);
-              throw new Error('Failed to add PENDING_ROLES');
-            }
-          }
-        } catch (error) {
-          console.error('Error during login process:', error.response?.data || error);
-          await signOut();
-          navigate('/signin');
-        }
+        handleAuthRedirect();
       }
     });
 
     return () => unsubscribe();
   }, [navigate]);
+
+  const handleAuthRedirect = async () => {
+    try {
+      const session = await fetchAuthSession();
+      const token = session.tokens.accessToken.toString();
+      localStorage.setItem('token', token);
+
+      const { groups } = getSessionInfo(session);
+
+      if (groups.some(group => ['INSTRUCTOR', 'STUDENT'].includes(group))) {
+        await updateGoogleProfile(session);
+        navigate('/courses');
+        return;
+      }
+
+      if (groups.includes('PENDING_ROLES')) {
+        navigate('/pending-approval');
+        return;
+      }
+
+      navigate('/pending-approval');
+    } catch (error) {
+      console.error('Error during login process:', error);
+      await signOut();
+      navigate('/signin');
+    }
+  };
+
+  const getSessionInfo = (session) => {
+    const groups = session.tokens.accessToken.payload['cognito:groups'] || [];
+    const email = session.tokens.accessToken.payload['email'];
+    console.log('User Groups:', groups);
+    return { groups, email };
+  };
+
+  const handleUserNavigation = async (session, groups) => {
+    if (groups.includes('INSTRUCTOR') || groups.includes('STUDENT')) {
+      await updateGoogleProfile(session);
+      navigate('/courses');
+      return;
+    }
+    navigate('/pending-approval');
+  };
+
+  const updateGoogleProfile = async (session) => {
+    const idToken = session.tokens.idToken.payload;
+    const isGoogleUser = Array.isArray(idToken.identities) &&
+        idToken.identities.some(identity => identity.providerName === "Google");
+
+    if (isGoogleUser && idToken['custom:profile_image']) {
+      try {
+        await axios.post('/api/auth/google-profile', {
+          email: idToken.email,
+          imageUrl: idToken['custom:profile_image']
+        });
+      } catch (error) {
+        console.error('Failed to update Google profile image:', error);
+      }
+    }
+  };
 
   const handleGoogleSignIn = async () => {
     try {
