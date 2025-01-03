@@ -5,6 +5,7 @@ import TinyEditor from '../editor/TinyEditor';
 import ToastEditor from '../editor/ToastEditor';
 import EditorTabs from '../editor/EditorTabs';
 import { useAuth } from '../../auth/AuthContext';
+import boardApiClient from '../../api/boardAxios';
 
 const BoardWriteContent = () => {
   const { user } = useAuth();
@@ -68,10 +69,7 @@ const BoardWriteContent = () => {
 
   const fetchPost = async (postId) => {
     try {
-      const response = await fetch(`/api/posts/${postId}`);
-      if (!response.ok) throw new Error('게시글을 불러올 수 없습니다.');
-
-      const post = await response.json();
+      const { data: post } = await boardApiClient.get(`/posts/${postId}`);
 
       if (isMounted.current) {
         setOriginalPost(post);
@@ -107,14 +105,9 @@ const BoardWriteContent = () => {
       setIsSubmitting(true);
       const updatedContent = await processImages(editorContents[activeTab]);
 
-      if (!isMounted.current) return; // Exit if component is unmounted
+      if (!isMounted.current) return;
 
-      const endpoint = isEditMode
-          ? `/api/posts/${originalPost.PK.split('#')[1]}`
-          : `/api/posts`;
-
-      const method = isEditMode ? 'PUT' : 'POST';
-
+      const postId = isEditMode ? originalPost.PK.split('#')[1] : '';
       const postData = {
         title,
         content: updatedContent,
@@ -127,17 +120,11 @@ const BoardWriteContent = () => {
         }
       };
 
-      const response = await fetch(endpoint, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(postData),
-      });
-
-      if (!isMounted.current) return; // Exit if component is unmounted
-
-      if (!response.ok) throw new Error('게시글 저장에 실패했습니다.');
+      if (isEditMode) {
+        await boardApiClient.put(`/posts/${postId}`, postData);
+      } else {
+        await boardApiClient.post('/posts', postData);
+      }
 
       navigate('/board');
     } catch (error) {
@@ -157,29 +144,23 @@ const BoardWriteContent = () => {
     const images = doc.querySelectorAll('img[data-filename]');
 
     for (const img of images) {
-      if (!isMounted.current) return content; // Exit if component is unmounted
+      if (!isMounted.current) return content;
 
       const fileName = img.getAttribute('data-filename');
       const blob = tempImages.get(fileName);
 
       if (blob) {
         try {
-          const response = await fetch('/api/uploads/presigned-url', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              fileType: '.png',
-              contentType: 'image/png',
-              key: fileName,
-              source: fileName.startsWith('drawings/') ? 'drawing' : 'image'
-            })
+          const { data } = await boardApiClient.post('/uploads/presigned-url', {
+            fileType: '.png',
+            contentType: 'image/png',
+            key: fileName,
+            source: fileName.startsWith('drawings/') ? 'drawing' : 'image'
           });
 
-          if (!isMounted.current) return content; // Exit if component is unmounted
+          if (!isMounted.current) return content;
 
-          if (!response.ok) throw new Error('Failed to get presigned URL');
-
-          const { uploadUrl } = await response.json();
+          const { uploadUrl } = data;
           await fetch(uploadUrl, {
             method: 'PUT',
             body: blob,

@@ -6,6 +6,7 @@ import { useAuth } from '../../auth/AuthContext';
 import TagSearch from './TagSearch';
 import TrendingPosts from './TrendingPosts';
 import CategorySlider from "../../components/board/CategorySlider.jsx";
+import boardApiClient from '../../api/boardAxios';
 
 const BoardListContent = () => {
   const [allPosts, setAllPosts] = useState([]); // 전체 게시물 저장
@@ -36,9 +37,7 @@ const BoardListContent = () => {
     const fetchInitialPosts = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/api/posts');
-        if (!response.ok) throw new Error('Failed to fetch posts');
-        const data = await response.json();
+        const { data } = await boardApiClient.get('/posts');
         setAllPosts(data);
         setFilteredPosts(data);
       } catch (error) {
@@ -93,9 +92,7 @@ const BoardListContent = () => {
     const fetchPosts = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/api/posts');
-        if (!response.ok) throw new Error('Failed to fetch posts');
-        const data = await response.json();
+        const { data } = await boardApiClient.get('/posts');
         setAllPosts(data);
       } catch (error) {
         console.error('Error fetching posts:', error);
@@ -112,17 +109,11 @@ const BoardListContent = () => {
     if (!user) return;
 
     try {
-      const response = await fetch(`/api/posts/${postId}/like`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userId: user.username }),
+      const { data } = await boardApiClient.post(`/posts/${postId}/like`, {
+        userId: user.username
       });
 
-      if (!response.ok) throw new Error('Failed to update like');
-
-      const { likes, likedUsers } = await response.json();
+      const { likes, likedUsers } = data;
 
       // allPosts와 filteredPosts 모두 업데이트
       const updatePosts = (posts) =>
@@ -159,9 +150,7 @@ const BoardListContent = () => {
     if (!value.trim()) {
       const fetchInitialPosts = async () => {
         try {
-          const response = await fetch('/api/posts');
-          if (!response.ok) throw new Error('Failed to fetch posts');
-          const data = await response.json();
+          const { data } = await boardApiClient.get('/posts');
           setAllPosts(data);
           setFilteredPosts(data);
         } catch (error) {

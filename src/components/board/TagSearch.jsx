@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import boardApiClient from '../../api/boardAxios';
 
 function TagSearch({ onTagSelect }) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -8,12 +9,9 @@ function TagSearch({ onTagSelect }) {
     let mounted = true;
     const fetchPopularTags = async () => {
       try {
-        const response = await fetch('/api/tags/popular');
+        const { data } = await boardApiClient.get('/tags/popular');
         if (!mounted) return;
-        if (response.ok) {
-          const data = await response.json();
-          setPopularTags(data);
-        }
+        setPopularTags(data);
       } catch (error) {
         console.error('Error fetching popular tags:', error);
       }

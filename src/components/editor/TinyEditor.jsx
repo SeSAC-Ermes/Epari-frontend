@@ -3,6 +3,8 @@ import { Editor } from '@tinymce/tinymce-react';
 import { Excalidraw, exportToCanvas } from "@excalidraw/excalidraw";
 import { v4 as uuidv4 } from 'uuid';
 import 'highlight.js/styles/atom-one-dark.css';
+import boardApiClient from '../../api/boardAxios';
+
 
 function TinyEditor({ content, onChange, onTempImageAdd }) {
   const editorRef = useRef(null);
@@ -72,22 +74,13 @@ function TinyEditor({ content, onChange, onTempImageAdd }) {
 
     try {
       setIsLoading(true);
-      // Carbon API를 통해 코드 이미지 생성
-      const response = await fetch('/api/carbon/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ code: carbonCode })
+      const { data } = await boardApiClient.post('/carbon/generate', {
+        code: carbonCode
       });
-
-      if (!response.ok) throw new Error('코드 이미지 생성 실패');
-
-      const { url } = await response.json();
 
       // 에디터에 코드 이미지 삽입
       editorRef.current.selection.setContent(
-          `<img src="${url}" alt="code" style="max-width: 100%;" />`
+          `<img src="${data.url}" alt="code" style="max-width: 100%;" />`
       );
 
       setShowCarbon(false);
@@ -138,41 +131,32 @@ function TinyEditor({ content, onChange, onTempImageAdd }) {
                 // 일반 이미지 업로드 핸들러도 임시 저장소 사용
                 images_upload_handler: async (blobInfo) => {
                   const fileName = `images/${uuidv4()}-${blobInfo.filename()}`;
-                  // 1. presigned URL 요청
-                  const response = await fetch('/api/uploads/presigned-url', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
+                  try {
+                    // 1. presigned URL 요청
+                    const { data } = await boardApiClient.post('/uploads/presigned-url', {
                       fileType: '.png',
                       contentType: 'image/png',
                       key: fileName,
                       source: fileName.startsWith('drawings/') ? 'drawing' : 'image'
-                    })
-                  });
+                    });
 
-                  if (!response.ok) {
-                    const errorData = await response.json();
-                    console.error('presigned URL 요청 실패:', response.status, errorData);
-                    throw new Error('Failed to get presigned URL');
+                    // 2. S3에 이미지 업로드
+                    const s3Response = await fetch(data.uploadUrl, {
+                      method: 'PUT',
+                      body: blobInfo.blob(),
+                      headers: { 'Content-Type': 'image/png' }
+                    });
+
+                    if (!s3Response.ok) {
+                      throw new Error('Failed to upload image to S3');
+                    }
+
+                    // 3. 업로드된 이미지 URL 반환
+                    return data.uploadUrl.split('?')[0];
+                  } catch (error) {
+                    console.error('이미지 업로드 실패:', error);
+                    throw error;
                   }
-
-                  const { uploadUrl } = await response.json();
-
-                  // 2. S3에 이미지 업로드
-                  const s3Response = await fetch(uploadUrl, {
-                    method: 'PUT',
-                    body: blobInfo.blob(),
-                    headers: { 'Content-Type': 'image/png' }
-                  });
-
-                  if (!s3Response.ok) {
-                    console.error('S3 업로드 실패:', s3Response.status);
-                    throw new Error('Failed to upload image to S3');
-                  }
-
-                  // 3. 업로드된 이미지 URL 반환
-                  const finalUrl = uploadUrl.split('?')[0];
-                  return finalUrl;
                 }
               }}
               onEditorChange={onChange}

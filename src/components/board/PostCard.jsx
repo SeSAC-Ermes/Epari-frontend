@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import defaultAvatar from '../../assets/default-avatar.png';
+import boardApiClient from '../../api/boardAxios';
 
 function PostCard({ post }) {
   const [showMenu, setShowMenu] = useState(false);
@@ -8,7 +9,7 @@ function PostCard({ post }) {
 
   const handleEdit = () => {
     const postId = post.id.split('#')[1];
-    navigate(`/courses/write?edit=${postId}`);
+    navigate(`/board/write?edit=${postId}`);
     setShowMenu(false);
   };
 
@@ -16,12 +17,7 @@ function PostCard({ post }) {
     if (!window.confirm('정말 삭제하시겠습니까?')) return;
 
     try {
-      const response = await fetch(`/api/courses/${post.courseId}/board/posts/${post.id.split('#')[1]}`, {
-        method: 'DELETE'
-      });
-
-      if (!response.ok) throw new Error('Failed to delete post');
-
+      await boardApiClient.delete(`/posts/${post.id.split('#')[1]}`);
       // 부모 컴포넌트에서 목록을 새로고침하거나 해당 게시글을 제거
       window.location.reload();
     } catch (error) {
@@ -86,7 +82,7 @@ function PostCard({ post }) {
             )}
           </div>
         </div>
-        <Link to={`/courses/${post.courseId}/board/${post.id}`}>
+        <Link to={`/board/${post.id.split('#')[1]}`}>
           <h2 className="mt-4 text-xl font-semibold hover:text-blue-600">{post.title}</h2>
         </Link>
         <p className="mt-2 text-gray-600">{createExcerpt(post.content)}</p>
