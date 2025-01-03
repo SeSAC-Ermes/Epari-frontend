@@ -40,6 +40,9 @@ import NoticeListPage from "./pages/notice/NoticeListPage.jsx";
 import NoticeDetailPage from "./pages/notice/NoticeDetailPage.jsx";
 import NoticeEditContent from "./components/notice/NoticeEditContent.jsx";
 import CourseFileOffsetContent from "./components/course/file/CourseFileOffsetContent.jsx";
+import BoardListPage from "./pages/board/BoardListPage.jsx";
+import BoardWritePage from "./pages/board/BoardWritePage.jsx";
+import BoardDetailPage from "./pages/board/BoardDetailPage.jsx";
 
 function App() {
   return (
@@ -71,6 +74,13 @@ function App() {
                 }/>
                 <Route path=":noticeId" element={<NoticeDetailPage type="GLOBAL"/>}/>
                 <Route path=":noticeId/edit" element={<NoticeEditContent type="GLOBAL"/>}/>
+              </Route>
+
+              {/* 게시판 */}
+              <Route path="/board">
+                <Route index element={<BoardListPage />} />
+                <Route path="write" element={<BoardWritePage />} />
+                <Route path=":postId" element={<BoardDetailPage />} />
               </Route>
             </Route>
 
@@ -123,6 +133,7 @@ function App() {
               {/* 강의 관리 */}
               <Route path="curriculum" element={<CurriculumPage/>}/>
               <Route path="activities" element={<CourseFilePage/>}/>
+
               {/* 오프셋 기반 페이지네이션 라우트 추가 */}
               <Route path="offset" element={<CourseFileOffsetContent/>}/>
 
