@@ -47,7 +47,7 @@ export default defineConfig(({ command, mode }) => {
     server: {
       proxy: {
         '/api': {
-          target: 'https://mrw10sc2ic.execute-api.ap-northeast-2.amazonaws.com',
+          target: 'https://1wem7asq9b.execute-api.ap-northeast-2.amazonaws.com',
           // target: env.VITE_API_URL || 'http://localhost:3000',
           changeOrigin: true,
           secure: false,

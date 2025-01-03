@@ -1,7 +1,7 @@
 import { fetchAuthSession } from 'aws-amplify/auth';
 import axios from 'axios';
 
-const BOARD_API_URL = 'https://mrw10sc2ic.execute-api.ap-northeast-2.amazonaws.com';
+const BOARD_API_URL = 'https://1wem7asq9b.execute-api.ap-northeast-2.amazonaws.com';
 
 const boardApiClient = axios.create({
   baseURL: BOARD_API_URL,
