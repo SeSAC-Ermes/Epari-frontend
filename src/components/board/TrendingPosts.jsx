@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import boardApiClient from '../../api/boardAxios';
 
 function TrendingPosts() {
   const [trendingPosts, setTrendingPosts] = useState([]);
@@ -11,15 +12,11 @@ function TrendingPosts() {
     const fetchTrendingPosts = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/api/posts/trending');
+        const { data } = await boardApiClient.get('/posts/trending');
         if (!mounted) return;
-        if (!response.ok) throw new Error('Failed to fetch trending posts');
 
-        const data = await response.json();
-        if (mounted) {
-          // 데이터가 배열인지 확인하고 설정
-          setTrendingPosts(Array.isArray(data) ? data : []);
-        }
+        // 데이터가 배열인지 확인하고 설정
+        setTrendingPosts(Array.isArray(data) ? data : []);
       } catch (error) {
         if (mounted) {
           console.error('Error fetching trending posts:', error);

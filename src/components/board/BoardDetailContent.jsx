@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Eye, Heart, MessageSquare } from 'lucide-react';
 import { useAuth } from '../../auth/AuthContext';
 import CommentItem from '../../components/board/CommentItem.jsx';
+import boardApiClient from '../../api/boardAxios';
 
 const BoardDetailContent = () => {
   const { postId } = useParams();
@@ -20,9 +21,7 @@ const BoardDetailContent = () => {
   const fetchPost = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/posts/${postId}`);
-      if (!response.ok) throw new Error('Failed to fetch post');
-      const data = await response.json();
+      const { data } = await boardApiClient.get(`/posts/${postId}`);
       setPost(data);
     } catch (error) {
       console.error('Error fetching post:', error);
@@ -35,11 +34,7 @@ const BoardDetailContent = () => {
     if (!window.confirm('정말 삭제하시겠습니까?')) return;
 
     try {
-      const response = await fetch(`/api/posts/${postId}`, {
-        method: 'DELETE'
-      });
-
-      if (!response.ok) throw new Error('Failed to delete post');
+      await boardApiClient.delete(`/posts/${postId}`);
       navigate('/board');
     } catch (error) {
       console.error('Error deleting post:', error);
@@ -50,16 +45,10 @@ const BoardDetailContent = () => {
     if (!user) return;
 
     try {
-      const response = await fetch(`/api/posts/${postId}/like`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userId: user.username })
+      const { data } = await boardApiClient.post(`/posts/${postId}/like`, {
+        userId: user.username
       });
 
-      if (!response.ok) throw new Error('Failed to update like');
-      const data = await response.json();
       setPost(prev => ({
         ...prev,
         metadata: {
@@ -79,23 +68,14 @@ const BoardDetailContent = () => {
 
     try {
       setIsSubmitting(true);
-      const response = await fetch(`/api/posts/${postId}/comments`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          content: comment,
-          author: {
-            id: user.username,
-            name: user.username
-          }
-        })
+      const { data: newComment } = await boardApiClient.post(`/posts/${postId}/comments`, {
+        content: comment,
+        author: {
+          id: user.username,
+          name: user.username
+        }
       });
 
-      if (!response.ok) throw new Error('Failed to post comment');
-
-      const newComment = await response.json();
       setPost(prev => ({
         ...prev,
         comments: [...(prev.comments || []), newComment],
@@ -114,20 +94,11 @@ const BoardDetailContent = () => {
 
   const handleCommentUpdate = async (commentId, content) => {
     try {
-      const response = await fetch(`/api/posts/${postId}/comments/${commentId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(content)
-      });
+      const { data: updatedComment } = await boardApiClient.put(
+          `/posts/${postId}/comments/${commentId}`,
+          content
+      );
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to update comment');
-      }
-
-      const updatedComment = await response.json();
       setPost(prev => ({
         ...prev,
         comments: prev.comments.map(c =>
@@ -142,11 +113,7 @@ const BoardDetailContent = () => {
 
   const handleCommentDelete = async (commentId) => {
     try {
-      const response = await fetch(`/api/posts/${postId}/comments/${commentId}`, {
-        method: 'DELETE'
-      });
-
-      if (!response.ok) throw new Error('Failed to delete comment');
+      await boardApiClient.delete(`/posts/${postId}/comments/${commentId}`);
 
       setPost(prev => ({
         ...prev,

@@ -38,7 +38,7 @@ function CategoryFilter({ selectedCategory, onCategoryChange }) {
         ))}
       </div>
       <button
-        onClick={() => navigate('/courses/write')}
+          onClick={() => navigate('/board/write')}
         className="px-4 py-2 text-sm font-medium bg-black text-white rounded-full hover:bg-gray-800 transition-colors duration-200"
       >
         + New Post
