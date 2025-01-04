@@ -43,6 +43,7 @@ import CourseFileOffsetContent from "./components/course/file/CourseFileOffsetCo
 import BoardListPage from "./pages/board/BoardListPage.jsx";
 import BoardWritePage from "./pages/board/BoardWritePage.jsx";
 import BoardDetailPage from "./pages/board/BoardDetailPage.jsx";
+import ChatbotLayout from "./components/layout/ChatbotLayout.jsx";
 
 function App() {
   return (
@@ -77,10 +78,12 @@ function App() {
               </Route>
 
               {/* 게시판 */}
-              <Route path="/board">
-                <Route index element={<BoardListPage />} />
-                <Route path="write" element={<BoardWritePage />} />
-                <Route path=":postId" element={<BoardDetailPage />} />
+              <Route element={<ChatbotLayout/>}>
+                <Route path="/board">
+                  <Route index element={<BoardListPage/>}/>
+                  <Route path="write" element={<BoardWritePage/>}/>
+                  <Route path=":postId" element={<BoardDetailPage/>}/>
+                </Route>
               </Route>
             </Route>
 
