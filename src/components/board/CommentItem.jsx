@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from "../../auth/AuthContext.jsx";
+import defaultAvatar from '../../assets/default-avatar.jpg';
 
 const CommentItem = ({ comment, onUpdate, onDelete }) => {
   const { user } = useAuth();
@@ -7,6 +8,23 @@ const CommentItem = ({ comment, onUpdate, onDelete }) => {
   const [editContent, setEditContent] = useState(comment.content);
 
   const isAuthor = user?.username === comment.author.id;
+
+  const getProfileImageUrl = () => {
+    if (comment.author.id.startsWith('kakao_') || comment.author.id.startsWith('google_')) {
+      return comment.author.picture || defaultAvatar;
+    }
+    return defaultAvatar;
+  };
+
+  const getDisplayName = () => {
+    if (comment.author.name) {
+      return comment.author.name;
+    }
+    if (comment.author.id.startsWith('google_')) {
+      return user?.attributes?.name || comment.author.id;
+    }
+    return comment.author.id;
+  };
 
   const handleSubmit = async () => {
     if (!editContent.trim()) return;
@@ -23,13 +41,13 @@ const CommentItem = ({ comment, onUpdate, onDelete }) => {
   return (
       <div className="flex space-x-3 p-4 bg-gray-50 rounded-lg">
         <img
-            src={comment.author.avatar || '/default-avatar.png'}
-            alt={comment.author.name}
-            className="w-8 h-8 rounded-full"
+            src={getProfileImageUrl()}
+            alt={getDisplayName()}
+            className="w-8 h-8 rounded-full object-cover"
         />
         <div className="flex-1">
           <div className="flex items-center justify-between">
-            <h4 className="text-sm font-medium text-gray-900">{comment.author.name}</h4>
+            <h4 className="text-sm font-medium text-gray-900">{getDisplayName()}</h4>
             <div className="flex items-center space-x-2">
               <time className="text-xs text-gray-500">
                 {new Date(comment.createdAt).toLocaleDateString()}

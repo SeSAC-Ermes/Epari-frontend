@@ -107,6 +107,12 @@ const BoardWriteContent = () => {
 
       if (!isMounted.current) return;
 
+      const currentUser = {
+        id: user.username,
+        name: user.attributes?.name || user.attributes?.preferred_username || user.username
+      };
+
+
       const postId = isEditMode ? originalPost.PK.split('#')[1] : '';
       const postData = {
         title,
@@ -114,10 +120,7 @@ const BoardWriteContent = () => {
         category,
         tags,
         editorType: activeTab,
-        author: {
-          id: user.username,
-          name: user.attributes?.name || user.username
-        }
+        author: currentUser
       };
 
       if (isEditMode) {
