@@ -68,12 +68,15 @@ const BoardDetailContent = () => {
 
     try {
       setIsSubmitting(true);
+
+      const currentUser = {
+        id: user.username,
+        name: user.attributes?.name || user.attributes?.preferred_username || user.username
+      };
+
       const { data: newComment } = await boardApiClient.post(`/posts/${postId}/comments`, {
         content: comment,
-        author: {
-          id: user.username,
-          name: user.username
-        }
+        author: currentUser
       });
 
       setPost(prev => ({
