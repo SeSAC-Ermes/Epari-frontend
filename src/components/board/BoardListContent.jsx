@@ -6,7 +6,7 @@ import { useAuth } from '../../auth/AuthContext';
 import TagSearch from './TagSearch';
 import TrendingPosts from './TrendingPosts';
 import CategorySlider from "../../components/board/CategorySlider.jsx";
-import boardApiClient from '../../api/boardAxios';
+import boardApiClient, { getCurrentUser } from '../../api/boardAxios';
 
 const BoardListContent = () => {
   const [allPosts, setAllPosts] = useState([]); // 전체 게시물 저장
@@ -15,6 +15,7 @@ const BoardListContent = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [selectedTag, setSelectedTag] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
   const { user } = useAuth();
 
   // 게시판 카테고리
@@ -34,28 +35,20 @@ const BoardListContent = () => {
 
   // 초기 게시물 로딩
   useEffect(() => {
-    const fetchInitialPosts = async () => {
-      try {
-        setLoading(true);
-        const { data } = await boardApiClient.get('/posts');
-        setAllPosts(data);
-        setFilteredPosts(data);
-      } catch (error) {
-        console.error('Error fetching posts:', error);
-      } finally {
-        setLoading(false);
-      }
+    const loadUserInfo = async () => {
+      const userInfo = await getCurrentUser();
+      setCurrentUser(userInfo);
     };
-
-    fetchInitialPosts();
-  }, []);
+    if (user) {
+      loadUserInfo();
+    }
+  }, [user]);
 
   // 클라이언트 사이드 필터링
   useEffect(() => {
     const filterPosts = () => {
       let result = [...allPosts];
 
-      // 검색어 필터링
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
         result = result.filter(post =>
@@ -65,16 +58,14 @@ const BoardListContent = () => {
         );
       }
 
-      // 카테고리 필터링
       if (selectedCategory && selectedCategory !== 'ALL') {
-        if (selectedCategory === 'MY') {
-          result = result.filter(post => post.author?.id === user?.username);
+        if (selectedCategory === 'MY' && currentUser) {
+          result = result.filter(post => post.author?.id === currentUser.id);
         } else {
           result = result.filter(post => post.category === selectedCategory);
         }
       }
 
-      // 태그 필터링
       if (selectedTag) {
         result = result.filter(post =>
             post.tags?.includes(selectedTag)
@@ -85,7 +76,7 @@ const BoardListContent = () => {
     };
 
     filterPosts();
-  }, [searchQuery, selectedCategory, selectedTag, allPosts, user?.username]);
+  }, [searchQuery, selectedCategory, selectedTag, allPosts, currentUser]);
 
   // 서버 동기화
   useEffect(() => {
@@ -106,16 +97,15 @@ const BoardListContent = () => {
 
   // 좋아요 기능
   const handleLikeClick = async (postId) => {
-    if (!user) return;
+    if (!user || !currentUser) return;
 
     try {
       const { data } = await boardApiClient.post(`/posts/${postId}/like`, {
-        userId: user.username
+        userId: currentUser.id
       });
 
       const { likes, likedUsers } = data;
 
-      // allPosts와 filteredPosts 모두 업데이트
       const updatePosts = (posts) =>
           posts.map(post =>
               post.id === postId
@@ -227,7 +217,7 @@ const BoardListContent = () => {
             {/* 게시글 목록 */}
             <div className="space-y-4">
               {filteredPosts.map((post) => {
-                const isLiked = post.likedUsers?.includes(user?.username);
+                const isLiked = post.likedUsers?.includes(currentUser?.id);
 
                 return (
                     <div
