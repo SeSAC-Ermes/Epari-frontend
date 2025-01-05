@@ -17,7 +17,17 @@ const BoardDetailContent = () => {
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
-    fetchPost(); // 컴포넌트 마운트 시 게시글 조회
+    const loadData = async () => {
+      try {
+        const userInfo = await getCurrentUser();
+        setCurrentUser(userInfo);
+        await fetchPost();
+      } catch (error) {
+        console.error('Error loading data:', error);
+      }
+    };
+
+    loadData();
   }, [postId]);
 
   const fetchPost = async () => {
