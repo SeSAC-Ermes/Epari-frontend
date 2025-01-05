@@ -5,7 +5,7 @@ import TinyEditor from '../editor/TinyEditor';
 import ToastEditor from '../editor/ToastEditor';
 import EditorTabs from '../editor/EditorTabs';
 import { useAuth } from '../../auth/AuthContext';
-import boardApiClient from '../../api/boardAxios';
+import boardApiClient, { getCurrentUser } from '../../api/boardAxios';
 
 const BoardWriteContent = () => {
   const { user } = useAuth();
@@ -107,11 +107,10 @@ const BoardWriteContent = () => {
 
       if (!isMounted.current) return;
 
-      const currentUser = {
-        id: user.username,
-        name: user.attributes?.name || user.attributes?.preferred_username || user.username
-      };
-
+      const currentUser = await getCurrentUser();
+      if (!currentUser) {
+        throw new Error('사용자 정보를 가져올 수 없습니다.');
+      }
 
       const postId = isEditMode ? originalPost.PK.split('#')[1] : '';
       const postData = {

@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Eye, Heart, MessageSquare } from 'lucide-react';
 import { useAuth } from '../../auth/AuthContext';
 import CommentItem from '../../components/board/CommentItem.jsx';
-import boardApiClient from '../../api/boardAxios';
+import boardApiClient, { getCurrentUser } from '../../api/boardAxios';
 
 const BoardDetailContent = () => {
   const { postId } = useParams();
@@ -14,17 +14,25 @@ const BoardDetailContent = () => {
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const [currentUser, setCurrentUser] = useState(null);
+
   useEffect(() => {
-    fetchPost();
+    fetchPost(); // 컴포넌트 마운트 시 게시글 조회
   }, [postId]);
 
   const fetchPost = async () => {
     try {
       setLoading(true);
       const { data } = await boardApiClient.get(`/posts/${postId}`);
+      if (!data) {
+        throw new Error('게시글을 찾을 수 없습니다.');
+      }
       setPost(data);
     } catch (error) {
       console.error('Error fetching post:', error);
+      // 사용자에게 에러 메시지 표시
+      alert(error.response?.data?.message || '게시글을 불러오는데 실패했습니다.');
+      navigate('/board'); // 에러 발생시 목록으로 이동
     } finally {
       setLoading(false);
     }
@@ -45,8 +53,9 @@ const BoardDetailContent = () => {
     if (!user) return;
 
     try {
+      const currentUser = await getCurrentUser();
       const { data } = await boardApiClient.post(`/posts/${postId}/like`, {
-        userId: user.username
+        userId: currentUser.id
       });
 
       setPost(prev => ({
@@ -69,10 +78,10 @@ const BoardDetailContent = () => {
     try {
       setIsSubmitting(true);
 
-      const currentUser = {
-        id: user.username,
-        name: user.attributes?.name || user.attributes?.preferred_username || user.username
-      };
+      const currentUser = await getCurrentUser();
+      if (!currentUser) {
+        throw new Error('사용자 정보를 가져올 수 없습니다.');
+      }
 
       const { data: newComment } = await boardApiClient.post(`/posts/${postId}/comments`, {
         content: comment,
@@ -90,6 +99,7 @@ const BoardDetailContent = () => {
       setComment('');
     } catch (error) {
       console.error('Error posting comment:', error);
+      alert('댓글 작성에 실패했습니다.');
     } finally {
       setIsSubmitting(false);
     }
@@ -147,8 +157,8 @@ const BoardDetailContent = () => {
     );
   }
 
-  const isLiked = post.likedUsers?.includes(user?.username);
-  const isAuthor = post.author?.id === user?.username;
+  const isLiked = post.likedUsers?.includes(currentUser?.id);
+  const isAuthor = post.author?.id === currentUser?.id;
 
   return (
       <main className="max-w-7xl mx-auto px-4 py-8">
@@ -159,7 +169,7 @@ const BoardDetailContent = () => {
                 onClick={() => navigate('/board')}
                 className="flex items-center text-gray-600 hover:text-gray-900"
             >
-              <ArrowLeft className="mr-2" size={20} />
+              <ArrowLeft className="mr-2" size={20}/>
               목록으로
             </button>
             {isAuthor && (
@@ -209,11 +219,11 @@ const BoardDetailContent = () => {
                   </span>
                   </button>
                   <div className="flex items-center space-x-1">
-                    <Eye size={20} className="text-gray-400" />
+                    <Eye size={20} className="text-gray-400"/>
                     <span className="text-gray-500">{post.metadata?.views || 0}</span>
                   </div>
                   <div className="flex items-center space-x-1">
-                    <MessageSquare size={20} className="text-gray-400" />
+                    <MessageSquare size={20} className="text-gray-400"/>
                     <span className="text-gray-500">
                     {post.metadata?.commentsCount || 0}
                   </span>
@@ -222,7 +232,7 @@ const BoardDetailContent = () => {
               </div>
             </header>
 
-            <div className="prose max-w-none mb-8" dangerouslySetInnerHTML={{ __html: post.content }} />
+            <div className="prose max-w-none mb-8" dangerouslySetInnerHTML={{ __html: post.content }}/>
 
             <div className="flex flex-wrap gap-2 mt-4">
               {post.tags?.map((tag, index) => (

@@ -1,29 +1,38 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from "../../auth/AuthContext.jsx";
 import defaultAvatar from '../../assets/default-avatar.jpg';
+import { getCurrentUser } from '../../api/boardAxios';
 
 const CommentItem = ({ comment, onUpdate, onDelete }) => {
   const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(comment.content);
+  const [currentUser, setCurrentUser] = useState(null);
 
-  const isAuthor = user?.username === comment.author.id;
+  useEffect(() => {
+    const loadUserInfo = async () => {
+      if (user) {
+        const userInfo = await getCurrentUser();
+        setCurrentUser(userInfo);
+      }
+    };
+    loadUserInfo();
+  }, [user]);
+
+  const isAuthor = currentUser?.id === comment.author.id;
 
   const getProfileImageUrl = () => {
-    if (comment.author.id.startsWith('kakao_') || comment.author.id.startsWith('google_')) {
-      return comment.author.picture || defaultAvatar;
+    if (comment.author?.loginType === 'google' && comment.author?.picture) {
+      return comment.author.picture;
     }
     return defaultAvatar;
   };
 
   const getDisplayName = () => {
-    if (comment.author.name) {
-      return comment.author.name;
-    }
-    if (comment.author.id.startsWith('google_')) {
-      return user?.attributes?.name || comment.author.id;
-    }
-    return comment.author.id;
+    const name = comment.author?.name || comment.author?.email?.split('@')[0] || 'Unknown User';
+    // 로그인 타입에 따라 이름 옆에 작은 배지 표시 (선택사항)
+    const badge = comment.author?.loginType === 'google' ? '(Google)' : '';
+    return `${name} ${badge}`;
   };
 
   const handleSubmit = async () => {
@@ -47,7 +56,14 @@ const CommentItem = ({ comment, onUpdate, onDelete }) => {
         />
         <div className="flex-1">
           <div className="flex items-center justify-between">
-            <h4 className="text-sm font-medium text-gray-900">{getDisplayName()}</h4>
+            <h4 className="text-sm font-medium text-gray-900">
+              {getDisplayName()}
+            </h4>
+            {comment.author?.loginType === 'google' && (
+                <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
+                Google
+              </span>
+            )}
             <div className="flex items-center space-x-2">
               <time className="text-xs text-gray-500">
                 {new Date(comment.createdAt).toLocaleDateString()}
